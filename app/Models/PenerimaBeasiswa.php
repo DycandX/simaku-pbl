@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TahunAkademik extends Model
+class PenerimaBeasiswa extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class TahunAkademik extends Model
      * 
      * @var string
      */
-    protected $table = 'tahun_akademik';
+    protected $table = 'penerima_beasiswa';
 
     /**
      * The attributes that are mass assignable.
@@ -22,11 +22,14 @@ class TahunAkademik extends Model
      * @var array
      */
     protected $fillable = [
-        'tahun_akademik',
-        'semester',
+        'nim',
+        'id_beasiswa',
         'tanggal_mulai',
         'tanggal_selesai',
+        'nominal',
         'status',
+        'keterangan',
+        'created_by',
     ];
 
     /**
@@ -37,26 +40,35 @@ class TahunAkademik extends Model
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
+        'nominal' => 'decimal:2',
     ];
 
     /**
-     * Get the periode pembayaran for the tahun akademik.
+     * Get the mahasiswa that owns the penerima beasiswa.
      */
-    public function periodePembayaran()
+    public function mahasiswa()
     {
-        return $this->hasMany(PeriodePembayaran::class, 'id_tahun_akademik');
+        return $this->belongsTo(Mahasiswa::class, 'nim');
     }
 
     /**
-     * Get the enrollments for the tahun akademik.
+     * Get the beasiswa that owns the penerima beasiswa.
      */
-    public function enrollments()
+    public function beasiswa()
     {
-        return $this->hasMany(EnrollmentMahasiswa::class, 'id_tahun_akademik');
+        return $this->belongsTo(Beasiswa::class, 'id_beasiswa');
     }
 
     /**
-     * Scope a query to only include active academic years.
+     * Get the staff that created the penerima beasiswa.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(Staff::class, 'created_by');
+    }
+
+    /**
+     * Scope a query to only include active scholarship recipients.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TahunAkademik extends Model
+class PeriodePembayaran extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class TahunAkademik extends Model
      * 
      * @var string
      */
-    protected $table = 'tahun_akademik';
+    protected $table = 'periode_pembayaran';
 
     /**
      * The attributes that are mass assignable.
@@ -22,8 +22,8 @@ class TahunAkademik extends Model
      * @var array
      */
     protected $fillable = [
-        'tahun_akademik',
-        'semester',
+        'id_tahun_akademik',
+        'nama_periode',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
@@ -40,23 +40,23 @@ class TahunAkademik extends Model
     ];
 
     /**
-     * Get the periode pembayaran for the tahun akademik.
+     * Get the tahun akademik that owns the periode pembayaran.
      */
-    public function periodePembayaran()
+    public function tahunAkademik()
     {
-        return $this->hasMany(PeriodePembayaran::class, 'id_tahun_akademik');
+        return $this->belongsTo(TahunAkademik::class, 'id_tahun_akademik');
     }
 
     /**
-     * Get the enrollments for the tahun akademik.
+     * Get the UKT semesters for the periode pembayaran.
      */
-    public function enrollments()
+    public function uktSemesters()
     {
-        return $this->hasMany(EnrollmentMahasiswa::class, 'id_tahun_akademik');
+        return $this->hasMany(UktSemester::class, 'id_periode_pembayaran');
     }
 
     /**
-     * Scope a query to only include active academic years.
+     * Scope a query to only include active payment periods.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
