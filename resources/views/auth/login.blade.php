@@ -29,7 +29,7 @@
             @csrf
             <div class="input-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="1.23.45.6.78" value="{{ old('username') }}">
+                <input type="text" id="username" name="username" placeholder="4.33.23.2.00" value="{{ old('username') }}">
             </div>
 
             <div class="input-group">
@@ -58,5 +58,14 @@
     <div class="footer">
         Copyright © 2025 Polytechnic State Semarang
     </div>
+    <script>
+        const form = document.querySelector('form');
+        const button = form.querySelector('button');
+
+        form.addEventListener('submit', () => {
+            button.disabled = true;
+            button.innerText = 'Signing In...';
+        });
+    </script>
 </body>
 </html>

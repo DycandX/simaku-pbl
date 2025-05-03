@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SIMAKU')</title>
 
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+
     <!-- CSS AdminLTE -->
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
@@ -145,8 +149,8 @@
                     <a href="#" class="nav-link dropdown-toggle profile-link" data-toggle="dropdown">
                         <img src="{{ asset('assets/Profile.jpeg') }}" class="user-image rounded-circle" alt="User Image">
                         <div class="user-info">
-                            <span class="user-name" onclick="window.location.href='/profile'; event.stopPropagation(); return false;">{{ Auth::user()->name ?? 'Zirlda Syafira' }}</span>
-                            <span class="user-role">Mahasiswa</span>
+                            <span class="user-name" onclick="window.location.href='/profile'; event.stopPropagation(); return false;">{{ Session::get('username') ?? 'Username' }}</span>
+                            <span class="user-role">{{ Session::get('role') ?? 'role' }}</span>
                         </div>
                         <i class="fas fa-chevron-down profile-arrow"></i>
                     </a>
@@ -154,8 +158,8 @@
                         <li class="user-header bg-primary">
                             <img src="{{ asset('assets/Profile.jpeg') }}" class="img-circle elevation-2" alt="User Image">
                             <p>
-                                {{ Auth::user()->name ?? 'Zirlda Syafira' }}
-                                <small>{{ Auth::user()->email ?? 'mahasiswa@example.com' }}</small>
+                                {{ Session::get('username') ?? 'Username' }}
+                                <small>{{ Session::get('email') ?? 'user@example.com' }}</small>
                             </p>
                         </li>
                         <li class="user-footer">

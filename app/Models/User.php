@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Users extends Authenticatable
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -70,5 +70,10 @@ class Users extends Authenticatable
     public function logAktivitas()
     {
         return $this->hasMany(LogAktivitas::class, 'id_user');
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'username';
     }
 }

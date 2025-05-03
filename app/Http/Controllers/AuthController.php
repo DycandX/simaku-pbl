@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
-    // Menampilkan halaman login
     public function showLoginForm()
     {
+        // If already logged in, redirect to dashboard
+        if (Session::has('token') && Session::has('logged_in')) {
+            return redirect()->route('dashboard');
+        }
         return view('auth.login');
     }
 
-    // Proses login
     public function login(Request $request)
     {
         $request->validate([
@@ -21,64 +24,69 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $username = $request->username;
-        $password = $request->password;
-
-        // Cek user di database
-        $user = DB::table('users')
-            ->where('username', $username)
-            ->where('is_active', 1)
-            ->first();
-
-        if ($user && $password == $user->password) {
-            // Login berhasil, buat session manual
-            session([
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'role' => $user->role,
-                'logged_in' => true
+        try {
+            // Kirim POST request ke API login endpoint
+            $response = Http::post(url('/api/login'), [
+                'username' => $request->username,
+                'password' => $request->password,
             ]);
 
-            // Update last_login
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update(['last_login' => now()]);
+            if ($response->successful()) {
+                $data = $response->json();
 
-            // Catat log aktivitas
-            DB::table('log_aktivitas')->insert([
-                'id_user' => $user->id,
-                'aktivitas' => 'Login ke sistem',
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'created_at' => now()
-            ]);
+                // Simpan token dan user info ke session
+                Session::put('token', $data['access_token']);
+                Session::put('token_type', $data['token_type']);
+                Session::put('username', $request->username);
+                Session::put('logged_in', true);
 
-            return redirect()->route('dashboard');
+                // Get user data
+                $userResponse = Http::withToken($data['access_token'])->get(url('/api/user'));
+                
+                if ($userResponse->successful()) {
+                    $userData = $userResponse->json()['data'];
+                    
+                    // Find the current user by username
+                    $currentUser = null;
+                    foreach ($userData as $user) {
+                        if ($user['username'] === $request->username) {
+                            $currentUser = $user;
+                            break;
+                        }
+                    }
+                    
+                    if ($currentUser) {
+                        Session::put('user_data', $currentUser);
+                        Session::put('role', $currentUser['role']);
+                        Session::put('email', $currentUser['email']);
+                    }
+                }
+
+                return redirect()->route('dashboard');
+            } else {
+                return back()->withErrors(['username' => 'Login gagal! Cek kembali username dan password.']);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['username' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-
-        // Jika login gagal
-        return back()->withErrors([
-            'username' => 'Username atau password salah!',
-        ])->withInput($request->only('username'));
     }
 
-    // Proses logout
     public function logout(Request $request)
     {
-        if (session('user_id')) {
-            // Catat log aktivitas
-            DB::table('log_aktivitas')->insert([
-                'id_user' => session('user_id'),
-                'aktivitas' => 'Logout dari sistem',
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'created_at' => now()
-            ]);
+        $token = Session::get('token');
+
+        if ($token) {
+            try {
+                // Kirim request ke API logout
+                Http::withToken($token)->post(url('/api/logout'));
+            } catch (\Exception $e) {
+                // Log error tapi tetap lanjutkan logout
+            }
         }
 
-        // Hapus semua session
-        $request->session()->flush();
+        // Hapus session
+        Session::flush();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Berhasil logout.');
     }
 }

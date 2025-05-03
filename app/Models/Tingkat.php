@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Tingkat extends Model
 {
     use HasFactory;
-
+    
+    protected $table = 'tingkat';
     /**
      * The attributes that are mass assignable.
      *

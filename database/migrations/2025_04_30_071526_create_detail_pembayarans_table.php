@@ -6,16 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('detail_pembayaran', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->foreignId('id_aktivitas_pembayaran')->constrained('pembayaran_ukt_semester')->onDelete('cascade');
+
+            // Perbaikan kolom relasi
+            $table->foreignId('id_pembayaran_ukt_semester')->constrained('pembayaran_ukt_semester')->onDelete('cascade');
+
             $table->decimal('nominal', 15, 2);
             $table->dateTime('tanggal_pembayaran');
             $table->string('metode_pembayaran');
@@ -25,18 +23,12 @@ return new class extends Migration
             $table->foreignId('verified_by')->nullable()->constrained('staff')->onDelete('set null');
             $table->timestamp('verified_at')->nullable();
             $table->text('catatan')->nullable();
-            $table->timestamps(); // created_at & updated_at
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('detail_pembayarans');
+        Schema::dropIfExists('detail_pembayaran');
     }
 };
-

@@ -17,7 +17,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="card-title">Semua Tagihan</h6>
-                <h3 class="mb-0">Rp 7.800.000,00</h3>
+                <h3 class="mb-0">Rp 20.800.000,00</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
@@ -30,7 +30,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="card-title">Belum Terbayar</h6>
-                <h3 class="mb-0">Rp 2.600.000,00</h3>
+                <h3 class="mb-0">Rp 15.800.000,00</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
@@ -43,7 +43,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="card-title">Sudah Terbayar</h6>
-                <h3 class="mb-0">Rp 5.200.000,00</h3>
+                <h3 class="mb-0">Rp 5.000.000,00</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
