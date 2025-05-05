@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\TingkatController;
 use App\Http\Controllers\Api\UktSemesterController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PenerimaBeasiswaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,29 +38,90 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-
+// login dan logout untuk semua users
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-
-Route::middleware(['auth:sanctum', 'role:admin,staff,mahasiswa'])->group(function () {
-    Route::apiResource('user', UsersController::class);
+// route untuk role admin
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::apiResource('user', UsersController::class); // hanya admin yang boleh kelola user
+    Route::apiResource('log-aktivitas', LogAktivitasController::class); // hanya admin yang bisa lihat log
 });
 
-Route::apiResource('mahasiswa', MahasiswaController::class);
-Route::apiResource('beasiswa', BeasiswaController::class);
-Route::apiResource('staff', StaffController::class);
-Route::apiResource('fakultas', FakultasController::class);
-Route::apiResource('golongan-ukt', GolonganUktController::class);
-Route::apiResource('tahun-akademik', TahunAkademikController::class);
-Route::apiResource('periode-pembayaran', PeriodePembayaranController::class);
-Route::apiResource('ukt-semester', UktSemesterController::class);
-Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
-Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
-Route::apiResource('kelas', KelasController::class);
-Route::apiResource('program-studi', ProgramStudiController::class);
-Route::apiResource('tingkat', TingkatController::class);
-Route::apiResource('jenis-pembayaran', JenisPembayaranController::class);
-Route::apiResource('log-aktivitas', LogAktivitasController::class);
-Route::apiResource('enrollment-mahasiswa', EnrollmentMahasiswaController::class);
+// route untuk role staff
+Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
+    Route::apiResource('mahasiswa', MahasiswaController::class);
+    Route::apiResource('beasiswa', BeasiswaController::class);
+    Route::apiResource('penerima-beasiswa', PenerimaBeasiswaController::class); //belom buat
+    Route::apiResource('staff', StaffController::class);
+    Route::apiResource('golongan-ukt', GolonganUktController::class);
+    Route::apiResource('tahun-akademik', TahunAkademikController::class);
+    Route::apiResource('periode-pembayaran', PeriodePembayaranController::class);
+    Route::apiResource('ukt-semester', UktSemesterController::class);
+    Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
+    Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
+    Route::apiResource('kelas', KelasController::class);
+    Route::apiResource('program-studi', ProgramStudiController::class);
+    Route::apiResource('tingkat', TingkatController::class);
+    Route::apiResource('fakultas', FakultasController::class);
+    Route::apiResource('jenis-pembayaran', JenisPembayaranController::class);
+    Route::apiResource('enrollment-mahasiswa', EnrollmentMahasiswaController::class);
+});
+
+
+// route untuk role mahasiswa
+Route::middleware(['auth:sanctum', 'role:staff,mahasiswa'])->group(function () {
+    // Mahasiswa hanya bisa akses data yang relevan ke dirinya
+    Route::get('mahasiswa/{id}', [MahasiswaController::class, 'show']);
+    Route::get('user', [UsersController::class, 'index']); 
+    Route::get('beasiswa', [BeasiswaController::class, 'index']);
+    Route::get('penerima-beasiswa', [PenerimaBeasiswaController::class, 'index']);
+    Route::get('ukt-semester', [UktSemesterController::class, 'index']);
+    Route::get('pembayaran-ukt-semester', [PembayaranUktSemesterController::class, 'index']);
+    Route::get('detail-pembayaran', [DetailPembayaranController::class, 'index']);
+    Route::get('jenis-pembayaran', [JenisPembayaranController::class, 'index']);
+    Route::get('periode-pembayaran', [PeriodePembayaranController::class, 'index']);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Route::middleware(['auth:sanctum', 'role:admin,staff,mahasiswa'])->group(function () {
+//     Route::apiResource('user', UsersController::class);
+// });
+
+// Route::apiResource('mahasiswa', MahasiswaController::class);
+// Route::apiResource('beasiswa', BeasiswaController::class);
+// Route::apiResource('staff', StaffController::class);
+// Route::apiResource('fakultas', FakultasController::class);
+// Route::apiResource('golongan-ukt', GolonganUktController::class);
+// Route::apiResource('tahun-akademik', TahunAkademikController::class);
+// Route::apiResource('periode-pembayaran', PeriodePembayaranController::class);
+// Route::apiResource('ukt-semester', UktSemesterController::class);
+// Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
+// Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
+// Route::apiResource('kelas', KelasController::class);
+// Route::apiResource('program-studi', ProgramStudiController::class);
+// Route::apiResource('tingkat', TingkatController::class);
+// Route::apiResource('jenis-pembayaran', JenisPembayaranController::class);
+// Route::apiResource('log-aktivitas', LogAktivitasController::class);
+// Route::apiResource('enrollment-mahasiswa', EnrollmentMahasiswaController::class);
+// Route::apiResource('penerima-beasiswa', PenerimaBeasiswaController::class);
