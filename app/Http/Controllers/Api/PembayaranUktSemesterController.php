@@ -9,9 +9,60 @@ use Illuminate\Support\Facades\Validator;
 
 class PembayaranUktSemesterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = PembayaranUktSemester::with(['mahasiswa', 'uktSemester'])->orderByDesc('id')->get();
+        $query = PembayaranUktSemester::with([
+            'mahasiswa',
+            'uktSemester.periodePembayaran' // perhatikan ini
+        ])->orderByDesc('id');
+
+        // Filter berdasarkan NIM jika tersedia di query
+        if ($request->has('nim')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        //$data = $query->get();
+        // $data = $query->get()->map(function ($item) {
+        //     // Ambil data asli sebagai array
+        //     $original = $item->toArray();
+    
+        //     // Tambahkan data custom
+        //     $custom = [
+        //         'nomor_tagihan' => 'INV0000' . $item->uktSemester->id,
+        //         'semester' => optional($item->uktSemester->periodePembayaran)->nama_periode ?? '-',
+        //         'total_tagihan' => $item->uktSemester->jumlah_ukt,
+        //         'total_terbayar' => $item->status === 'terbayar' ? $item->nominal_tagihan : 0,
+        //         'keterangan' => $item->nomor_cicilan == 1 ? 'kontan' : 'cicilan',
+        //         'status' => $item->status === 'terbayar' ? 'sudah lunas' : 'belum lunas',
+        //     ];
+    
+        //     // Gabungkan data asli dan custom
+        //     return array_merge($original, $custom);
+        // });
+        $data = $query->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nim' => $item->nim,
+                'id_ukt_semester' => $item->id_ukt_semester,
+                'nomor_cicilan' => $item->nomor_cicilan,
+                'nominal_tagihan' => $item->nominal_tagihan,
+                'tanggal_jatuh_tempo' => $item->tanggal_jatuh_tempo,
+                'status' => $item->status === 'terbayar' ? 'sudah lunas' : 'belum lunas',
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'mahasiswa' => $item->mahasiswa,
+                'ukt_semester' => $item->uktSemester,
+                'nomor_tagihan' => 'INV' . str_pad($item->id, 5, '0', STR_PAD_LEFT),
+                'semester' => optional($item->uktSemester->periodePembayaran)->nama_periode ?? '-',
+                'total_tagihan' => $item->uktSemester->jumlah_ukt,
+                'total_terbayar' => $item->status === 'terbayar' ? $item->nominal_tagihan : 0,
+                'keterangan' => $item->nomor_cicilan == 1 ? 'kontan' : 'cicilan',
+            ];
+            return array_merge($original, $custom);
+        });
+        
 
         return response()->json([
             'status' => true,

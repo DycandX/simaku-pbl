@@ -9,13 +9,22 @@ use Illuminate\Support\Facades\Validator;
 
 class UktSemesterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = UktSemester::with(['mahasiswa', 'golonganUkt', 'periodePembayaran'])->orderByDesc('id')->get();
+        $query = UktSemester::with(['mahasiswa', 'golonganUkt', 'periodePembayaran'])->orderByDesc('id');
+
+        // Jika parameter 'nim' ada, filter berdasarkan NIM mahasiswa
+        if ($request->has('nim')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Data UKT Semester Ditemukan',
+            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data UKT Semester Ditemukan',
             'data' => $data
         ], 200);
     }

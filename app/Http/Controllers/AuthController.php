@@ -62,7 +62,7 @@ class AuthController extends Controller
                     }
                 }
 
-                return redirect()->route('dashboard');
+                return redirect()->route('lihat-tagihan-ukt');
             } else {
                 return back()->withErrors(['username' => 'Login gagal! Cek kembali username dan password.']);
             }

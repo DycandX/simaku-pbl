@@ -9,16 +9,27 @@ use Illuminate\Support\Facades\Validator;
 
 class DetailPembayaranController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = DetailPembayaran::with(['pembayaranUktSemester', 'verifiedBy'])->orderByDesc('id')->get();
+        $query = DetailPembayaran::with(['pembayaranUktSemester.uktSemester.mahasiswa', 'verifiedBy'])
+            ->orderByDesc('id');
+
+        // Filter berdasarkan NIM jika tersedia
+        if ($request->has('nim')) {
+            $query->whereHas('pembayaranUktSemester.uktSemester.mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Detail Pembayaran ditemukan',
+            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data Detail Pembayaran ditemukan',
             'data' => $data
         ], 200);
     }
+
 
     public function store(Request $request)
     {
