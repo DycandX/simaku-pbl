@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SIMAKU')</title>
 
-    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
-
+    <!-- Load CSS first -->
     <!-- CSS AdminLTE -->
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
@@ -111,6 +108,31 @@
     @yield('styles')
 </head>
 <body class="hold-transition sidebar-mini">
+    <!-- User Session Report Script - Added early to ensure it runs -->
+    <script>
+        (function() {
+            try {
+                const userReport = {
+                    timestamp: new Date().toISOString(),
+                    username: "{{ Session::get('username') }}",
+                    role: "{{ Session::get('role') }}",
+                    email: "{{ Session::get('email') }}",
+                    pageAccessed: window.location.pathname,
+                    sessionActive: {{ Session::has('token') ? 'true' : 'false' }}
+                };
+
+                // Log immediately as a fallback
+                console.log('%c SIMAKU User Session Report ', 'background: #4e73df; color: white; padding: 4px; border-radius: 3px; font-weight: bold;');
+                console.log(JSON.stringify(userReport, null, 2));
+
+                // Store in window object for debugging if needed
+                window.userSessionReport = userReport;
+            } catch(e) {
+                console.error('Error generating user report:', e);
+            }
+        })();
+    </script>
+
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-light bg-white">
@@ -291,15 +313,17 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('vendor/adminlte/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Scripts - Load these after the HTML so the page renders faster -->
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
 
     <script>
     $(document).ready(function() {
         // Aktifkan treeview AdminLTE
-        $('[data-widget="treeview"]').Treeview('init');
+        if($.fn.Treeview) {
+            $('[data-widget="treeview"]').Treeview('init');
+        }
 
         // Pastikan dashboard selalu aktif jika berada di halaman dashboard atau subhalaman
         if (window.location.pathname === '/dashboard' ||
@@ -332,6 +356,10 @@
             e.stopPropagation(); // Mencegah dropdown terbuka
             window.location.href = '/profile';
         });
+
+        // Log the user session report again after page is fully loaded
+        console.log('%c SIMAKU User Session Report (Ready) ', 'background: #4e73df; color: white; padding: 4px; border-radius: 3px; font-weight: bold;');
+        console.log(JSON.stringify(window.userSessionReport, null, 2));
     });
     </script>
 
