@@ -33,6 +33,19 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/admin/kelola-pengguna', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'index'])->name('admin.kelola-pengguna');
 
     //staff
+    Route::get('/staff-app', function () {
+        return view('layouts.staff-app');
+    })->name('staff-app');
+
+    Route::get('/staff-beasiswa', function () {
+        return view('staff.staff-beasiswa');
+    })->name('staff.beasiswa');
+
+    Route::get('/staff-profile', function () {
+        return view('staff.profile');
+    })->name('staff.profile');
+    
+    
     Route::get('/staff/pembayaran-ukt', [\App\Http\Controllers\Staff\PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
 
 });

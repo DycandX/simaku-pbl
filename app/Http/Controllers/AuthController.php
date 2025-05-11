@@ -25,7 +25,7 @@ class AuthController extends Controller
             } elseif ($role == 'admin') {
                 return redirect()->route('admin.kelola-pengguna');
             } elseif ($role == 'staff') {
-                return redirect()->route('staff.pembayaran-ukt');
+                return redirect()->route('staff-app');
             }
         }
         return view('auth.login');
@@ -204,7 +204,7 @@ class AuthController extends Controller
                     return redirect()->route('admin.kelola-pengguna');
                 } elseif ($role === 'staff') {
                     Log::info('Redirecting to staff dashboard');
-                    return redirect()->route('staff.pembayaran-ukt');
+                    return redirect()->route('staff-app');
                 }
 
                 // Default redirect jika role tidak terdeteksi
