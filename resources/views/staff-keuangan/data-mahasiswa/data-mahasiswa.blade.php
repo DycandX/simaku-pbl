@@ -2,6 +2,8 @@
 
 @section('title', 'Data Mahasiswa')
 
+@section('header', 'Staff - Data Mahasiswa')
+
 @section('content_header')
     <h1>Data Mahasiswa</h1>
 @stop

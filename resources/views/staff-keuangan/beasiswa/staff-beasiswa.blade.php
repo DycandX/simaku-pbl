@@ -2,7 +2,7 @@
 
 @section('title', 'Beasiswa - SIMAKU')
 
-@section('header', 'Sfaff - Beasiswa Pendidikan')
+@section('header', 'Staff - Beasiswa Pendidikan')
 
 @section('content')
 <div class="row">
