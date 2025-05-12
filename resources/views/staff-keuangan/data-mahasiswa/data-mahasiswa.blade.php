@@ -12,17 +12,27 @@
     <div class="container">
         <!-- Filter Form -->
         <div class="d-flex mb-3">
+            <!-- Dropdown untuk Angkatan -->
             <select class="form-control w-25 mr-2" id="angkatan">
+                <option value="2023">Angkatan 2024</option>
                 <option value="2023">Angkatan 2023</option>
                 <option value="2022">Angkatan 2022</option>
                 <option value="2021">Angkatan 2021</option>
-                <!-- Add more options as needed -->
             </select>
-            <select class="form-control w-25" id="jurusan">
-                <option value="D4 - Manajemen Bisnis">D4 - Manajemen Bisnis</option>
-                <option value="D3 - Akuntansi">D3 - Akuntansi</option>
-                <!-- Add more options as needed -->
+
+            <!-- Dropdown untuk Prodi -->
+            <select class="form-control w-25 mr-2" id="prodi">
+                <option value="all">Semua Prodi</option>
+                <option value="Ekonomi Pembangunan">Ekonomi Pembangunan</option>
+                <option value="Ilmu Gizi">Ilmu Gizi</option>
+                <option value="Informatika">Informatika</option>
+                <option value="Sastra Indonesia">Sastra Indonesia</option>
+                <option value="Sistem Informasi">Sistem Informasi</option>
+                <option value="Akuntansi">Akuntansi</option>
+                <!-- Tambahkan prodi lainnya sesuai kebutuhan -->
             </select>
+
+            <!-- Tombol Filter -->
             <button class="btn btn-primary ml-2" id="filterButton">Filter</button>
 
             <!-- Search Input on the Right -->
@@ -36,115 +46,55 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Mahasiswa</th>
+                    <th>Nama Mahasiswa</th>
                     <th>NIM</th>
                     <th>Angkatan</th>
                     <th>Jurusan</th>
                     <th>Prodi</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody id="dataMahasiswa">
-                <!-- Data will be dynamically inserted here -->
+            <tbody id="mahasiswaTable">
+                @foreach($mahasiswaData as $index => $mahasiswa)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $mahasiswa['nama_lengkap'] }}</td>
+                        <td>{{ $mahasiswa['nim'] }}</td>
+                        <td>{{ $mahasiswa['angkatan'] }}</td>
+                        <td>{{ $mahasiswa['jurusan'] }}</td>
+                        <td>{{ $mahasiswa['prodi'] }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
-        
-        <div>
-            Showing <span id="startRow">1</span>-<span id="endRow">10</span> of 7500
-        </div>
-
-        <div class="pagination mt-3">
-            <button id="prevBtn" class="btn btn-secondary">Previous</button>
-            <button id="nextBtn" class="btn btn-secondary">Next</button>
-        </div>
     </div>
 
     <script>
-        const mahasiswaData = [
-            { "nama_lengkap": "Zirlda Syafira", "nim": "4.33.23.5.19", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Fadhil Ramadhan", "nim": "4.33.23.5.20", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Aisyah Hanifah", "nim": "4.33.23.5.21", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Yudha Prasetyo", "nim": "4.33.23.5.22", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Lestari Widya", "nim": "4.33.23.5.24", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Zikri Alfarizi", "nim": "4.33.23.5.23", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Nabila Fauziah", "nim": "4.33.23.5.25", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Rizky Ramadhan", "nim": "4.33.23.5.26", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Salma Ayu Lestari", "nim": "4.33.23.5.27", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-            { "nama_lengkap": "Daffa Nursemaid", "nim": "4.33.23.5.28", "angkatan": 2023, "jurusan": "Administrasi Bisnis", "prodi": "D4 - Manajemen Bisnis Internasional" },
-        ];
+        // Fungsi untuk filter data berdasarkan dropdown dan search input
+        document.getElementById('filterButton').addEventListener('click', function () {
+            let angkatan = document.getElementById('angkatan').value;
+            let prodi = document.getElementById('prodi').value;
+            let searchInput = document.getElementById('searchInput').value.toLowerCase();
+            
+            let tableRows = document.querySelectorAll('#mahasiswaTable tr');
 
-        let currentPage = 1;
-        const rowsPerPage = 10;
+            tableRows.forEach(function(row) {
+                let namaMahasiswa = row.cells[1].textContent.toLowerCase();
+                let nim = row.cells[2].textContent;
+                let angkatanCell = row.cells[3].textContent;
+                let jurusanCell = row.cells[4].textContent;
+                let prodiCell = row.cells[5].textContent;
 
-        // Function to render mahasiswa data
-        function renderTable(data) {
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const slicedData = data.slice(start, end);
-
-            const tableBody = document.getElementById('dataMahasiswa');
-            tableBody.innerHTML = '';
-
-            slicedData.forEach((mahasiswa, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${start + index + 1}</td>
-                    <td>${mahasiswa.nama_lengkap}</td>
-                    <td>${mahasiswa.nim}</td>
-                    <td>${mahasiswa.angkatan}</td>
-                    <td>${mahasiswa.jurusan}</td>
-                    <td>${mahasiswa.prodi}</td>
-                    <td><button class="btn btn-info">Lihat Mahasiswa</button></td>
-                `;
-                tableBody.appendChild(row);
+                // Filter berdasarkan angkatan, prodi, dan pencarian nama
+                if (
+                    (angkatan === 'all' || angkatanCell === angkatan) &&
+                    (prodi === 'all' || prodiCell === prodi) &&
+                    (namaMahasiswa.includes(searchInput) || nim.includes(searchInput))
+                ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
-
-            // Update pagination info
-            document.getElementById('startRow').textContent = start + 1;
-            document.getElementById('endRow').textContent = Math.min(end, data.length);
-        }
-
-        // Pagination functionality
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable(mahasiswaData);
-            }
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            if (currentPage * rowsPerPage < mahasiswaData.length) {
-                currentPage++;
-                renderTable(mahasiswaData);
-            }
-        });
-
-        // Initial render
-        renderTable(mahasiswaData);
-
-        // Filter functionality
-        document.getElementById('filterButton').addEventListener('click', () => {
-            const angkatan = document.getElementById('angkatan').value;
-            const jurusan = document.getElementById('jurusan').value;
-
-            const filteredData = mahasiswaData.filter(mahasiswa => {
-                return (angkatan === '' || mahasiswa.angkatan === parseInt(angkatan)) &&
-                    (jurusan === '' || mahasiswa.jurusan === jurusan);
-            });
-
-            renderTable(filteredData);
-        });
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', () => {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-
-            const filteredData = mahasiswaData.filter(mahasiswa => {
-                return mahasiswa.nama_lengkap.toLowerCase().includes(searchQuery) || 
-                       mahasiswa.nim.toLowerCase().includes(searchQuery);
-            });
-
-            renderTable(filteredData);
         });
     </script>
 @stop
