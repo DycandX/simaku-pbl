@@ -238,7 +238,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/data-mahasiswa" class="nav-link {{ request()->is('data-mahasiswa*') ? 'active' : '' }}">
+                            <a href="/staff-keuangan/data-mahasiswa" class="nav-link {{ request()->is('staff.data-mahasiswa*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>Data Mahasiswa</p>
                             </a>
