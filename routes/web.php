@@ -9,6 +9,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BeasiswaController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\Mahasiswa\LihatTagihanUktController;
+use App\Http\Controllers\staff\staffBeasiswaController;
+use App\Http\Controllers\staff\staffProfileController;
+use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaController;
 
 // Login Routes
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -37,13 +40,13 @@ Route::middleware(['check.login'])->group(function () {
         return view('layouts.staff-app');
     })->name('staff-app');
 
-    Route::get('/staff-beasiswa', function () {
-        return view('staff.staff-beasiswa');
-    })->name('staff.beasiswa');
+    Route::get('/staff-beasiswa', [staffBeasiswaController::class, 'index'])->name('staff-beasiswa');
 
-    Route::get('/staff-profile', function () {
-        return view('staff.profile');
-    })->name('staff.profile');
+    Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
+
+    // Route::get('/staff-profile', function () {
+    //     return view('staff-keuangan.profile.staff-profile');
+    // })->name('staff-profile');
     
     
     Route::get('/staff/pembayaran-ukt', [\App\Http\Controllers\Staff\PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');

@@ -232,25 +232,25 @@
                         </li>
                         <!-- Menu lainnya tetap sama -->
                         <li class="nav-item">
-                            <a href="/staff.beasiswa" class="nav-link {{ request()->is('staff.beasiswa*') ? 'active' : '' }}">
+                            <a href="/staff-beasiswa" class="nav-link {{ request()->is('staff.beasiswa*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-graduation-cap"></i>
-                                <p>Beasiswa</p>
+                                <p>Staff - Beasiswa</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/profile" class="nav-link {{ request()->is('data-mahasiswa*') ? 'active' : '' }}">
+                            <a href="/data-mahasiswa" class="nav-link {{ request()->is('data-mahasiswa*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>Data Mahasiswa</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/profile" class="nav-link {{ request()->is('profile*') ? 'active' : '' }}">
+                            <a href="/staff-profile" class="nav-link {{ request()->is('staff-profile*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>Profile</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/settings" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
+                            <a href="/staff-settings" class="nav-link {{ request()->is('staff-settings*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-cog"></i>
                                 <p>Settings</p>
                             </a>
