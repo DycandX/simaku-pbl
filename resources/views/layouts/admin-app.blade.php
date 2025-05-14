@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SIMAKU')</title>
+    <title>@yield('title', 'SIMAKU - Admin')</title>
 
     <!-- Load CSS first -->
     <!-- CSS AdminLTE -->
@@ -90,7 +90,7 @@
             background-color: #2e59d9;
         }
 
-        /* Tambahkan di bagian <style> */
+        /* User info styling */
         .navbar-nav .user-menu .user-info .user-name {
             font-weight: 600;
             font-size: 0.9rem;
@@ -104,56 +104,7 @@
             text-decoration: none;
         }
 
-        /* Custom styling untuk menu Pengajuan Cicilan */
-        /* Removed since Pengajuan Cicilan is now a submenu */
-
-        /* Status cards styling */
-        .status-card {
-            text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .status-card.verified {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-card.unverified {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-        }
-
-        .status-card.rejected {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status-card h3 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .status-card p {
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        .status-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-
-        .filter-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-        }
-
+        /* Table styling */
         .table-container {
             background-color: white;
             border-radius: 8px;
@@ -168,92 +119,47 @@
             font-weight: 600;
         }
 
-        .badge-diverifikasi {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            padding: 6px 15px;
-            border-radius: 15px;
+        /* Button styling */
+        .btn-edit {
+            background-color: #4e73df;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
             font-size: 12px;
             font-weight: 500;
-            display: inline-block;
         }
 
-        .badge-belum-diverifikasi {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
+        .btn-edit:hover {
+            background-color: #2e59d9;
+            color: white;
         }
 
-        .badge-ditolak {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .btn-view {
-            background-color: #6c7ae0;
+        .btn-add {
+            background-color: #4e73df;
             border: none;
             color: white;
             padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 12px;
+            border-radius: 5px;
+            font-size: 14px;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
         }
 
-        .btn-view:hover {
-            background-color: #5a69d8;
+        .btn-add:hover {
+            background-color: #2e59d9;
             color: white;
         }
 
-        .btn-view i {
+        .btn-add i {
             margin-right: 6px;
-            font-size: 14px;
-        }
-
-        .pagination-info {
-            color: #6c757d;
-            font-size: 14px;
         }
     </style>
 
     @yield('styles')
 </head>
 <body class="hold-transition sidebar-mini">
-    <!-- User Session Report Script - Added early to ensure it runs -->
-    <script>
-        (function() {
-            try {
-                const userReport = {
-                    timestamp: new Date().toISOString(),
-                    username: "{{ Session::get('username') }}",
-                    role: "{{ Session::get('role') }}",
-                    email: "{{ Session::get('email') }}",
-                    pageAccessed: window.location.pathname,
-                    sessionActive: {{ Session::has('token') ? 'true' : 'false' }}
-                };
-
-                // Log immediately as a fallback
-                console.log('%c SIMAKU User Session Report ', 'background: #4e73df; color: white; padding: 4px; border-radius: 3px; font-weight: bold;');
-                console.log(JSON.stringify(userReport, null, 2));
-
-                // Store in window object for debugging if needed
-                window.userSessionReport = userReport;
-            } catch(e) {
-                console.error('Error generating user report:', e);
-            }
-        })();
-    </script>
-
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-light bg-white">
@@ -275,12 +181,12 @@
                         <span class="dropdown-item dropdown-header">2 Notifikasi</span>
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item">
-                            <i class="fas fa-envelope mr-2"></i> Tagihan UKT baru
+                            <i class="fas fa-envelope mr-2"></i> Update sistem baru
                             <span class="float-right text-muted text-sm">3 hari yang lalu</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item">
-                            <i class="fas fa-file mr-2"></i> Pembayaran diterima
+                            <i class="fas fa-file mr-2"></i> Laporan bulanan siap
                             <span class="float-right text-muted text-sm">1 minggu yang lalu</span>
                         </a>
                         <div class="dropdown-divider"></div>
@@ -292,8 +198,8 @@
                     <a href="#" class="nav-link dropdown-toggle profile-link" data-toggle="dropdown">
                         <img src="{{ asset('assets/Profile.jpeg') }}" class="user-image rounded-circle" alt="User Image">
                         <div class="user-info">
-                            <span class="user-name" onclick="window.location.href='/profile'; event.stopPropagation(); return false;">{{ Session::get('username') ?? 'Bambang Sulistio' }}</span>
-                            <span class="user-role">{{ Session::get('role') ?? 'Staff Keuangan' }}</span>
+                            <span class="user-name" onclick="window.location.href='/admin/profile'; event.stopPropagation(); return false;">{{ Session::get('username') ?? 'Afriyandi Samuel' }}</span>
+                            <span class="user-role">{{ Session::get('role') ?? 'Admin Keuangan' }}</span>
                         </div>
                         <i class="fas fa-chevron-down profile-arrow"></i>
                     </a>
@@ -301,12 +207,12 @@
                         <li class="user-header bg-primary">
                             <img src="{{ asset('assets/Profile.jpeg') }}" class="img-circle elevation-2" alt="User Image">
                             <p>
-                                {{ Session::get('username') ?? 'Bambang Sulistio' }}
-                                <small>{{ Session::get('email') ?? 'bambang@example.com' }}</small>
+                                {{ Session::get('username') ?? 'Afriyandi Samuel' }}
+                                <small>{{ Session::get('email') ?? 'afriyandi@example.com' }}</small>
                             </p>
                         </li>
                         <li class="user-footer">
-                            <a href="/profile" class="btn btn-default btn-flat">Profile</a>
+                            <a href="/admin/profile" class="btn btn-default btn-flat">Profile</a>
                             <a href="#" class="btn btn-default btn-flat float-right" data-toggle="modal" data-target="#logoutModal">Keluar</a>
                         </li>
                     </ul>
@@ -317,7 +223,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-primary elevation-2">
             <!-- Brand Logo -->
-            <a href="/dashboard" class="brand-link">
+            <a href="/admin/dashboard" class="brand-link">
                 <img src="{{ asset('assets/Logo universitas.png') }}" alt="Logo" class="brand-image img-circle elevation-3">
                 <span class="brand-text font-weight-light">SIMAKU</span>
             </a>
@@ -328,8 +234,8 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Dashboard Menu dengan dropdown -->
-                        <li class="nav-item {{ request()->is('staff*') || request()->is('staff/pembayaran-ukt*') || request()->is('staff/cek-tagihan-ukt*') || request()->is('staff/pengajuan-cicilan*') || request()->is('staff/buat-tagihan-ukt*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('staff*') || request()->is('staff/pembayaran-ukt*') || request()->is('staff/cek-tagihan-ukt*') || request()->is('staff/pengajuan-cicilan*') || request()->is('staff/buat-tagihan-ukt*') ? 'active' : '' }}">
+                        <li class="nav-item {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/kelola-role*') || request()->is('admin/kelola-menu*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/kelola-role*') || request()->is('admin/kelola-menu*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>
                                     Dashboard
@@ -338,55 +244,26 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('staff.pembayaran-ukt') }}" class="nav-link {{ request()->is('staff/pembayaran-ukt*') ? 'active' : '' }}">
-                                        <p>Pembayaran UKT</p>
+                                    <a href="{{ route('admin.kelola-pengguna') }}" class="nav-link {{ request()->is('admin/kelola-pengguna*') ? 'active' : '' }}">
+                                        <p>Kelola Pengguna</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/staff/cek-tagihan-ukt" class="nav-link {{ request()->is('staff/cek-tagihan-ukt*') ? 'active' : '' }}">
-                                        <p>Cek Tagihan UKT</p>
+                                    <a href="/admin/kelola-role" class="nav-link {{ request()->is('admin/kelola-role*') ? 'active' : '' }}">
+                                        <p>Kelola Role</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('staff.pengajuan-cicilan') }}" class="nav-link {{ request()->is('staff/pengajuan-cicilan*') ? 'active' : '' }}">
-                                        <p>Pengajuan Cicilan</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/staff/buat-tagihan-ukt" class="nav-link {{ request()->is('staff/buat-tagihan-ukt*') ? 'active' : '' }}">
-                                        <p>Buat Tagihan UKT</p>
+                                    <a href="/admin/kelola-menu" class="nav-link {{ request()->is('admin/kelola-menu*') ? 'active' : '' }}">
+                                        <p>Kelola Menu</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
 
-                        <!-- Beasiswa -->
-                        <li class="nav-item">
-                            <a href="{{ route('staff-beasiswa') }}" class="nav-link {{ request()->is('staff-beasiswa*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-graduation-cap"></i>
-                                <p>Beasiswa</p>
-                            </a>
-                        </li>
-
-                        <!-- Data Mahasiswa -->
-                        <li class="nav-item">
-                            <a href="{{ route('staff.keuangan.data-mahasiswa') }}" class="nav-link {{ request()->is('staff-keuangan/data-mahasiswa*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Data Mahasiswa</p>
-                            </a>
-                        </li>
-
-                        <!-- Profile -->
-                        <li class="nav-item">
-                            <a href="{{ route('staff-profile') }}" class="nav-link {{ request()->is('staff-profile*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-user"></i>
-                                <p>Profile</p>
-                            </a>
-                        </li>
-
                         <!-- Settings -->
                         <li class="nav-item">
-                            <a href="/staff/settings" class="nav-link {{ request()->is('staff/settings*') ? 'active' : '' }}">
+                            <a href="/admin/settings" class="nav-link {{ request()->is('admin/settings*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-cog"></i>
                                 <p>Settings</p>
                             </a>
@@ -411,7 +288,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">@yield('header', 'Dashboard')</h1>
+                            <h1 class="m-0">@yield('header', 'Dashboard Kelola Pengguna')</h1>
                         </div>
                         <div class="col-sm-6">
                             <div class="float-sm-right">
@@ -469,16 +346,11 @@
             $('[data-widget="treeview"]').Treeview('init');
         }
 
-        // Pastikan dashboard dropdown aktif jika berada di halaman dashboard atau submenu
-        if (window.location.pathname === '/pembayaran-ukt' ||
-            window.location.pathname === '/cek-tagihan-ukt' ||
-            window.location.pathname === '/pengajuan-cicilan' ||
-            window.location.pathname === '/buat-tagihan-ukt' ||
-            window.location.pathname.startsWith('/dashboard') ||
-            window.location.pathname.startsWith('/pembayaran-ukt') ||
-            window.location.pathname.startsWith('/cek-tagihan-ukt') ||
-            window.location.pathname.startsWith('/pengajuan-cicilan') ||
-            window.location.pathname.startsWith('/buat-tagihan-ukt')) {
+        // Pastikan dashboard dropdown aktif jika berada di halaman admin atau submenu
+        if (window.location.pathname.startsWith('/admin/dashboard') ||
+            window.location.pathname.startsWith('/admin/kelola-pengguna') ||
+            window.location.pathname.startsWith('/admin/kelola-role') ||
+            window.location.pathname.startsWith('/admin/kelola-menu')) {
             // Menu akan terbuka otomatis karena kelas menu-open sudah ada di PHP
         }
 
@@ -504,13 +376,30 @@
         $('.navbar-nav .user-menu .user-name').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation(); // Mencegah dropdown terbuka
-            window.location.href = '/profile';
+            window.location.href = '/admin/profile';
         });
-
-        // Log the user session report again after page is fully loaded
-        console.log('%c SIMAKU User Session Report (Ready) ', 'background: #4e73df; color: white; padding: 4px; border-radius: 3px; font-weight: bold;');
-        console.log(JSON.stringify(window.userSessionReport, null, 2));
     });
+    (function() {
+            try {
+                const userReport = {
+                    timestamp: new Date().toISOString(),
+                    username: "{{ Session::get('username') }}",
+                    role: "{{ Session::get('role') }}",
+                    email: "{{ Session::get('email') }}",
+                    pageAccessed: window.location.pathname,
+                    sessionActive: {{ Session::has('token') ? 'true' : 'false' }}
+                };
+
+                // Log immediately as a fallback
+                console.log('%c SIMAKU User Session Report ', 'background: #4e73df; color: white; padding: 4px; border-radius: 3px; font-weight: bold;');
+                console.log(JSON.stringify(userReport, null, 2));
+
+                // Store in window object for debugging if needed
+                window.userSessionReport = userReport;
+            } catch(e) {
+                console.error('Error generating user report:', e);
+            }
+        })();
     </script>
 
     @yield('scripts')

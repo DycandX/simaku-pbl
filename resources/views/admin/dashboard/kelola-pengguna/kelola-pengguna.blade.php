@@ -1,485 +1,346 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kelola Pengguna</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+@extends('layouts.admin-app')
 
-        body {
-            background-color: #f5f6fa;
-            display: flex;
-        }
+@section('title', 'Kelola Pengguna')
 
-        .sidebar {
-            width: 240px;
-            background-color: white;
-            height: 100vh;
-            padding: 20px 0;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
-        }
+@section('styles')
+<style>
+    /* Filter Row Styling */
+    .filter-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            margin-bottom: 30px;
-        }
+    .filter-left {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
 
-        .logo img {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
-        }
+    .select-wrapper {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        min-width: 150px;
+    }
 
-        .logo span {
-            color: #4178f9;
-            font-weight: bold;
-            font-size: 18px;
-        }
+    .select-wrapper select {
+        border: none;
+        background: transparent;
+        width: 100%;
+        outline: none;
+        font-size: 14px;
+    }
 
-        .nav-menu {
-            list-style: none;
-        }
+    .filter-btn {
+        background-color: #4e73df;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
 
-        .nav-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            color: #444;
-            transition: all 0.3s;
-        }
+    .filter-btn:hover {
+        background-color: #2e59d9;
+    }
 
-        .nav-item:hover {
-            background-color: rgba(65, 120, 249, 0.1);
-        }
+    /* Search Box */
+    .search-box {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 8px 15px;
+        width: 250px;
+        font-size: 14px;
+        outline: none;
+    }
 
-        .nav-item.active {
-            background-color: #4178f9;
-            color: white;
-            border-radius: 5px;
-            margin: 0 10px;
-            padding: 12px 10px;
-        }
+    .search-box:focus {
+        border-color: #4e73df;
+    }
 
-        .nav-item i {
-            margin-right: 10px;
-            font-size: 20px;
-        }
+    /* Role Badge Styling */
+    .role-badge {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+        white-space: nowrap;
+    }
 
-        .content {
-            margin-left: 240px;
-            width: calc(100% - 240px);
-            padding: 20px;
-        }
+    .role-admin {
+        background-color: rgba(255, 71, 87, 0.2);
+        color: #ff4757;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    .role-staff {
+        background-color: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+    }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
+    .role-mahasiswa {
+        background-color: rgba(54, 162, 235, 0.2);
+        color: #36a2eb;
+    }
 
-        .user-info .notif {
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            position: relative;
-        }
+    /* Table Custom Styling */
+    .table thead th {
+        background-color: #f8f9fc;
+        font-weight: 600;
+        color: #666;
+        font-size: 14px;
+        padding: 12px 15px;
+        border-bottom: 2px solid #e3e6f0;
+    }
 
-        .notif .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #ff4757;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-        }
+    .table tbody td {
+        padding: 12px 15px;
+        font-size: 14px;
+        color: #5a5c69;
+        vertical-align: middle;
+    }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            overflow: hidden;
-        }
+    .table tbody tr:hover {
+        background-color: #f8f9fc;
+    }
 
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+    /* Pagination Styling */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 10px 0;
+    }
 
-        .user-detail {
-            display: flex;
-            flex-direction: column;
-        }
+    .pagination-info {
+        color: #6c757d;
+        font-size: 14px;
+    }
 
-        .user-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
+    .page-controls {
+        display: flex;
+        gap: 5px;
+    }
 
-        .user-role {
-            font-size: 12px;
-            color: #777;
-        }
+    .page-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #dee2e6;
+        background-color: white;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
 
+    .page-btn:hover {
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    /* Pagination Link Styling */
+    .page-btn {
+        text-decoration: none;
+        color: #6c757d;
+    }
+
+    .page-btn.active {
+        background-color: #4e73df;
+        color: white;
+        border-color: #4e73df;
+    }
+
+    a.page-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    a.page-btn:hover {
+        text-decoration: none;
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    .page-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
         .filter-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            align-items: stretch;
         }
 
         .filter-left {
-            display: flex;
-            gap: 10px;
-        }
-
-        .select-wrapper {
-            background-color: white;
-            border-radius: 5px;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            width: 200px;
-        }
-
-        .select-wrapper select {
-            border: none;
-            background: transparent;
-            width: 100%;
-            outline: none;
-        }
-
-        .filter-btn {
-            background-color: #4178f9;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 20px;
-            cursor: pointer;
-        }
-
-        .add-btn {
-            background-color: #4178f9;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
+            margin-bottom: 10px;
         }
 
         .search-box {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 8px 15px;
-            width: 250px;
-        }
-
-        .table-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .table-header {
-            margin-bottom: 20px;
-        }
-
-        .table-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        table {
             width: 100%;
-            border-collapse: collapse;
         }
+    }
+</style>
+@endsection
 
-        th {
-            text-align: left;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            color: #666;
-            font-weight: 600;
-            font-size: 14px;
-        }
+@section('header', 'Dashboard Kelola Pengguna')
 
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
+@section('header_button')
+<button class="btn-add">
+    <i class="fas fa-plus"></i>
+    Tambah Pengguna
+</button>
+@endsection
 
-        .role-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .role-admin {
-            background-color: rgba(255, 71, 87, 0.2);
-            color: #ff4757;
-        }
-
-        .role-staff {
-            background-color: rgba(46, 213, 115, 0.2);
-            color: #2ed573;
-        }
-
-        .role-mahasiswa {
-            background-color: rgba(54, 162, 235, 0.2);
-            color: #36a2eb;
-        }
-
-        .edit-btn {
-            background-color: #4178f9;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 6px 12px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .page-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .page-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        /* Icons */
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            display: inline-block;
-            line-height: 1;
-            text-transform: none;
-            letter-spacing: normal;
-            word-wrap: normal;
-            white-space: nowrap;
-            direction: ltr;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <img src="/api/placeholder/30/30" alt="SIMAKU Logo">
-            <span>SIMAKU</span>
+@section('content')
+<div class="filter-row">
+    <div class="filter-left">
+        <div class="select-wrapper">
+            <select id="userRoleFilter">
+                <option value="">All User</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
+                <option value="mahasiswa">Mahasiswa</option>
+            </select>
         </div>
-
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <i class="material-icons">dashboard</i>
-                <span>Dashboard</span>
-            </li>
-            <li class="nav-item active">
-                <i class="material-icons">people</i>
-                <span>Kelola Pengguna</span>
-            </li>
-            <li class="nav-item">
-                <i class="material-icons">assignment</i>
-                <span>Kelola Role</span>
-            </li>
-            <li class="nav-item">
-                <i class="material-icons">menu</i>
-                <span>Kelola Menu</span>
-            </li>
-            <li class="nav-item">
-                <i class="material-icons">settings</i>
-                <span>Settings</span>
-            </li>
-            <li class="nav-item">
-                <i class="material-icons">exit_to_app</i>
-                <span>Logout</span>
-            </li>
-        </ul>
+        <button class="filter-btn">Filter</button>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <div class="header">
-            <h2>Dashboard Kelola Pengguna</h2>
-            <div class="user-info">
-                <div class="notif">
-                    <i class="material-icons" style="font-size: 18px;">notifications</i>
-                    <span class="badge">3</span>
-                </div>
-                <div class="user-avatar">
-                    <img src="/api/placeholder/40/40" alt="User Avatar">
-                </div>
-                <div class="user-detail">
-                    <div class="user-name">Arifyandi Samuel</div>
-                    <div class="user-role">Admin Keuangan</div>
-                </div>
+    <div class="search-wrapper">
+        <input type="text" placeholder="Search..." class="search-box" id="searchInput">
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="card-header">
+        <h3 class="card-title">Semua Pengguna</h3>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Pengguna</th>
+                    <th>Email</th>
+                    <th>Role Pengguna</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($usersData as $index => $user)
+                <tr>
+                    <td>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</td>
+                    <td>{{ $user['nama_lengkap'] ?: 'Belum diatur' }}</td>
+                    <td>{{ $user['email'] }}</td>
+                    <td>
+                        @if($user['role'] == 'admin')
+                            <span class="role-badge role-admin">Admin Keuangan</span>
+                        @elseif($user['role'] == 'staff')
+                            <span class="role-badge role-staff">Staff Keuangan</span>
+                        @elseif($user['role'] == 'mahasiswa')
+                            <span class="role-badge role-mahasiswa">Mahasiswa</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.kelola-pengguna.edit', $user['id']) }}" class="btn-edit">Edit</a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer">
+        <div class="pagination-wrapper">
+            <div class="pagination-info">
+                Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ $users->total() }}
             </div>
-        </div>
+            <div class="page-controls">
+                @if ($users->onFirstPage())
+                    <button class="page-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                @else
+                    <a href="{{ $users->previousPageUrl() }}" class="page-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                @endif
 
-        <div class="filter-row">
-            <div class="filter-left">
-                <div class="select-wrapper">
-                    <select>
-                        <option>All User</option>
-                        <option>Admin</option>
-                        <option>Staff</option>
-                        <option>Mahasiswa</option>
-                    </select>
-                </div>
-                <button class="filter-btn">Filter</button>
-            </div>
+                @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                    @if ($page == $users->currentPage())
+                        <button class="page-btn active">{{ $page }}</button>
+                    @else
+                        <a href="{{ $url }}" class="page-btn">{{ $page }}</a>
+                    @endif
+                @endforeach
 
-            <div class="search-wrapper">
-                <input type="text" placeholder="Search..." class="search-box">
-            </div>
-        </div>
-
-        <button class="add-btn">
-            <i class="material-icons" style="font-size: 18px;">add</i>
-            Tambah Pengguna
-        </button>
-
-        <div class="table-container" style="margin-top: 20px;">
-            <div class="table-header">
-                <div class="table-title">Semua Pengguna</div>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Pengguna</th>
-                        <th>Email</th>
-                        <th>Role Pengguna</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>01</td>
-                        <td>Satria Ramadhan</td>
-                        <td>satria@univ.ac.id</td>
-                        <td><span class="role-badge role-admin">Admin Keuangan</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>02</td>
-                        <td>Dina Kusumawati</td>
-                        <td>dina@univ.ac.id</td>
-                        <td><span class="role-badge role-admin">Admin Keuangan</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>03</td>
-                        <td>Farhan Alamsyah</td>
-                        <td>farhan.al@univ.ac.id</td>
-                        <td><span class="role-badge role-staff">Staff Keuangan</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>04</td>
-                        <td>Lestari Ayuningtyas</td>
-                        <td>lestari.ay@univ.ac.id</td>
-                        <td><span class="role-badge role-staff">Staff Keuangan</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>05</td>
-                        <td>Bima Aditya</td>
-                        <td>bima.aditya@univ.ac.id</td>
-                        <td><span class="role-badge role-staff">Staff Keuangan</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>06</td>
-                        <td>Aulia Rahmawati</td>
-                        <td>aulia.rahma@univ.ac.id</td>
-                        <td><span class="role-badge role-mahasiswa">Mahasiswa</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>07</td>
-                        <td>Galang Saputra</td>
-                        <td>galang.saputra@univ.ac.id</td>
-                        <td><span class="role-badge role-mahasiswa">Mahasiswa</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                    <tr>
-                        <td>08</td>
-                        <td>Indah Permatasari</td>
-                        <td>indah.p@univ.ac.id</td>
-                        <td><span class="role-badge role-mahasiswa">Mahasiswa</span></td>
-                        <td><button class="edit-btn">Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="pagination">
-                <div>Showing 1-8 of 7950</div>
-                <div class="page-controls">
-                    <button class="page-btn"><i class="material-icons" style="font-size: 18px;">chevron_left</i></button>
-                    <button class="page-btn"><i class="material-icons" style="font-size: 18px;">chevron_right</i></button>
-                </div>
+                @if ($users->hasMorePages())
+                    <a href="{{ $users->nextPageUrl() }}" class="page-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                @else
+                    <button class="page-btn" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                @endif
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Filter functionality
+    $('.filter-btn').on('click', function() {
+        var selectedRole = $('#userRoleFilter').val();
+        // Implement filter logic here
+        console.log('Filtering by role:', selectedRole);
+    });
+
+    // Search functionality
+    $('#searchInput').on('input', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        // Implement search logic here
+        console.log('Searching for:', searchTerm);
+    });
+
+    // Page navigation
+    $('.page-btn').on('click', function() {
+        if (!$(this).hasClass('active') && $(this).text()) {
+            $('.page-btn').removeClass('active');
+            $(this).addClass('active');
+        }
+    });
+
+    // Edit button
+    $('.btn-edit').on('click', function() {
+        var row = $(this).closest('tr');
+        var username = row.find('td:eq(1)').text();
+        console.log('Editing user:', username);
+        // Implement edit logic here
+    });
+
+    // Add user button
+    $('.btn-add').on('click', function() {
+        console.log('Adding new user');
+        // Implement add user logic here
+    });
+});
+</script>
+@endsection

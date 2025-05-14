@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,45 +14,38 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'username',
-        'password',
         'email',
+        'password',
         'role',
         'is_active',
-        'last_login',
+        'last_login'
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
         'is_active' => 'boolean',
-        'last_login' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'last_login' => 'datetime'
     ];
-
-    /**
-     * Get the mahasiswa associated with the user.
-     */
-    public function mahasiswa()
-    {
-        return $this->hasOne(Mahasiswa::class, 'id_user');
-    }
 
     /**
      * Get the staff associated with the user.
@@ -63,17 +55,11 @@ class User extends Authenticatable
         return $this->hasOne(Staff::class, 'id_user');
     }
 
-
     /**
-     * Get the log activities for the user.
+     * Get the mahasiswa associated with the user.
      */
-    public function logAktivitas()
+    public function mahasiswa()
     {
-        return $this->hasMany(LogAktivitas::class, 'id_user');
-    }
-
-    public function getAuthIdentifierName()
-    {
-        return 'username';
+        return $this->hasOne(Mahasiswa::class, 'nim', 'username');
     }
 }
