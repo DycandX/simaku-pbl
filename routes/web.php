@@ -26,7 +26,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Dashboard Route - Dilindungi middleware
 Route::middleware(['check.login'])->group(function () {
-    Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('dashboard');
+    Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('mahasiswa-dashboard');
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang');
