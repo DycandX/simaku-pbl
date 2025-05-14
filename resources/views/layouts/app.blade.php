@@ -103,6 +103,7 @@
             color: #4e73df;
             text-decoration: none;
         }
+        
     </style>
 
     @yield('styles')
@@ -196,7 +197,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-primary elevation-2">
             <!-- Brand Logo -->
-            <a href="/dashboard" class="brand-link">
+            <a href="/lihat-tagihan-ukt" class="brand-link">
                 <img src="{{ asset('assets/Logo universitas.png') }}" alt="Logo" class="brand-image img-circle elevation-3">
                 <span class="brand-text font-weight-light">SIMAKU</span>
             </a>
@@ -206,9 +207,8 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <!-- Menu Dashboard dengan dropdown -->
-                        <li class="nav-item {{ request()->is('dashboard*') || request()->is('tagihan-ukt*') || request()->is('daftar-ulang*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('dashboard*') || request()->is('tagihan-ukt*') || request()->is('daftar-ulang*') ? 'active' : '' }}">
+                        <li class="nav-item {{ request()->is('lihat-tagihan-ukt*') || request()->is('daftar-ulang*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('lihat-tagihan-ukt*') || request()->is('daftar-ulang*') ? 'active' : '' }}">    
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>
                                     Dashboard
@@ -217,7 +217,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="/dashboard" class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}">
+                                    <a href="/lihat-tagihan-ukt" class="nav-link {{ request()->is('lihat-tagihan-ukt*') ? 'active' : '' }}">
                                         <i class="fas fa-money-bill nav-icon"></i>
                                         <p>Tagihan UKT</p>
                                     </a>

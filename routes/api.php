@@ -82,6 +82,7 @@ Route::middleware(['auth:sanctum', 'role:staff,mahasiswa'])->group(function () {
     Route::get('detail-pembayaran', [DetailPembayaranController::class, 'index']);
     Route::get('jenis-pembayaran', [JenisPembayaranController::class, 'index']);
     Route::get('periode-pembayaran', [PeriodePembayaranController::class, 'index']);
+    Route::get('enrollment-mahasiswa', [EnrollmentMahasiswaController::class, 'index']);
 });
 
 

@@ -9,24 +9,34 @@ use Illuminate\Support\Facades\Validator;
 
 class PenerimaBeasiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = PenerimaBeasiswa::orderBy('created_at', 'desc')->get();
+        $query = PenerimaBeasiswa::with(['beasiswa'])->orderByDesc('id');
+
+        // Jika parameter 'nim' ada, filter berdasarkan NIM mahasiswa
+        if ($request->has('nim')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Penerima Beasiswa Ditemukan',
+            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data Beasiswa Ditemukan',
             'data' => $data
         ], 200);
     }
+
 
     public function store(Request $request)
     {
         $rules = [
             'nim' => 'required|exists:mahasiswa,nim',
             'id_beasiswa' => 'required|exists:beasiswa,id',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'periode_pencairan' => 'required|string',
+            'tanggal_cair' => 'nullable|date',
             'nominal' => 'required|numeric|min:0',
             'status' => 'in:aktif,non-aktif',
             'keterangan' => 'nullable|string',
@@ -81,40 +91,19 @@ class PenerimaBeasiswaController extends Controller
             ], 404);
         }
 
-        $rules = [];
+        // Aturan validasi - sama dengan fungsi store
+        $rules = [
+            'nim' => 'sometimes|required|exists:mahasiswa,nim',
+            'id_beasiswa' => 'sometimes|required|exists:beasiswa,id',
+            'periode_pencairan' => 'sometimes|required|string',
+            'tanggal_cair' => 'sometimes|nullable|date',
+            'nominal' => 'sometimes|required|numeric|min:0',
+            'status' => 'sometimes|in:aktif,non-aktif',
+            'keterangan' => 'sometimes|nullable|string',
+            'created_by' => 'sometimes|nullable|exists:staff,id',
+        ];
 
-        if ($request->has('nim')) {
-            $rules['nim'] = 'exists:mahasiswa,nim';
-        }
-
-        if ($request->has('id_beasiswa')) {
-            $rules['id_beasiswa'] = 'exists:beasiswa,id';
-        }
-
-        if ($request->has('tanggal_mulai')) {
-            $rules['tanggal_mulai'] = 'date';
-        }
-
-        if ($request->has('tanggal_selesai')) {
-            $rules['tanggal_selesai'] = 'nullable|date|after_or_equal:tanggal_mulai';
-        }
-
-        if ($request->has('nominal')) {
-            $rules['nominal'] = 'numeric|min:0';
-        }
-
-        if ($request->has('status')) {
-            $rules['status'] = 'in:aktif,non-aktif';
-        }
-
-        if ($request->has('keterangan')) {
-            $rules['keterangan'] = 'nullable|string';
-        }
-
-        if ($request->has('created_by')) {
-            $rules['created_by'] = 'nullable|exists:staff,id';
-        }
-
+        // Validasi input
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -125,6 +114,7 @@ class PenerimaBeasiswaController extends Controller
             ], 400);
         }
 
+        // Update data dengan input yang telah divalidasi
         $data->update($validator->validated());
 
         return response()->json([
@@ -133,6 +123,7 @@ class PenerimaBeasiswaController extends Controller
             'data' => $data
         ], 200);
     }
+
 
     public function destroy($id)
     {

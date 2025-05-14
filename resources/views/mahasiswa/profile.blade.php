@@ -10,17 +10,17 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="text-center mb-4">
-                            <!-- Profile Image -->
+                    <div class="col-md-12">
+                        <div class="text-left mb-4">
+                            <!-- Profile Image -->  
                             <img src="{{ asset('assets/Profile.jpeg') }}"
                                  alt="Profile Picture"
                                  class="img-fluid rounded"
-                                 style="max-width: 300px; border-radius: 10px;">
+                                 style="max-width: 150px; border-radius: 10px;">
                         </div>
 
                         <!-- Profile Info -->
-                        <div class="row mb-3">
+                        <div class="row mb-3 ">
                             <div class="col-sm-4">
                                 <strong>Nama :</strong>
                             </div>

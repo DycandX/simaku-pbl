@@ -20,7 +20,7 @@
         background-color: #ffe7e7;
         color: #dc3545;
     }
-    .status-bandung {
+    .status-banding {
         background-color: #f5f5f5;
         color: #333;
     }
@@ -55,7 +55,7 @@
                             <tr class="table-header">
                                 <th>No</th>
                                 <th>No Tagihan</th>
-                                <th>Mahasiswa</th>
+                                {{-- <th>Mahasiswa</th> --}}
                                 <th>Tanggal Terbit</th>
                                 <th>Jatuh Tempo</th>
                                 <th>Semester</th>
@@ -68,48 +68,42 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse ($dataTransaksi as $data)
                             <tr>
-                                <td>01</td>
-                                <td>INV000013408</td>
-                                <td>Zirlda Syafira</td>
-                                <td>29 Jan 2024</td>
-                                <td>2 Feb 2024</td>
-                                <td>2023/ 2024 - Genap</td>
-                                <td>Rp 3.600.000,00-</td>
-                                <td>BNI</td>
-                                <td><span class="badge status-sudah">Publish</span></td>
-                                <td><span class="badge status-sudah">Sudah Dibayar</span></td>
-                                <td>-</td>
-                                <td><i class="far fa-eye view-icon"></i></td>
+                                <td>{{ $data['no'] }}</td>
+                                <td>{{ $data['no_tagihan'] }}</td>
+                                {{-- <td>{{ $data['nama_mahasiswa'] }}</td> --}}
+                                <td>{{ $data['tanggal_terbit'] }}</td>
+                                <td>{{ $data['jatuh_tempo'] }}</td>
+                                <td>{{ $data['semester'] }}</td>
+                                <td>{{ $data['total'] }}</td>
+                                <td>{{ $data['bank'] }}</td>
+                                <td>
+                                    <span class="badge {{ $data['status_tagihan'] === 'publish' ? 'status-sudah' : 'status-belum' }}">
+                                        {{ ucfirst($data['status_tagihan']) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $data['status_payment'] === 'Sudah Dibayar' ? 'status-sudah' : 'status-belum' }}">
+                                        {{ $data['status_payment'] }}
+                                    </span>
+                                </td>
+                                <td>{{ $data['keterangan'] }}</td>
+                                <td>
+                                    @if($data['bukti'])
+                                        <a href="{{ asset($data['bukti']) }}" target="_blank">
+                                            <i class="far fa-eye view-icon"></i>
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>02</td>
-                                <td>INV000014590</td>
-                                <td>Zirlda Syafira</td>
-                                <td>7 July 2024</td>
-                                <td>9 July 2024</td>
-                                <td>2024/ 2025 - Gasal</td>
-                                <td>Rp 2.600.000,00-</td>
-                                <td>BNI</td>
-                                <td><span class="badge status-sudah">Publish</span></td>
-                                <td><span class="badge status-sudah">Sudah Dibayar</span></td>
-                                <td>Bandung UKT Berhasil Dhukukan</td>
-                                <td><i class="far fa-eye view-icon"></i></td>
+                                <td colspan="12" class="text-center">Data tidak tersedia.</td>
                             </tr>
-                            <tr>
-                                <td>03</td>
-                                <td>INV000016030</td>
-                                <td>Zirlda Syafira</td>
-                                <td>20 Jan 2025</td>
-                                <td>23 Jan 2025</td>
-                                <td>2024/ 2025 - Genap</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td><span class="badge status-belum">Belum Dibayar</span></td>
-                                <td>-</td>
-                                <td>-</td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -156,7 +150,7 @@
                                 <th>Urutan Semester</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        {{-- <tbody>
                             <tr>
                                 <td>01</td>
                                 <td>MB-1A</td>
@@ -193,6 +187,23 @@
                                 <td>Aktif</td>
                                 <td>4</td>
                             </tr>
+                        </tbody> --}}
+                        <tbody>
+                            @forelse($dataDaftarUlang as $item)
+                            <tr>
+                                <td>{{ str_pad($item['no'], 2, '0', STR_PAD_LEFT) }}</td>
+                                <td>{{ $item['kelas'] }}</td>
+                                <td>{{ $item['semester'] }}</td>
+                                <td>{{ $item['daftar_ulang'] }}</td>
+                                <td>{{ $item['tanggal_daftar_ulang'] }}</td>
+                                <td>{{ $item['status'] }}</td>
+                                <td>{{ $item['urutan_semester'] }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center">Belum ada data daftar ulang.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
