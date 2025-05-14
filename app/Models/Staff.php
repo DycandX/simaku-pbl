@@ -10,6 +10,13 @@ class Staff extends Model
     use HasFactory;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'staff';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -19,7 +26,7 @@ class Staff extends Model
         'nip',
         'nama_lengkap',
         'jabatan',
-        'unit_kerja',
+        'unit_kerja'
     ];
 
     /**
@@ -28,21 +35,5 @@ class Staff extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
-    }
-
-    /**
-     * Get the payment verifications done by this staff.
-     */
-    public function verifiedPayments()
-    {
-        return $this->hasMany(DetailPembayaran::class, 'verified_by');
-    }
-
-    /**
-     * Get the scholarships created by this staff.
-     */
-    public function createdScholarships()
-    {
-        return $this->hasMany(PenerimaBeasiswa::class, 'created_by');
     }
 }
