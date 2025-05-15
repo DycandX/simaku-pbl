@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Staff\staffBuatTagihanUktController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagihanController;
@@ -58,6 +59,7 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
     Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
+    Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
 });
 
 // Lihat Tagihan route
