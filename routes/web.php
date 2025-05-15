@@ -5,10 +5,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\CicilanController;
 use App\Http\Controllers\GolonganUktController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Mahasiswa\DaftarUlangController;
 use App\Http\Controllers\Mahasiswa\LihatTagihanUktController;
 use App\Http\Controllers\Mahasiswa\BeasiswaController;
+use App\Http\Controllers\Mahasiswa\ProfileController;
 use App\Http\Controllers\staff\staffBeasiswaController;
 use App\Http\Controllers\staff\staffProfileController;
 use App\Http\Controllers\staff\staffDataMahasiswaController;
@@ -27,6 +27,10 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('lihat-tagihan-ukt');
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+//     Route::get('/profile', function()
+// {
+//     return 'Hello WEorld';
+// });
     Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang');
     Route::get('/golongan-ukt', [GolonganUktController::class, 'index'])->name('golongan-ukt');
 

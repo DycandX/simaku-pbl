@@ -9,18 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class EnrollmentMahasiswaController extends Controller
 {
-    // public function index()
-    // {
-    //     $data = EnrollmentMahasiswa::with(['mahasiswa', 'kelas', 'tingkat', 'tahunAkademik'])
-    //         ->orderByDesc('id')
-    //         ->get();
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Data Enrollment Mahasiswa ditemukan',
-    //         'data' => $data
-    //     ], 200);
-    // }
+    
     public function index(Request $request)
     {
         $query = EnrollmentMahasiswa::with(['mahasiswa', 'kelas', 'tingkat', 'tahunAkademik'])
