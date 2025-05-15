@@ -150,44 +150,6 @@
                                 <th>Urutan Semester</th>
                             </tr>
                         </thead>
-                        {{-- <tbody>
-                            <tr>
-                                <td>01</td>
-                                <td>MB-1A</td>
-                                <td>2023/2024 - Gasal</td>
-                                <td>Sudah</td>
-                                <td>01 Juli 2023</td>
-                                <td>Aktif</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td>02</td>
-                                <td>MB-1A</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>Sudah</td>
-                                <td>01 Feb 2024</td>
-                                <td>Aktif</td>
-                                <td>2</td>
-                            </tr>
-                            <tr>
-                                <td>03</td>
-                                <td>MB-2A</td>
-                                <td>2024/2025 - Gasal</td>
-                                <td>Sudah</td>
-                                <td>15 Juli 2024</td>
-                                <td>Aktif</td>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td>04</td>
-                                <td>MB-2A</td>
-                                <td>2024/2025 - Genap</td>
-                                <td>Sudah</td>
-                                <td>04 Feb 2025</td>
-                                <td>Aktif</td>
-                                <td>4</td>
-                            </tr>
-                        </tbody> --}}
                         <tbody>
                             @forelse($dataDaftarUlang as $item)
                             <tr>
@@ -196,7 +158,7 @@
                                 <td>{{ $item['semester'] }}</td>
                                 <td>{{ $item['daftar_ulang'] }}</td>
                                 <td>{{ $item['tanggal_daftar_ulang'] }}</td>
-                                <td>{{ $item['status'] }}</td>
+                                <td>{{ ucfirst ($item['status']) }}</td>
                                 <td>{{ $item['urutan_semester'] }}</td>
                             </tr>
                             @empty
