@@ -67,25 +67,32 @@
     }
 
     .badge-diverifikasi {
-        background-color: #17a2b8;
-        color: white;
-        padding: 5px 12px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: normal;
+        background-color: #d1f5ee;
+        color: #34a793;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+        width: 100%;
+        text-align: center;
     }
 
     .btn-view {
-        background-color: #17a2b8;
+        background-color: #4e7eff;
         border: none;
         color: white;
-        padding: 6px 15px;
-        border-radius: 4px;
-        font-size: 12px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+        width: 100%;
+        text-align: center;
     }
 
     .btn-view:hover {
-        background-color: #138496;
+        background-color: #3a6cfa;
         color: white;
     }
 
@@ -197,7 +204,7 @@
                         <td>Administrasi Bisnis</td>
                         <td>D4 - Manajemen Bisnis Internasional</td>
                         <td><span class="badge-diverifikasi">Diverifikasi</span></td>
-                        <td><button class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</button></td>
+                        <td><a href="{{ route('staff.pengajuan-cicilan.detail', '4.33.23.5.19') }}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
                     </tr>
                     <tr>
                         <td>02</td>
@@ -207,7 +214,7 @@
                         <td>Administrasi Bisnis</td>
                         <td>D4 - Manajemen Bisnis Internasional</td>
                         <td><span class="badge-diverifikasi">Diverifikasi</span></td>
-                        <td><button class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</button></td>
+                        <td><a href="{{ route('staff.pengajuan-cicilan.detail', '4.33.23.5.20') }}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
                     </tr>
                     <tr>
                         <td>03</td>
@@ -217,7 +224,7 @@
                         <td>Administrasi Bisnis</td>
                         <td>D4 - Manajemen Bisnis Internasional</td>
                         <td><span class="badge-diverifikasi">Diverifikasi</span></td>
-                        <td><button class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</button></td>
+                        <td><a href="{{ route('staff.pengajuan-cicilan.detail', '4.33.23.5.21') }}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
                     </tr>
                     <tr>
                         <td>04</td>
@@ -227,7 +234,7 @@
                         <td>Administrasi Bisnis</td>
                         <td>D4 - Manajemen Bisnis Internasional</td>
                         <td><span class="badge-diverifikasi">Diverifikasi</span></td>
-                        <td><button class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</button></td>
+                        <td><a href="{{ route('staff.pengajuan-cicilan.detail', '4.33.23.5.22') }}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
                     </tr>
                     <tr>
                         <td>05</td>
@@ -237,7 +244,7 @@
                         <td>Administrasi Bisnis</td>
                         <td>D4 - Manajemen Bisnis Internasional</td>
                         <td><span class="badge-diverifikasi">Diverifikasi</span></td>
-                        <td><button class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</button></td>
+                        <td><a href="{{ route('staff.pengajuan-cicilan.detail', '4.33.23.5.23') }}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -307,7 +314,7 @@ $(document).ready(function() {
                 <td>${item.jurusan}</td>
                 <td>${item.prodi}</td>
                 <td>${statusBadge}</td>
-                <td><button class='btn btn-view'><i class='fas fa-eye'></i> Lihat Pengajuan</button></td>
+                <td><a href="{{ route('staff.pengajuan-cicilan.detail', '') }}/${item.nim}" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
             </tr>`;
             tableBody.insertAdjacentHTML("beforeend", row);
         });
@@ -334,7 +341,7 @@ $(document).ready(function() {
     function updatePaginationInfo(data, page) {
         const startIndex = (page - 1) * itemsPerPage + 1;
         const endIndex = Math.min(page * itemsPerPage, data.length);
-        document.querySelector('.pagination-info').textContent = Showing ${startIndex}-${endIndex} of ${data.length};
+        document.querySelector('.pagination-info').textContent = `Showing ${startIndex}-${endIndex} of ${data.length}`;
     }
 
     // Update pagination buttons
