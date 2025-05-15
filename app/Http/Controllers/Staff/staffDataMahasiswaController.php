@@ -1,25 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\staff;
+namespace App\Http\Controllers\Staff;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 
-class staffDataMahasiswaController extends Controller
+class StaffDataMahasiswaController extends Controller
 {
-    public function showDataMahasiswa()
+    public function showDataMahasiswa(Request $request)
     {
         // Memeriksa apakah token ada
         if (!session('token')) {
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
         }
 
-        // Mengambil data mahasiswa dari API
-        $responseMahasiswa = Http::withToken(session('token'))->get('http://simaku-pbl.test/api/mahasiswa');
+        // Menyiapkan parameter filter dari request
+        $angkatan = $request->input('angkatan', '2023');  // Default to 2023
+        $jurusan = $request->input('jurusan', 'D4 - Manajemen Bisnis');  // Default to D4 - Manajemen Bisnis
+        $search = $request->input('search', '');
+
+        // Mengambil data mahasiswa dari API dengan filter
+        $responseMahasiswa = Http::withToken(session('token'))
+            ->get('http://simaku-pbl.test/api/mahasiswa', [
+                'angkatan' => $angkatan,
+                'jurusan' => $jurusan,
+                'search' => $search,
+            ]);
+
         if ($responseMahasiswa->failed()) {
             return redirect()->back()->withErrors(['error' => 'Gagal mengambil data mahasiswa']);
         }
+
         $mahasiswaData = $responseMahasiswa->json()['data'] ?? [];
 
         // Mengambil data enrollment mahasiswa untuk mendapatkan angkatan dan prodi
@@ -73,6 +85,9 @@ class staffDataMahasiswaController extends Controller
         // Mengirimkan data ke view
         return view('staff-keuangan.data-mahasiswa.data-mahasiswa', [
             'mahasiswaData' => $mahasiswaData,
+            'angkatan' => $angkatan,
+            'jurusan' => $jurusan,
+            'search' => $search
         ]);
     }
 }

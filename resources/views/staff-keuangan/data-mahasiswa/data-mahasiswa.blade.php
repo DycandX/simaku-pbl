@@ -1,100 +1,187 @@
 @extends('layouts.staff-app')
 
-@section('title', 'Data Mahasiswa')
+@section('title', 'Data Mahasiswa - SIMAKU')
 
-@section('header', 'Staff - Data Mahasiswa')
-
-@section('content_header')
-    <h1>Data Mahasiswa</h1>
-@stop
+@section('header', 'Data Mahasiswa')
 
 @section('content')
-    <div class="container">
-        <!-- Filter Form -->
-        <div class="d-flex mb-3">
-            <!-- Dropdown untuk Angkatan -->
-            <select class="form-control w-25 mr-2" id="angkatan">
-                <option value="2023">Angkatan 2024</option>
-                <option value="2023">Angkatan 2023</option>
-                <option value="2022">Angkatan 2022</option>
-                <option value="2021">Angkatan 2021</option>
-            </select>
-
-            <!-- Dropdown untuk Prodi -->
-            <select class="form-control w-25 mr-2" id="prodi">
-                <option value="all">Semua Prodi</option>
-                <option value="Ekonomi Pembangunan">Ekonomi Pembangunan</option>
-                <option value="Ilmu Gizi">Ilmu Gizi</option>
-                <option value="Informatika">Informatika</option>
-                <option value="Sastra Indonesia">Sastra Indonesia</option>
-                <option value="Sistem Informasi">Sistem Informasi</option>
-                <option value="Akuntansi">Akuntansi</option>
-                <!-- Tambahkan prodi lainnya sesuai kebutuhan -->
-            </select>
-
-            <!-- Tombol Filter -->
-            <button class="btn btn-primary ml-2" id="filterButton">Filter</button>
-
-            <!-- Search Input on the Right -->
-            <div class="ml-auto">
-                <input type="text" class="form-control" id="searchInput" placeholder="Search..." style="width: 250px;">
+<div class="row">
+    <!-- Filter Section -->
+    <div class="col-12 mb-4">
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="filterAngkatan">Angkatan</label>
+                        <select class="form-control" id="filterAngkatan">
+                            <option value="">Semua Angkatan</option>
+                            <option value="2023" selected>2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="filterProdi">Program Studi</label>
+                        <select class="form-control" id="filterProdi">
+                            <option value="">Semua Program Studi</option>
+                            <option value="D4 - Manajemen Bisnis" selected>D4 - Manajemen Bisnis</option>
+                            <option value="D4 - Teknik Informatika">D4 - Teknik Informatika</option>
+                            <option value="D4 - Akuntansi">D4 - Akuntansi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="searchInput">Cari</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nama/NIM...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                </div>
             </div>
         </div>
-
-        <!-- Table for Data Mahasiswa -->
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Mahasiswa</th>
-                    <th>NIM</th>
-                    <th>Angkatan</th>
-                    <th>Jurusan</th>
-                    <th>Prodi</th>
-                </tr>
-            </thead>
-            <tbody id="mahasiswaTable">
-                @foreach($mahasiswaData as $index => $mahasiswa)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $mahasiswa['nama_lengkap'] }}</td>
-                        <td>{{ $mahasiswa['nim'] }}</td>
-                        <td>{{ $mahasiswa['angkatan'] }}</td>
-                        <td>{{ $mahasiswa['jurusan'] }}</td>
-                        <td>{{ $mahasiswa['prodi'] }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
     </div>
 
-    <script>
-        // Fungsi untuk filter data berdasarkan dropdown dan search input
-        document.getElementById('filterButton').addEventListener('click', function () {
-            let angkatan = document.getElementById('angkatan').value;
-            let prodi = document.getElementById('prodi').value;
-            let searchInput = document.getElementById('searchInput').value.toLowerCase();
-            
-            let tableRows = document.querySelectorAll('#mahasiswaTable tr');
+    <!-- Data Mahasiswa Table -->
+    <div class="col-12">
+        <div class="table-container card">
+            <div class="card-header">
+                <h3 class="card-title">Daftar Mahasiswa</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Mahasiswa</th>
+                                <th>NIM</th>
+                                <th>Angkatan</th>
+                                <th>Jurusan</th>
+                                <th>Prodi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>01</td>
+                                <td>Zirlda Syafira</td>
+                                <td>4.33.23.5.19</td>
+                                <td>2023</td>
+                                <td>Administrasi Bisnis</td>
+                                <td>D4 - Manajemen Bisnis Internasional</td>
+                                {{-- <td>
+                                    <a href="#" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td> --}}
+                                <td>
+                                    <a href="{{ route('staff.keuangan.data-mahasiswa.detail') }}" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>02</td>
+                                <td>Fadhil Ramadhan</td>
+                                <td>4.33.23.5.20</td>
+                                <td>2023</td>
+                                <td>Administrasi Bisnis</td>
+                                <td>D4 - Manajemen Bisnis Internasional</td>
+                                <td>
+                                    <a href="#" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>03</td>
+                                <td>Aisyah Hanifah</td>
+                                <td>4.33.23.5.21</td>
+                                <td>2023</td>
+                                <td>Administrasi Bisnis</td>
+                                <td>D4 - Manajemen Bisnis Internasional</td>
+                                <td>
+                                    <a href="#" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>04</td>
+                                <td>Yudha Prasetyo</td>
+                                <td>4.33.23.5.22</td>
+                                <td>2023</td>
+                                <td>Administrasi Bisnis</td>
+                                <td>D4 - Manajemen Bisnis Internasional</td>
+                                <td>
+                                    <a href="#" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>05</td>
+                                <td>Lestari Widya</td>
+                                <td>4.33.23.5.24</td>
+                                <td>2023</td>
+                                <td>Administrasi Bisnis</td>
+                                <td>D4 - Manajemen Bisnis Internasional</td>
+                                <td>
+                                    <a href="#" class="btn btn-view">
+                                        <i class="fas fa-eye"></i> Lihat Mahasiswa
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="pagination-info">
+                            Menampilkan 1-5 dari 7500 data
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <ul class="pagination justify-content-end">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Sebelumnya</a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Selanjutnya</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
 
-            tableRows.forEach(function(row) {
-                let namaMahasiswa = row.cells[1].textContent.toLowerCase();
-                let nim = row.cells[2].textContent;
-                let angkatanCell = row.cells[3].textContent;
-                let jurusanCell = row.cells[4].textContent;
-                let prodiCell = row.cells[5].textContent;
-
-                // Filter berdasarkan angkatan, prodi, dan pencarian nama
-                if (
-                    (angkatan === 'all' || angkatanCell === angkatan) &&
-                    (prodi === 'all' || prodiCell === prodi) &&
-                    (namaMahasiswa.includes(searchInput) || nim.includes(searchInput))
-                ) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Filter functionality can be implemented here
+        $('.btn-filter').on('click', function() {
+            // Handle filter logic
         });
-    </script>
-@stop
+    });
+</script>
+@endsection
