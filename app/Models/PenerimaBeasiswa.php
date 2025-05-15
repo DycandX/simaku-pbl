@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Beasiswa;
 
 class PenerimaBeasiswa extends Model
 {
@@ -24,8 +25,8 @@ class PenerimaBeasiswa extends Model
     protected $fillable = [
         'nim',
         'id_beasiswa',
-        'tanggal_mulai',
-        'tanggal_selesai',
+        'periode_pencairan',
+        'tanggal_cair',
         'nominal',
         'status',
         'keterangan',
@@ -38,8 +39,7 @@ class PenerimaBeasiswa extends Model
      * @var array
      */
     protected $casts = [
-        'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date',
+        'tanggal_cari' => 'date',
         'nominal' => 'decimal:2',
     ];
 

@@ -19,7 +19,7 @@
                                 <strong>Nama Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                KIP-Kuliah
+                                {{ $beasiswa[0]['beasiswa']['nama_beasiswa'] ?? '-' }}
                             </div>
                         </div>
 
@@ -28,7 +28,7 @@
                                 <strong>Status Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                Aktif
+                                {{ strtoupper($beasiswa[0]['beasiswa']['status'] ?? '-') }}
                             </div>
                         </div>
 
@@ -37,7 +37,7 @@
                                 <strong>Tipe Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                Pembebasan UKT + Uang Saku
+                                {{ ucwords($beasiswa[0]['beasiswa']['jenis'] ?? '-') }}
                             </div>
                         </div>
                     </div>
@@ -45,28 +45,28 @@
                     <div class="col-md-6">
                         <div class="row mb-3">
                             <div class="col-sm-4">
-                                <strong>Periode :</strong>
+                                <strong>Periode Mulai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                2023/2024
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['beasiswa']['periode_mulai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-sm-4">
-                                <strong>Semester Berlaku :</strong>
+                                <strong>Periode Selesai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                Semester 1 s.d. 8
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['beasiswa']['periode_selesai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-sm-4">
-                                <strong>Skema Pembayaran:</strong>
+                                <strong>Keterangan</strong>
                             </div>
                             <div class="col-sm-8">
-                                Langsung ke rekening mahasiswa
+                                {{ ucwords($beasiswa[0]['beasiswa']['deskripsi'] ?? '-' ) }}
                             </div>
                         </div>
                     </div>
@@ -74,7 +74,6 @@
 
                 <!-- Detail Penerimaan Dana -->
                 <h5 class="mb-4">Detail Penerimaan Dana</h5>
-
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead class="thead-light">
@@ -86,31 +85,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Semester 1</td>
-                                <td>Rp 2.400.000</td>
-                                <td>20 Februari 2023</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
-                            </tr>
-                            <tr>
-                                <td>Semester 2</td>
-                                <td>Rp 2.400.000</td>
-                                <td>5 September 2023</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
-                            </tr>
-                            <tr>
-                                <td>Semester 3</td>
-                                <td>Rp 2.400.000</td>
-                                <td>10 Februari 2024</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
-                            </tr>
+                            @forelse ($beasiswa as $item)
+                                <tr>
+                                    <td>{{ $item['periode_pencairan'] ?? '-' }}</td>
+                                    <td>Rp {{ number_format($item['nominal'], 0, ',', '.') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item['tanggal_cair'])->translatedFormat('d F Y') }}</td>
+                                    <td>
+                                        @if ($item['status'] === 'aktif')
+                                            <span class="badge badge-success">Sudah Cair</span>
+                                        @else
+                                            <span class="badge badge-secondary">Belum Cair</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">Belum ada data beasiswa</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                </div>
+                </div>                
             </div>
         </div>
     </div>
-</div>
+</div> 
 @endsection
 
 @section('styles')

@@ -82,7 +82,6 @@
                                 <th>Total Terbayar</th>
                                 <th>Keterangan</th>
                                 <th>Status</th>
-                                <th>Metode Pembayaran</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -104,7 +103,6 @@
                                         <span class="badge badge-danger">{{ $item['status'] }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $item['metode_pembayaran'] ?? '-' }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('lihat-tagihan', ['id' => $item['id']]) }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i> Lihat Tagihan

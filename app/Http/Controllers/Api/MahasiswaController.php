@@ -9,16 +9,34 @@ use Illuminate\Support\Facades\Validator;
 
 class MahasiswaController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     $data = Mahasiswa::orderBy('nim', 'asc')->get();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Data Mahasiswa Ditemukan',
+    //         'data' => $data
+    //     ], 200);
+    // }
+    public function index(Request $request)
     {
-        $data = Mahasiswa::orderBy('nim', 'asc')->get();
+        $query = Mahasiswa::query()->orderBy('nim', 'asc');
+
+        // Jika parameter 'nim' ada, filter berdasarkan NIM
+        if ($request->has('nim')) {
+            $query->where('nim', $request->nim);
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Mahasiswa Ditemukan',
+            'message' => $data->isEmpty() ? 'Data Mahasiswa tidak ditemukan' : 'Data Mahasiswa ditemukan',
             'data' => $data
         ], 200);
     }
+
 
     public function store(Request $request)
     {

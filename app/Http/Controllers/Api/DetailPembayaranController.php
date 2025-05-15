@@ -11,8 +11,11 @@ class DetailPembayaranController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DetailPembayaran::with(['pembayaranUktSemester.uktSemester.mahasiswa', 'verifiedBy'])
-            ->orderByDesc('id');
+        $query = DetailPembayaran::with([
+            'pembayaranUktSemester.uktSemester.mahasiswa',
+            'pembayaranUktSemester.uktSemester.periodePembayaran',
+            'verifiedBy'
+        ])->orderByDesc('id');
 
         // Filter berdasarkan NIM jika tersedia
         if ($request->has('nim')) {

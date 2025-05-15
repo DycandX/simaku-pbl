@@ -9,15 +9,24 @@ use Illuminate\Support\Facades\Validator;
 
 class EnrollmentMahasiswaController extends Controller
 {
-    public function index()
+    
+    public function index(Request $request)
     {
-        $data = EnrollmentMahasiswa::with(['mahasiswa', 'kelas', 'tingkat', 'tahunAkademik'])
-            ->orderByDesc('id')
-            ->get();
+        $query = EnrollmentMahasiswa::with(['mahasiswa', 'kelas', 'tingkat', 'tahunAkademik'])
+            ->orderByDesc('id');
+
+        // Jika parameter 'nim' ada, filter berdasarkan NIM mahasiswa
+        if ($request->has('nim')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Enrollment Mahasiswa ditemukan',
+            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data Enrollment Mahasiswa ditemukan',
             'data' => $data
         ], 200);
     }
