@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Staff\dataBandingUktController;
+use App\Http\Controllers\Staff\detailPembayaranUktStaffController;
 use App\Http\Controllers\Staff\staffBuatTagihanUktController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -73,6 +74,8 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff-keuangan/data-banding-ukt', [dataBandingUktController::class, 'index'])->name('staff-keuangan.data-mahasiswa.data-banding-ukt');
     
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
+    Route::get('/staff/detail-pembayaran-ukt', [detailPembayaranUktStaffController::class, 'detail'])->name('staff.pembayaran-ukt.detail');
+
     Route::get('/staff/cek-tagihan-ukt', [CekTagihanUktController::class, 'index'])->name('staff.cek-tagihan-ukt');
     Route::get('/staff/cek-tagihan-ukt/{noTagihan}', [CekTagihanUktController::class, 'detail'])->name('staff.cek-tagihan-ukt.detail');
 });

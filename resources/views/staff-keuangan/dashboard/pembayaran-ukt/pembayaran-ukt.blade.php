@@ -79,7 +79,13 @@
                     <td>29-Jan-2024</td>
                     <td>Rp 2,600,000.00</td>
                     <td class="text-success">Diverifikasi</td>
-                    <td><button class="btn btn-info">Lihat Pembayaran</button></td>
+                    {{-- <td><button class="btn btn-info">Lihat Pembayaran</button></td> --}}
+                    <td>
+                        <a href="{{ route('staff.pembayaran-ukt.detail') }}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> Lihat Pembayaran
+                        </a>
+                    </td>
+                    
                 </tr>
                 <tr>
                     <td>02</td>
