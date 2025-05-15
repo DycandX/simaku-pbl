@@ -11,6 +11,7 @@ use App\Http\Controllers\Mahasiswa\LihatTagihanUktController;
 use App\Http\Controllers\staff\staffBeasiswaController;
 use App\Http\Controllers\staff\staffProfileController;
 use App\Http\Controllers\staff\staffDataMahasiswaController;
+use App\Http\Controllers\Staff\CekTagihanUktController;
 use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaController;
 use App\Http\Controllers\staffDataMahasiswaController as ControllersStaffDataMahasiswaController;
 
@@ -52,12 +53,18 @@ Route::middleware(['check.login'])->group(function () {
         return view('layouts.staff-app');
     })->name('staff-app');
 
-    // FIX: Menambahkan nama controller yang lengkap
+    // ADDED: Route pengajuan cicilan staff dengan detail, approve, dan reject
     Route::get('/staff/pengajuan-cicilan', [PengajuanCicilanStaffController::class, 'x'])->name('staff.pengajuan-cicilan');
+    Route::get('/staff/pengajuan-cicilan/{id}', [PengajuanCicilanStaffController::class, 'show'])->name('staff.pengajuan-cicilan.detail');
+    Route::post('/staff/pengajuan-cicilan/{id}/approve', [PengajuanCicilanStaffController::class, 'approve'])->name('staff.pengajuan-cicilan.approve');
+    Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');
+
     Route::get('/staff-beasiswa', [staffBeasiswaController::class, 'index'])->name('staff-beasiswa');
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
     Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
+    Route::get('/staff/cek-tagihan-ukt', [CekTagihanUktController::class, 'index'])->name('staff.cek-tagihan-ukt');
+    Route::get('/staff/cek-tagihan-ukt/{noTagihan}', [CekTagihanUktController::class, 'detail'])->name('staff.cek-tagihan-ukt.detail');
 });
 
 // Lihat Tagihan route
