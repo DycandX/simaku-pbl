@@ -24,33 +24,20 @@ class KelolaPenggunaController extends Controller
             return redirect()->route('login')->withErrors(['error' => 'Anda tidak memiliki akses ke halaman ini.']);
         }
 
-        // Ambil data semua user dari database dengan relationship
-        $users = User::with(['staff', 'mahasiswa'])
-            ->orderBy('created_at', 'desc')
+        // Ambil data semua user dari database tanpa relationship
+        $users = User::orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Transform data untuk view
+        // Transform data untuk view (hanya menggunakan data dari tabel users)
         $usersData = [];
         foreach ($users as $user) {
-            $userData = [
+            $usersData[] = [
                 'id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
                 'is_active' => $user->is_active,
-                'nama_lengkap' => ''
             ];
-
-            // Ambil nama lengkap berdasarkan role
-            if ($user->role === 'staff' && $user->staff) {
-                $userData['nama_lengkap'] = $user->staff->nama_lengkap;
-            } elseif ($user->role === 'mahasiswa' && $user->mahasiswa) {
-                $userData['nama_lengkap'] = $user->mahasiswa->nama_lengkap;
-            } elseif ($user->role === 'admin') {
-                $userData['nama_lengkap'] = 'Administrator';
-            }
-
-            $usersData[] = $userData;
         }
 
         return view('admin.dashboard.kelola-pengguna.kelola-pengguna', [
@@ -66,8 +53,8 @@ class KelolaPenggunaController extends Controller
             return redirect()->route('login')->withErrors(['error' => 'Anda tidak memiliki akses ke halaman ini.']);
         }
 
-        // Get specific user data dari database
-        $user = User::with(['staff', 'mahasiswa'])->find($id);
+        // Get specific user data dari database (without relationships)
+        $user = User::find($id);
 
         if (!$user) {
             return redirect()->route('admin.kelola-pengguna')->withErrors(['error' => 'Pengguna tidak ditemukan.']);
@@ -80,17 +67,8 @@ class KelolaPenggunaController extends Controller
             'email' => $user->email,
             'role' => $user->role,
             'is_active' => $user->is_active,
-            'nama_lengkap' => ''
+            'nama_lengkap' => $user->username // Use username instead of nama_lengkap
         ];
-
-        // Ambil nama lengkap berdasarkan role
-        if ($user->role === 'staff' && $user->staff) {
-            $userData['nama_lengkap'] = $user->staff->nama_lengkap;
-        } elseif ($user->role === 'mahasiswa' && $user->mahasiswa) {
-            $userData['nama_lengkap'] = $user->mahasiswa->nama_lengkap;
-        } elseif ($user->role === 'admin') {
-            $userData['nama_lengkap'] = 'Administrator';
-        }
 
         return view('admin.dashboard.kelola-pengguna.kelola-pengguna-edit', ['user' => $userData]);
     }

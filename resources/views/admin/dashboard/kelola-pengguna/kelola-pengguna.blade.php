@@ -244,7 +244,7 @@
                 @foreach($usersData as $index => $user)
                 <tr>
                     <td>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</td>
-                    <td>{{ $user['nama_lengkap'] ?: 'Belum diatur' }}</td>
+                    <td>{{ $user['username'] }}</td>
                     <td>{{ $user['email'] }}</td>
                     <td>
                         @if($user['role'] == 'admin')

@@ -25,7 +25,7 @@ class AuthController extends Controller
             } elseif ($role == 'admin') {
                 return redirect()->route('admin.kelola-pengguna');
             } elseif ($role == 'staff') {
-                return redirect()->route('staff-app');
+                return redirect()->route('staff.pembayaran-ukt');
             }
         }
         return view('auth.login');
@@ -195,7 +195,7 @@ class AuthController extends Controller
                         } elseif ($role === 'mahasiswa') {
                             return redirect()->route('lihat-tagihan-ukt');
                         } elseif ($role === 'staff') {
-                            return redirect()->route('staff-app');
+                            return redirect()->route('staff.pembayaran-ukt');
                         }
                     } else {
                         Log::warning('User not found in /api/user response', [
@@ -214,7 +214,7 @@ class AuthController extends Controller
                     return redirect()->route('lihat-tagihan-ukt');
                 } elseif ($role === 'staff') {
                     Log::info('Redirecting to staff dashboard');
-                    return redirect()->route('staff-app');
+                    return redirect()->route('staff.pembayaran-ukt');
                 }
 
                 // If all else fails
