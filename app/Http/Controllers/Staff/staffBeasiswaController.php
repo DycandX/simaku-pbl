@@ -9,6 +9,6 @@ class staffBeasiswaController extends Controller
 {
     public function index()
     {
-        return view('staff-keuangan.beasiswa.staff-beasiswa');
+        return view('staff-keuangan.beasiswa.staff-beasiswa-1');
     }
 }
