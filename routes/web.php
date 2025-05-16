@@ -18,6 +18,9 @@ use App\Http\Controllers\Staff\CekTagihanUktController;
 use App\Http\Controllers\Staff\staffDetailDataMahasiswaController;
 use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaController;
 use App\Http\Controllers\staffDataMahasiswaController as ControllersStaffDataMahasiswaController;
+use App\Http\Controllers\Staff\staffBuatTagihanUktKlikController;
+
+
 
 // Import controller yang missing
 use App\Http\Controllers\Staff\PengajuanCicilanStaffController;
@@ -61,6 +64,7 @@ Route::middleware(['check.login'])->group(function () {
         return view('layouts.staff-app');
     })->name('staff-app');
 
+
     // ADDED: Route pengajuan cicilan staff dengan detail, approve, dan reject
     Route::get('/staff/pengajuan-cicilan', [PengajuanCicilanStaffController::class, 'x'])->name('staff.pengajuan-cicilan');
     Route::get('/staff/pengajuan-cicilan/{id}', [PengajuanCicilanStaffController::class, 'show'])->name('staff.pengajuan-cicilan.detail');
@@ -74,6 +78,9 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff-keuangan/data-banding-ukt', [dataBandingUktController::class, 'index'])->name('staff-keuangan.data-mahasiswa.data-banding-ukt');
     
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
+    Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
+    Route::get('/staff/buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.buat-tagihan');
+
     Route::get('/staff/detail-pembayaran-ukt', [detailPembayaranUktStaffController::class, 'detail'])->name('staff.pembayaran-ukt.detail');
 
     Route::get('/staff/cek-tagihan-ukt', [CekTagihanUktController::class, 'index'])->name('staff.cek-tagihan-ukt');

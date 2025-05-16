@@ -1,170 +1,86 @@
 @extends('layouts.staff-app')
 
-@section('title', 'Beasiswa - SIMAKU')
+@section('title', 'Dashboard - SIMAKU')
 
-@section('header', 'BUAT TAGIHAN UKT')
+@section('header', 'Dashboard Buat Tagihan UKT')
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <!-- Detail Beasiswa Mahasiswa -->
-                <h5 class="mb-4">BUAT TAGIHAN UKT</h5>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Dashboard Header -->
+                    <h5 class="mb-4">Dashboard Buat Tagihan UKT</h5>
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Nama Beasiswa :</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                KIP-Kuliah
-                            </div>
-                        </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <a href="{{ route('staff.buat-tagihan')}}" class="btn btn-primary">Buat Tagihan</a>
 
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Status Beasiswa :</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                Aktif
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Tipe Beasiswa :</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                Pembebasan UKT + Uang Saku
-                            </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Periode :</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                2023/2024
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Semester Berlaku :</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                Semester 1 s.d. 8
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <strong>Skema Pembayaran:</strong>
-                            </div>
-                            <div class="col-sm-8">
-                                Langsung ke rekening mahasiswa
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Detail Penerimaan Dana -->
-                <h5 class="mb-4">Detail Penerimaan Dana</h5>
-
-                <div class="table-responsive">
+                    <!-- Table for Jobs -->
                     <table class="table table-bordered">
-                        <thead class="thead-light">
+                        <thead>
                             <tr>
-                                <th>Periode</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal Cair</th>
+                                <th>No</th>
+                                <th>Nama Job</th>
+                                <th>Progress</th>
                                 <th>Status</th>
+                                <th>Waktu/ Tanggal Dituat</th>
+                                <th>Deskripsi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Semester 1</td>
-                                <td>Rp 2.400.000</td>
-                                <td>20 Februari 2023</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
+                                <td>01</td>
+                                <td>TAGIHAN UKT 2023 - Gasal</td>
+                                <td>1/1</td>
+                                <td><span class="badge bg-success">Finished</span></td>
+                                <td>08:00 29-July-2023</td>
+                                <td>Create TAGIHAN UKT 2023 - Gasal</td>
                             </tr>
                             <tr>
-                                <td>Semester 2</td>
-                                <td>Rp 2.400.000</td>
-                                <td>5 September 2023</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
+                                <td>02</td>
+                                <td>TAGIHAN UKT 2023 - Genap</td>
+                                <td>1/1</td>
+                                <td><span class="badge bg-success">Finished</span></td>
+                                <td>08:00 29-Jan-2024</td>
+                                <td>Create TAGIHAN UKT 2023 - Genap</td>
                             </tr>
                             <tr>
-                                <td>Semester 3</td>
-                                <td>Rp 2.400.000</td>
-                                <td>10 Februari 2024</td>
-                                <td><span class="badge badge-success">Sudah Cair</span></td>
+                                <td>03</td>
+                                <td>TAGIHAN UKT 2024 - Gasal</td>
+                                <td>1/1</td>
+                                <td><span class="badge bg-success">Finished</span></td>
+                                <td>08:00 29-July-2024</td>
+                                <td>Create TAGIHAN UKT 2024 - Gasal</td>
+                            </tr>
+                            <tr>
+                                <td>04</td>
+                                <td>TAGIHAN UKT 2024 - Genap</td>
+                                <td>1/1</td>
+                                <td><span class="badge bg-success">Finished</span></td>
+                                <td>08:00 29-Jan-2025</td>
+                                <td>Create TAGIHAN UKT 2024 - Genap</td>
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between">
+                        <p>Showing 1-4 of 8</p>
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="#">‹</a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">›</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
-
-@section('styles')
-<style>
-    .card {
-        background-color: #fff;
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    h5 {
-        color: #333;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-    }
-
-    .row.mb-3 {
-        margin-bottom: 1rem;
-    }
-
-    .row.mb-3 .col-sm-4 {
-        color: #6c757d;
-    }
-
-    .row.mb-3 .col-sm-8 {
-        color: #333;
-        font-weight: 500;
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .badge-success {
-        background-color: #4fd1c5;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-weight: 500;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    @media (max-width: 768px) {
-        .row.mb-3 .col-sm-4,
-        .row.mb-3 .col-sm-8 {
-            padding: 0.5rem 0;
-        }
-    }
-</style>
 @endsection
