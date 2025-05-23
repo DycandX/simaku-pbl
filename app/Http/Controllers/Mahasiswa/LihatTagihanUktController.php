@@ -54,6 +54,29 @@ class LihatTagihanUktController extends Controller
 
     }
 
+    public function show($id)
+    {
+        $token = Session::get('token');
+        $userData = Session::get('user_data');
+
+        if (!$userData) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        // Ambil data detail tagihan berdasarkan ID
+        $pembayaranUkt = $this->getApiData("/api/pembayaran-ukt-semester/$id", $token);
+        //dd($pembayaranUkt);
+        $detailPembayaran = $this->getApiData("/api/detail-pembayaran/$id", $token);
+        //dd($detailPembayaran);
+        if (empty($pembayaranUkt) && empty($detailPembayaran)) {
+            return redirect()->back()->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
+        }
+
+        return view('mahasiswa.dashboard.tagihan-ukt.detail_tagihan_ukt', compact('pembayaranUkt', 'detailPembayaran', 'userData'));
+        
+    }
+
+
     private function getApiData($endpoint, $token)
     {
         try {
@@ -63,4 +86,17 @@ class LihatTagihanUktController extends Controller
             return [];
         }
     }
+    // private function getApiData($endpoint, $token)
+    // {
+    //     try {
+    //         $response = Http::withToken($token)->get(config('app.api_url') . $endpoint);
+    //         if ($response->successful()) {
+    //             return $response->json(); // Jangan langsung ambil ['data'], biar kelihatan struktur aslinya
+    //         }
+    //         return [];
+    //     } catch (\Exception $e) {
+    //         return [];
+    //     }
+    // }
+
 }

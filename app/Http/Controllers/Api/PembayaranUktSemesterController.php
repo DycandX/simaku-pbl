@@ -23,24 +23,6 @@ class PembayaranUktSemesterController extends Controller
             });
         }
 
-        //$data = $query->get();
-        // $data = $query->get()->map(function ($item) {
-        //     // Ambil data asli sebagai array
-        //     $original = $item->toArray();
-    
-        //     // Tambahkan data custom
-        //     $custom = [
-        //         'nomor_tagihan' => 'INV0000' . $item->uktSemester->id,
-        //         'semester' => optional($item->uktSemester->periodePembayaran)->nama_periode ?? '-',
-        //         'total_tagihan' => $item->uktSemester->jumlah_ukt,
-        //         'total_terbayar' => $item->status === 'terbayar' ? $item->nominal_tagihan : 0,
-        //         'keterangan' => $item->nomor_cicilan == 1 ? 'kontan' : 'cicilan',
-        //         'status' => $item->status === 'terbayar' ? 'sudah lunas' : 'belum lunas',
-        //     ];
-    
-        //     // Gabungkan data asli dan custom
-        //     return array_merge($original, $custom);
-        // });
         $data = $query->get()->map(function ($item) {
             return [
                 'id' => $item->id,

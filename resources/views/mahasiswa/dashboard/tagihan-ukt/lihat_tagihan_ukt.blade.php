@@ -104,7 +104,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('lihat-tagihan', ['id' => $item['id']]) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('mahasiswa-dashboard.show', ['id' => $item['id']]) }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i> Lihat Tagihan
                                     </a>
                                 </td>

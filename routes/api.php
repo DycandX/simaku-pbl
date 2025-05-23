@@ -60,8 +60,8 @@ Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
     Route::apiResource('tahun-akademik', TahunAkademikController::class);
     Route::apiResource('periode-pembayaran', PeriodePembayaranController::class);
     Route::apiResource('ukt-semester', UktSemesterController::class);
-    Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
-    Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
+    //Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
+    //Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
     Route::apiResource('kelas', KelasController::class);
     Route::apiResource('program-studi', ProgramStudiController::class);
     Route::apiResource('tingkat', TingkatController::class);
@@ -81,7 +81,11 @@ Route::middleware(['auth:sanctum', 'role:staff,mahasiswa'])->group(function () {
     Route::get('penerima-beasiswa', [PenerimaBeasiswaController::class, 'index']);
     Route::get('ukt-semester', [UktSemesterController::class, 'index']);
     Route::get('pembayaran-ukt-semester', [PembayaranUktSemesterController::class, 'index']);
+    Route::get('pembayaran-ukt-semester/{id}', [PembayaranUktSemesterController::class, 'show']);
+    // Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
+    // Route::apiResource('detail-pembayaran', PembayaranUktSemesterController::class);
     Route::get('detail-pembayaran', [DetailPembayaranController::class, 'index']);
+    Route::get('detail-pembayaran/{id}', [DetailPembayaranController::class, 'show']);
     Route::get('jenis-pembayaran', [JenisPembayaranController::class, 'index']);
     Route::get('periode-pembayaran', [PeriodePembayaranController::class, 'index']);
     Route::get('enrollment-mahasiswa', [EnrollmentMahasiswaController::class, 'index']);

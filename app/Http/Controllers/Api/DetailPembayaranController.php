@@ -69,23 +69,92 @@ class DetailPembayaranController extends Controller
     }
 
 
+    // public function show($id)
+    // {
+    //     $detail = DetailPembayaran::with(['pembayaranUktSemester', 'verifiedBy'])->find($id);
+
+    //     if (!$detail) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Data Tidak Ditemukan'
+    //         ], 404);
+    //     }
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Data Ditemukan',
+    //         'data' => $detail
+    //     ], 200);
+    // }
+
+    // public function show($id)
+    // {
+    //     $item = DetailPembayaran::with([
+    //         'pembayaranUktSemester.uktSemester.mahasiswa',
+    //         'pembayaranUktSemester.uktSemester.periodePembayaran',
+    //         'verifiedBy'
+    //     ])->find($id);
+
+    //     if (!$item) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Data tidak ditemukan',
+    //             'data' => null
+    //         ]);
+    //     }
+
+    //     $uktSemester = $item->pembayaranUktSemester->uktSemester ?? null;
+    //     $mahasiswa = $uktSemester->mahasiswa ?? null;
+
+    //     // Optional: ambil nama semester
+    //     $semester = $uktSemester->periodePembayaran->nama_periode ?? null;
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Data Pembayaran UKT Semester Ditemukan',
+    //         'data' => [
+    //             'id' => $item->id,
+    //             'nim' => $mahasiswa->nim ?? null,
+    //             'id_ukt_semester' => $uktSemester->id ?? null,
+    //             'nomor_cicilan' => $item->nomor_cicilan,
+    //             'nominal_tagihan' => $item->nominal_tagihan,
+    //             'tanggal_jatuh_tempo' => $item->tanggal_jatuh_tempo,
+    //             'status' => $item->status,
+    //             'created_at' => $item->created_at,
+    //             'updated_at' => $item->updated_at,
+    //             'mahasiswa' => $mahasiswa,
+    //             'ukt_semester' => $uktSemester,
+    //             'nomor_tagihan' => 'INV' . str_pad($item->id, 5, '0', STR_PAD_LEFT),
+    //             'semester' => $semester,
+    //             'total_tagihan' => $item->nominal_tagihan,
+    //             'total_terbayar' => $item->status === 'sudah lunas' ? $item->nominal_tagihan : 0,
+    //             'keterangan' => 'kontan'
+    //         ]
+    //     ]);
+    // }
     public function show($id)
     {
-        $detail = DetailPembayaran::with(['pembayaranUktSemester', 'verifiedBy'])->find($id);
+        $item = DetailPembayaran::with([
+            'pembayaranUktSemester.uktSemester.mahasiswa',
+            'pembayaranUktSemester.uktSemester.periodePembayaran',
+            'verifiedBy'
+        ])->find($id); 
 
-        if (!$detail) {
+        if (!$item) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data Tidak Ditemukan'
+                'message' => 'Data Pembayaran UKT Tidak Ditemukan',
+                'data' => null
             ], 404);
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Ditemukan',
-            'data' => $detail
-        ], 200);
+            'message' => 'Data Pembayaran UKT Ditemukan',
+            'data' => $item
+        ]);
     }
+
 
     public function update(Request $request, $id)
     {
