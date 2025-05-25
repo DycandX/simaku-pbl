@@ -10,20 +10,24 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="filter-container">
             <label for="semester">Semester</label>
-            <select id="semester" class="form-select">
-                <option value="2023/2024 - Genap">2023/2024 - Genap</option>
-                <!-- Add more options as needed -->
+            <select id="semester" class="form-select" onchange="filterData()">
+                <option value="">Pilih Semester</option>
+                <option value="2023/2024 - Genap" {{ $semester == '2023/2024 - Genap' ? 'selected' : '' }}>2023/2024 - Genap</option>
+                <option value="2024/2025 - Genap" {{ $semester == '2024/2025 - Genap' ? 'selected' : '' }}>2024/2025 - Genap</option>
+                <!-- Add more options dynamically if needed -->
             </select>
         </div>
         <div class="filter-container">
             <label for="status">Status</label>
-            <select id="status" class="form-select">
-                <option value="All Status">All Status</option>
-                <!-- Add more options as needed -->
+            <select id="status" class="form-select" onchange="filterData()">
+                <option value="">Semua Status</option>
+                <option value="sudah lunas" {{ $status == 'sudah lunas' ? 'selected' : '' }}>Diverifikasi</option>
+                <option value="belum lunas" {{ $status == 'belum lunas' ? 'selected' : '' }}>Belum Diverifikasi</option>
+                <option value="ditolak" {{ $status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
             </select>
         </div>
         <div class="filter-container">
-            <button class="btn btn-primary">Filter</button>
+            <button class="btn btn-primary" onclick="filterData()">Filter</button>
         </div>
     </div>
 
@@ -32,25 +36,25 @@
         <div class="col-3">
             <div class="summary-card">
                 <p>Total Pembayaran</p>
-                <h4>Rp 700.000.000,00</h4>
+                <h4>Rp {{ number_format($totalPembayaran, 0, ',', '.') }}</h4>
             </div>
         </div>
         <div class="col-3">
             <div class="summary-card">
-                <p>Divertifikasi</p>
-                <h4>1000</h4>
+                <p>Diverifikasi</p>
+                <h4>{{ $diverifikasi }}</h4>
             </div>
         </div>
         <div class="col-3">
             <div class="summary-card">
                 <p>Belum Diverifikasi</p>
-                <h4>200</h4>
+                <h4>{{ $belumDiverifikasi }}</h4>
             </div>
         </div>
         <div class="col-3">
             <div class="summary-card">
                 <p>Ditolak</p>
-                <h4>2</h4>
+                <h4>{{ $ditolak }}</h4>
             </div>
         </div>
     </div>
@@ -71,66 +75,36 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach ($pembayaranUktData as $index => $data)
                 <tr>
-                    <td>01</td>
-                    <td>INV000013408</td>
-                    <td>Zirilda Syafira</td>
-                    <td>2023/2024 - Genap</td>
-                    <td>29-Jan-2024</td>
-                    <td>Rp 2,600,000.00</td>
-                    <td class="text-success">Diverifikasi</td>
-                    {{-- <td><button class="btn btn-info">Lihat Pembayaran</button></td> --}}
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $data['nomor_tagihan'] }}</td>
+                    <td>{{ $data['mahasiswa']['nama_lengkap'] }}</td>
+                    <td>{{ $data['semester'] }}</td>
+                    <td>{{ \Carbon\Carbon::parse($data['tanggal_jatuh_tempo'])->format('d-M-Y') }}</td>
+                    <td>Rp {{ number_format($data['total_tagihan'], 0, ',', '.') }}</td>
+                    <td class="{{ $data['status'] == 'sudah lunas' ? 'text-success' : ($data['status'] == 'belum lunas' ? 'text-warning' : 'text-danger') }}">
+                        {{ ucfirst($data['status']) }}
+                    </td>
                     <td>
-                        <a href="{{ route('staff.pembayaran-ukt.detail') }}" class="btn btn-view">
+                        <a href="{{ route('staff.pembayaran-ukt.detail', ['id' => $data['id']]) }}" class="btn btn-info">
                             <i class="fas fa-eye"></i> Lihat Pembayaran
                         </a>
                     </td>
-                    
                 </tr>
-                <tr>
-                    <td>02</td>
-                    <td>INV001234501</td>
-                    <td>Fadhil Ramadhan</td>
-                    <td>2023/2024 - Genap</td>
-                    <td>29-Jan-2024</td>
-                    <td>Rp 3,000,000.00</td>
-                    <td class="text-success">Diverifikasi</td>
-                    <td><button class="btn btn-info">Lihat Pembayaran</button></td>
-                </tr>
-                <tr>
-                    <td>03</td>
-                    <td>INV001234502</td>
-                    <td>Aisyah Hanifah</td>
-                    <td>2023/2024 - Genap</td>
-                    <td>29-Jan-2024</td>
-                    <td>Rp 2,850,000.00</td>
-                    <td class="text-danger">Ditolak</td>
-                    <td><button class="btn btn-info">Lihat Pembayaran</button></td>
-                </tr>
-                <tr>
-                    <td>04</td>
-                    <td>INV001234503</td>
-                    <td>Yudha Prasetyo</td>
-                    <td>2023/2024 - Genap</td>
-                    <td>29-Jan-2024</td>
-                    <td>Rp 2,700,000.00</td>
-                    <td class="text-warning">Belum Diverifikasi</td>
-                    <td><button class="btn btn-info">Lihat Pembayaran</button></td>
-                </tr>
-                <tr>
-                    <td>05</td>
-                    <td>INV001234506</td>
-                    <td>Siti Nurhaliza</td>
-                    <td>2023/2024 - Genap</td>
-                    <td>29-Jan-2024</td>
-                    <td>Rp 2,950,000.00</td>
-                    <td class="text-success">Diverifikasi</td>
-                    <td><button class="btn btn-info">Lihat Pembayaran</button></td>
-                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    function filterData() {
+        const semester = document.getElementById('semester').value;
+        const status = document.getElementById('status').value;
+        window.location.href = `{{ url('staff/pembayaran-ukt') }}?semester=${semester}&status=${status}`;
+    }
+</script>
 
 @endsection
 
