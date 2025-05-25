@@ -42,18 +42,26 @@ class StaffDataMahasiswaController extends Controller
         // Fetch programs (prodi) and academic year (angkatan) for dropdown filters
         $programs = $this->getApiData('/api/program-studi', [], $token);
         $years = $this->getApiData('/api/tahun-akademik', [], $token);
+        $faculties = $this->getApiData('/api/fakultas', [], $token);  // Fetch fakultas data
 
         // Create a map of program id to program name for quick lookup in the view
         $programsMap = collect($programs)->pluck('nama_prodi', 'id')->toArray();
 
-        // Map the program names to the students' data
+        // Create a map of faculty id to faculty name for quick lookup
+        $facultiesMap = collect($faculties)->pluck('nama_fakultas', 'id')->toArray();
+
+        // Map the program and faculty names to the students' data
         foreach ($students as &$student) {
-            // Replace the id_prodi with the program name (if available)
-            $student['kelas']['program_name'] = $programsMap[$student['kelas']['id_prodi']];
-            //dd ($student);
+            // Add program name
+            $student['kelas']['program_name'] = $programsMap[$student['kelas']['id_prodi']] ?? 'Unknown Program';
+            // Add faculty name (based on the id_fakultas from program studi)
+            $programId = $student['kelas']['id_prodi'];
+            $program = collect($programs)->firstWhere('id', $programId); // Get program details
+            $facultyId = $program['id_fakultas'] ?? null;  // Retrieve faculty id from program
+            $student['kelas']['faculty_name'] = $facultiesMap[$facultyId] ?? 'Unknown Faculty';
         }
 
-        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', compact('students', 'programs', 'years', 'programsMap', 'angkatan', 'prodi', 'searchTerm'));
+        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', compact('students', 'programs', 'years', 'programsMap', 'facultiesMap', 'angkatan', 'prodi', 'searchTerm'));
     }
 
     private function getApiData($endpoint, $queryParams = [], $token)

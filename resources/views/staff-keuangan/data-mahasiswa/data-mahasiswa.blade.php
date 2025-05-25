@@ -66,6 +66,7 @@
                                 <th>Nama Mahasiswa</th>
                                 <th>NIM</th>
                                 <th>Angkatan</th>
+                                <th>Jurusan</th>
                                 <th>Prodi</th>
                                 <th>Aksi</th>
                             </tr>
@@ -77,7 +78,9 @@
                                     <td>{{ $student['mahasiswa']['nama_lengkap'] }}</td>
                                     <td>{{ $student['mahasiswa']['nim'] }}</td>
                                     <td>{{ $student['tahun_akademik']['tahun_akademik'] }}</td>
+                                    <td>{{ $student['kelas']['faculty_name'] }}</td>
                                     <td>{{ $student['kelas']['program_name'] }}</td>
+                                    
 
                                     <td>
                                         <a href="{{ route('staff.keuangan.data-mahasiswa.detail', ['nim' => $student['mahasiswa']['nim']]) }}" class="btn btn-view">
