@@ -2,92 +2,67 @@
 
 namespace App\Http\Controllers\Staff;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 
 class StaffDataMahasiswaController extends Controller
 {
-    public function showDataMahasiswa(Request $request)
+    public function index(Request $request)
     {
-        // Memeriksa apakah token ada
-        if (!session('token')) {
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
+
+        // Check if user is logged in and has valid session
+        if (!$userData && !$token) {
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
         }
 
-        // Menyiapkan parameter filter dari request
-        $angkatan = $request->input('angkatan', '2023');  // Default to 2023
-        $jurusan = $request->input('jurusan', 'D4 - Manajemen Bisnis');  // Default to D4 - Manajemen Bisnis
-        $search = $request->input('search', '');
-
-        // Mengambil data mahasiswa dari API dengan filter
-        $responseMahasiswa = Http::withToken(session('token'))
-            ->get('http://simaku-pbl.test/api/mahasiswa', [
-                'angkatan' => $angkatan,
-                'jurusan' => $jurusan,
-                'search' => $search,
-            ]);
-
-        if ($responseMahasiswa->failed()) {
-            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data mahasiswa']);
+        // Validate user role (admin or staff)
+        if (!in_array($userData['role'], ['admin', 'staff'])) {
+            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
         }
 
-        $mahasiswaData = $responseMahasiswa->json()['data'] ?? [];
+        // Get filtering parameters from the request
+        $angkatan = $request->get('angkatan', '');
+        $prodi = $request->get('prodi', '');
+        $searchTerm = $request->get('search', '');
 
-        // Mengambil data enrollment mahasiswa untuk mendapatkan angkatan dan prodi
-        $responseEnrollment = Http::withToken(session('token'))->get('http://simaku-pbl.test/api/enrollment-mahasiswa');
-        if ($responseEnrollment->failed()) {
-            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data enrollment mahasiswa']);
-        }
-        $enrollmentData = $responseEnrollment->json()['data'] ?? [];
-
-        // Mengambil data kelas untuk mendapatkan nama_kelas dan tahun_angkatan
-        $responseKelas = Http::withToken(session('token'))->get('http://simaku-pbl.test/api/kelas');
-        if ($responseKelas->failed()) {
-            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data kelas']);
-        }
-        $kelasData = $responseKelas->json()['data'] ?? [];
-
-        // Mengambil data fakultas untuk mendapatkan nama_fakultas
-        $responseFakultas = Http::withToken(session('token'))->get('http://simaku-pbl.test/api/fakultas');
-        if ($responseFakultas->failed()) {
-            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data fakultas']);
-        }
-        $fakultasData = $responseFakultas->json()['data'] ?? [];
-
-        // Menambahkan angkatan, prodi, fakultas ke data mahasiswa berdasarkan enrollment
-        foreach ($mahasiswaData as &$mahasiswa) {
-            // Menambahkan informasi angkatan, prodi, dan kelas
-            foreach ($enrollmentData as $enrollment) {
-                if ($mahasiswa['nim'] == $enrollment['mahasiswa']['nim']) {
-                    // Menambahkan angkatan dari kelas
-                    $mahasiswa['angkatan'] = $enrollment['kelas']['tahun_angkatan'];
-
-                    // Menambahkan prodi dari kelas
-                    foreach ($kelasData as $kelas) {
-                        if ($kelas['id'] == $enrollment['id_kelas']) {
-                            $mahasiswa['prodi'] = $kelas['program_studi']['nama_prodi'];
-
-                            // Menambahkan jurusan dari fakultas
-                            foreach ($fakultasData as $fakultas) {
-                                if ($fakultas['id'] == $kelas['program_studi']['id_fakultas']) {
-                                    $mahasiswa['jurusan'] = $fakultas['nama_fakultas'];
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Mengirimkan data ke view
-        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', [
-            'mahasiswaData' => $mahasiswaData,
+        // Build query parameters
+        $queryParams = [
             'angkatan' => $angkatan,
-            'jurusan' => $jurusan,
-            'search' => $search
-        ]);
+            'prodi' => $prodi,
+            'search' => $searchTerm
+        ];
+
+        // Fetch student data from API
+        $students = $this->getApiData('/api/enrollment-mahasiswa', $queryParams, $token);
+
+        // Fetch programs (prodi) and academic year (angkatan) for dropdown filters
+        $programs = $this->getApiData('/api/program-studi', [], $token);
+        $years = $this->getApiData('/api/tahun-akademik', [], $token);
+
+        // Create a map of program id to program name for quick lookup in the view
+        $programsMap = collect($programs)->pluck('nama_prodi', 'id')->toArray();
+
+        // Map the program names to the students' data
+        foreach ($students as &$student) {
+            // Replace the id_prodi with the program name (if available)
+            $student['kelas']['program_name'] = $programsMap[$student['kelas']['id_prodi']];
+            //dd ($student);
+        }
+
+        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', compact('students', 'programs', 'years', 'programsMap', 'angkatan', 'prodi', 'searchTerm'));
+    }
+
+    private function getApiData($endpoint, $queryParams = [], $token)
+    {
+        try {
+            $response = Http::withToken($token)->get(config('app.api_url') . $endpoint, $queryParams);
+            return $response->successful() ? optional($response->json())['data'] ?? [] : [];
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }

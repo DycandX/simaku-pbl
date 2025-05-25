@@ -73,7 +73,8 @@ Route::middleware(['check.login'])->group(function () {
 
     Route::get('/staff-beasiswa', [staffBeasiswaController::class, 'index'])->name('staff-beasiswa');
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
-    Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
+    //Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
+    Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'index'])->name('staff-keuangan.data-mahasiswa');
     Route::get('/staff-keuangan/detail-data-mahasiswa', [staffDetailDataMahasiswaController::class, 'detail'])->name('staff.keuangan.data-mahasiswa.detail');
     Route::get('/staff-keuangan/data-banding-ukt', [dataBandingUktController::class, 'index'])->name('staff-keuangan.data-mahasiswa.data-banding-ukt');
     
