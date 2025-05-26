@@ -83,7 +83,7 @@
                                     
 
                                     <td>
-                                        <a href="{{ route('staff.keuangan.data-mahasiswa.detail', ['nim' => $student['mahasiswa']['nim']]) }}" class="btn btn-view">
+                                        <a href="{{ route('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', ['nim' => $student['mahasiswa']['nim']]) }}" class="btn btn-view">
                                             <i class="fas fa-eye"></i> Lihat Mahasiswa
                                         </a>
                                     </td>
