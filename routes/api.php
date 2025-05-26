@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\UktSemesterController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PenerimaBeasiswaController;
+use App\Http\Controllers\Api\PengajuanCicilanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,11 +64,10 @@ Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
     //Route::apiResource('pembayaran-ukt-semester', PembayaranUktSemesterController::class);
     //Route::apiResource('detail-pembayaran', DetailPembayaranController::class);
     Route::apiResource('kelas', KelasController::class);
-    Route::apiResource('program-studi', ProgramStudiController::class);
     Route::apiResource('tingkat', TingkatController::class);
-    Route::apiResource('fakultas', FakultasController::class);
     Route::apiResource('jenis-pembayaran', JenisPembayaranController::class);
     Route::apiResource('enrollment-mahasiswa', EnrollmentMahasiswaController::class);
+    
 });
 
 
@@ -89,6 +89,9 @@ Route::middleware(['auth:sanctum', 'role:staff,mahasiswa'])->group(function () {
     Route::get('jenis-pembayaran', [JenisPembayaranController::class, 'index']);
     Route::get('periode-pembayaran', [PeriodePembayaranController::class, 'index']);
     Route::get('enrollment-mahasiswa', [EnrollmentMahasiswaController::class, 'index']);
+    Route::apiResource('pengajuan-cicilan', PengajuanCicilanController::class);
+    Route::apiResource('program-studi', ProgramStudiController::class);
+    Route::apiResource('fakultas', FakultasController::class);
 });
 
 

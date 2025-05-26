@@ -14,17 +14,25 @@
             <div class="card-body">
                 <form action="{{ route('pengajuan.cicilan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <!-- Hidden input for tagihan_id jika ada -->
-                    @if(isset($tagihan))
-                    <input type="hidden" name="tagihan_id" value="{{ $tagihan['id'] }}">
+                    @if(isset($pembayaranUkt))
+                    <input type="hidden" name="id_pembayaran" value="{{ $pembayaranUkt['id'] }}">
                     @endif
 
                     <!-- Nama -->
                     <div class="form-group row mb-3">
-                        <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                        <label for="nama_lengkap" class="col-sm-2 col-form-label">Nama</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="nama" name="nama" value="{{ Auth::user()->name ?? 'ZIRLDA SYAFIRA' }}" readonly>
+                            <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" value="{{ $pembayaranUkt['mahasiswa']['nama_lengkap'] }}" readonly>
                         </div>
                     </div>
 
@@ -32,23 +40,23 @@
                     <div class="form-group row mb-3">
                         <label for="nim" class="col-sm-2 col-form-label">NIM</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="nim" name="nim" value="{{ Auth::user()->nim ?? '4.33.23.4.22' }}" readonly>
+                            <input type="text" class="form-control" id="nim" name="nim" value="{{ $pembayaranUkt['mahasiswa']['nim'] }}" readonly>
                         </div>
                     </div>
 
-                    <!-- Jurusan -->
+                    <!-- Fakultas -->
                     <div class="form-group row mb-3">
-                        <label for="jurusan" class="col-sm-2 col-form-label">Jurusan</label>
+                        <label for="fakultas" class="col-sm-2 col-form-label">Fakultas</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="jurusan" name="jurusan" value="ADMINISTRASI BISNIS" readonly>
+                            <input type="text" class="form-control" id="fakultas" name="fakultas" value="{{ $responseFakultas['nama_fakultas'] }}" readonly> 
                         </div>
                     </div>
 
-                    <!-- Prodi -->
+                    <!-- Program Studi -->
                     <div class="form-group row mb-3">
-                        <label for="prodi" class="col-sm-2 col-form-label">Prodi</label>
+                        <label for="program_studi" class="col-sm-2 col-form-label">Program Studi</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="prodi" name="prodi" value="D4 - MANAJEMEN BISNIS INTERNASIONAL" readonly>
+                            <input type="text" class="form-control" id="program_studi" name="program_studi" value="{{ $namaProdi }}" readonly>
                         </div>
                     </div>
 
@@ -57,7 +65,7 @@
                         <label for="tagihan" class="col-sm-2 col-form-label">Tagihan</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="tagihan" name="tagihan"
-                                value="{{ $tagihan['nama_tagihan'] ?? 'TAGIHAN UKT 2023 - Genap' }}"
+                                value="{{ $detailPembayaran['pembayaran_ukt_semester']['ukt_semester']['periode_pembayaran']['nama_periode'] }}"
                                 readonly>
                         </div>
                     </div>
@@ -68,9 +76,9 @@
                         <div class="col-sm-10">
                             <select class="form-control" id="angsuran" name="angsuran">
                                 <option value="" disabled>-- Pilih Jumlah Angsuran --</option>
-                                <option value="2x" selected>2x</option>
-                                <option value="3x">3x</option>
-                                <option value="4x">4x</option>
+                                <option value="2" selected>2x</option>
+                                <option value="3">3x</option>
+                                <option value="4">4x</option>
                             </select>
                         </div>
                     </div>
@@ -81,8 +89,9 @@
                         <div class="col-sm-10">
                             <div class="input-group">
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="file" name="file">
-                                    <label class="custom-file-label" for="file">Choose File</label>
+                                    {{-- <input type="file" class="custom-file-input" id="file_path" name="file_path"> --}}
+                                    <input type="file" class="custom-file-input" id="file_path" name="file_path" accept="application/pdf">
+                                    <label class="custom-file-label" for="file_path">Choose File</label>
                                 </div>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" id="upload-btn">Browse</button>
@@ -91,11 +100,9 @@
                             <small class="form-text text-muted">Upload surat permohonan cicilan dalam format PDF (Max: 2MB)</small>
                         </div>
                     </div>
-
-                    <!-- Submit Button -->
                     <div class="form-group row">
                         <div class="col-sm-10 offset-sm-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('Yakin ingin mengirim pengajuan cicilan?')">
                                 <i class="fas fa-paper-plane"></i> Kirim
                             </button>
                             <a href="{{ route('mahasiswa-dashboard') }}" class="btn btn-secondary">
@@ -108,6 +115,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('styles')

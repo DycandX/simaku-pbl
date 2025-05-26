@@ -33,7 +33,7 @@ class CicilanController extends Controller
                 'jumlah' => 5000000
             ];
         }
-
+        //dd($tagihan);
         return view('mahasiswa.pengajuan_cicilan', compact('tagihan'));
     }
 

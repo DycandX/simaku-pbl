@@ -44,8 +44,9 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/golongan-ukt', [GolonganUktController::class, 'index'])->name('golongan-ukt');
 
     // Pengajuan Cicilan
-    Route::get('/pengajuan-cicilan', [CicilanController::class, 'create'])->name('pengajuan.cicilan');
-    Route::post('/pengajuan-cicilan', [CicilanController::class, 'store'])->name('pengajuan.cicilan.store');
+   // Route::get('/pengajuan-cicilan', [CicilanController::class, 'create'])->name('pengajuan.cicilan'); // pas di submit pake ini
+    Route::get('/pengajuan-cicilan/{id}', [LihatTagihanUktController::class, 'pengajuan_cicilan'])->name('pengajuan.cicilan'); // pas di submit pake ini
+    Route::post('/pengajuan-cicilan', [LihatTagihanUktController::class, 'pengajuan_cicilan_store'])->name('pengajuan.cicilan.store'); //ini pas di awal tampilan
 
     //Admin
     Route::get('/admin/kelola-pengguna', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'index'])->name('admin.kelola-pengguna');

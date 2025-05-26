@@ -152,9 +152,10 @@
                                         <a href="#" class="btn btn-primary btn-sm">
                                             Pembayaran Langsung
                                         </a>
-                                        <a href="{{ route('pengajuan.cicilan', ['tagihan_id' => $detailPembayaran['id']]) }}" class="btn btn-success btn-sm">
+                                        {{-- <a href="{{ route('pengajuan.cicilan', ['tagihan_id' => $detailPembayaran['id']]) }}" class="btn btn-success btn-sm">
                                             Pembayaran Cicil
-                                        </a>
+                                        </a> --}}
+                                        <a href="{{ route('pengajuan.cicilan', ['id' => $detailPembayaran ['id']]) }}" class="btn btn-success btn-sm">Ajukan Cicilan</a>
                                     </div>
                                 @else
                                     <p class="text-dark mb-0">-</p>
