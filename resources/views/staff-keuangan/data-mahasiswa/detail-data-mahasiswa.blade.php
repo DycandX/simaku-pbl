@@ -56,7 +56,7 @@
                                 <th>Total</th>
                                 <th>Bank Tujuan</th>
                                 <th>Status</th>
-                                <th>Status Payment</th>
+                                <th>Status Pembayaran</th>
                                 <th>Keterangan Tagihan</th>
                                 <th>Bukti Pembayaran</th>
                             </tr>
@@ -75,7 +75,9 @@
                                 <td><span class="badge {{ $payment['status'] == 'belum lunas' ? 'badge-warning' : 'badge-success' }}">{{ ucfirst($payment['status']) }}</span></td>
                                 <td><span class="badge {{ $payment['total_terbayar'] == 0 ? 'badge-danger' : 'badge-info' }}">Sudah Dibayar</span></td>
                                 <td>-</td>
-                                <td><a href="#" class="btn btn-view"><i class="fas fa-eye"></i></a></td>
+                                <td><a href="{{ asset($payment['bukti_pembayaran_path']) }}" class="btn btn-view" target="_blank">
+                                    <i class="fas fa-eye"></i> Lihat Bukti Pembayaran
+                                </a></td>
                             </tr>
                             @endforeach
                         </tbody>

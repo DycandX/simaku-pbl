@@ -15,7 +15,7 @@ class StaffDetailDataMahasiswaController extends Controller
         $token = Session::get('token');
 
         // Check if user is logged in and has valid session
-        if (!$userData && !$token) {
+        if (!$userData || !$token) {
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
         }
 
@@ -26,24 +26,24 @@ class StaffDetailDataMahasiswaController extends Controller
 
         // Fetch student data from API based on nim
         $studentData = $this->getApiData("/api/enrollment-mahasiswa/{$nim}", [], $token);
-        $paymentData = $this->getApiData("/api/pembayaran-ukt-semester", ['nim' => $nim], $token);
-
-        // If no student data is found
         if (!$studentData) {
             return redirect()->route('staff-keuangan.data-mahasiswa')->withErrors(['error' => 'Data mahasiswa tidak ditemukan.']);
         }
 
-        // Fetch programs (prodi) and academic year (angkatan) for dropdown filters
-        $programs = $this->getApiData('/api/program-studi', [], $token);
+        // Fetch payment data for the student
+        $paymentData = $this->getApiData("/api/pembayaran-ukt-semester", ['nim' => $nim], $token);
+
+        // Fetch programs (prodi) and faculties (jurusan)
+        $programs = $this->getApiData('/api/kelas', [], $token);
         $faculties = $this->getApiData('/api/fakultas', [], $token);
 
-        // Create a map of program id to program name for quick lookup
-        $programsMap = collect($programs)->pluck('nama_prodi', 'id')->toArray();
+        // Map program and faculty names for quick lookup
+        $programsMap = collect($programs)->pluck('program_studi.nama_prodi', 'id')->toArray();
         $facultiesMap = collect($faculties)->pluck('nama_fakultas', 'id')->toArray();
 
         // Add program and faculty names to student data
         $studentData['kelas']['program_name'] = $programsMap[$studentData['kelas']['id_prodi']] ?? 'Unknown Program';
-        $facultyId = $programsMap[$studentData['kelas']['id_prodi']] ?? null;
+        $facultyId = collect($programs)->firstWhere('id', $studentData['kelas']['id_prodi'])['program_studi']['id_fakultas'] ?? null;
         $studentData['kelas']['faculty_name'] = $facultiesMap[$facultyId] ?? 'Unknown Faculty';
 
         return view('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', compact('studentData', 'paymentData'));

@@ -85,6 +85,7 @@
                                             <i class="fas fa-eye"></i> Lihat Mahasiswa
                                         </a>
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
