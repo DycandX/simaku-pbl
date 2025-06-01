@@ -15,7 +15,7 @@ class StaffDataMahasiswaController extends Controller
         $token = Session::get('token');
 
         // Check if user is logged in and has valid session
-        if (!$userData && !$token) {
+        if (!$userData || !$token) {
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
         }
 
@@ -39,13 +39,12 @@ class StaffDataMahasiswaController extends Controller
         // Fetch student data from API
         $students = $this->getApiData('/api/enrollment-mahasiswa', $queryParams, $token);
 
-        // Fetch programs (prodi) and academic year (angkatan) for dropdown filters
-        $programs = $this->getApiData('/api/program-studi', [], $token);
-        $years = $this->getApiData('/api/tahun-akademik', [], $token);
-        $faculties = $this->getApiData('/api/fakultas', [], $token);  // Fetch fakultas data
+        // Fetch programs (prodi) and faculties (jurusan) data
+        $programs = $this->getApiData('/api/kelas', [], $token);
+        $faculties = $this->getApiData('/api/fakultas', [], $token);
 
-        // Create a map of program id to program name for quick lookup in the view
-        $programsMap = collect($programs)->pluck('nama_prodi', 'id')->toArray();
+        // Create a map of program id to program name for quick lookup
+        $programsMap = collect($programs)->pluck('program_studi.nama_prodi', 'id')->toArray();
 
         // Create a map of faculty id to faculty name for quick lookup
         $facultiesMap = collect($faculties)->pluck('nama_fakultas', 'id')->toArray();
@@ -54,14 +53,17 @@ class StaffDataMahasiswaController extends Controller
         foreach ($students as &$student) {
             // Add program name
             $student['kelas']['program_name'] = $programsMap[$student['kelas']['id_prodi']] ?? 'Unknown Program';
+
             // Add faculty name (based on the id_fakultas from program studi)
             $programId = $student['kelas']['id_prodi'];
-            $program = collect($programs)->firstWhere('id', $programId); // Get program details
-            $facultyId = $program['id_fakultas'] ?? null;  // Retrieve faculty id from program
+            $facultyId = collect($programs)->firstWhere('id', $programId)['program_studi']['id_fakultas'] ?? null; // Get faculty id from program
             $student['kelas']['faculty_name'] = $facultiesMap[$facultyId] ?? 'Unknown Faculty';
         }
 
-        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', compact('students', 'programs', 'years', 'programsMap', 'facultiesMap', 'angkatan', 'prodi', 'searchTerm'));
+        // Fetch years (tahun akademik)
+        $years = $this->getApiData('/api/tahun-akademik', [], $token);
+
+        return view('staff-keuangan.data-mahasiswa.data-mahasiswa', compact('students', 'programs', 'years', 'angkatan', 'prodi', 'searchTerm', 'facultiesMap'));
     }
 
     private function getApiData($endpoint, $queryParams = [], $token)

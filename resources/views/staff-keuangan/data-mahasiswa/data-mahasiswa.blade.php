@@ -29,8 +29,8 @@
                         <select class="form-control" id="filterProdi">
                             <option value="">Semua Program Studi</option>
                             @foreach ($programs as $prodi)
-                                <option value="{{ $prodi['id'] }}" {{ $prodi == $prodi['id'] ? 'selected' : '' }}>
-                                    {{ $prodi['nama_prodi'] }}
+                                <option value="{{ $prodi['id'] }}" {{ $prodi['id'] == $prodi ? 'selected' : '' }}>
+                                    {{ $prodi['program_studi']['nama_prodi'] }}
                                 </option>
                             @endforeach
                         </select>
@@ -80,8 +80,6 @@
                                     <td>{{ $student['tahun_akademik']['tahun_akademik'] }}</td>
                                     <td>{{ $student['kelas']['faculty_name'] }}</td>
                                     <td>{{ $student['kelas']['program_name'] }}</td>
-                                    
-
                                     <td>
                                         <a href="{{ route('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', ['nim' => $student['mahasiswa']['nim']]) }}" class="btn btn-view">
                                             <i class="fas fa-eye"></i> Lihat Mahasiswa
