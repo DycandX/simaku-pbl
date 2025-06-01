@@ -15,8 +15,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <a href="{{ route('staff.buat-tagihan')}}" class="btn btn-primary">Buat Tagihan</a>
-
+                            <a href="{{ route('staff.buat-tagihan') }}" class="btn btn-primary">Buat Tagihan</a>
                         </div>
                     </div>
 
@@ -28,7 +27,7 @@
                                 <th>Nama Job</th>
                                 <th>Progress</th>
                                 <th>Status</th>
-                                <th>Waktu/ Tanggal Dituat</th>
+                                <th>Waktu/ Tanggal Dibuat</th>
                                 <th>Deskripsi</th>
                             </tr>
                         </thead>
@@ -37,40 +36,40 @@
                                 <td>01</td>
                                 <td>TAGIHAN UKT 2023 - Gasal</td>
                                 <td>1/1</td>
-                                <td><span class="badge bg-success">Finished</span></td>
-                                <td>08:00 29-July-2023</td>
-                                <td>Create TAGIHAN UKT 2023 - Gasal</td>
+                                <td><span class="badge bg-success">Selesai</span></td>
+                                <td>08:00 29-Juli-2023</td>
+                                <td>Buat TAGIHAN UKT 2023 - Gasal</td>
                             </tr>
                             <tr>
                                 <td>02</td>
                                 <td>TAGIHAN UKT 2023 - Genap</td>
                                 <td>1/1</td>
-                                <td><span class="badge bg-success">Finished</span></td>
+                                <td><span class="badge bg-success">Selesai</span></td>
                                 <td>08:00 29-Jan-2024</td>
-                                <td>Create TAGIHAN UKT 2023 - Genap</td>
+                                <td>Buat TAGIHAN UKT 2023 - Genap</td>
                             </tr>
                             <tr>
                                 <td>03</td>
                                 <td>TAGIHAN UKT 2024 - Gasal</td>
                                 <td>1/1</td>
-                                <td><span class="badge bg-success">Finished</span></td>
-                                <td>08:00 29-July-2024</td>
-                                <td>Create TAGIHAN UKT 2024 - Gasal</td>
+                                <td><span class="badge bg-success">Selesai</span></td>
+                                <td>08:00 29-Juli-2024</td>
+                                <td>Buat TAGIHAN UKT 2024 - Gasal</td>
                             </tr>
                             <tr>
                                 <td>04</td>
                                 <td>TAGIHAN UKT 2024 - Genap</td>
                                 <td>1/1</td>
-                                <td><span class="badge bg-success">Finished</span></td>
+                                <td><span class="badge bg-success">Selesai</span></td>
                                 <td>08:00 29-Jan-2025</td>
-                                <td>Create TAGIHAN UKT 2024 - Genap</td>
+                                <td>Buat TAGIHAN UKT 2024 - Genap</td>
                             </tr>
                         </tbody>
                     </table>
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-between">
-                        <p>Showing 1-4 of 8</p>
+                        <p>Menampilkan 1-4 dari 8</p>
                         <ul class="pagination">
                             <li class="page-item"><a class="page-link" href="#">‹</a></li>
                             <li class="page-item"><a class="page-link" href="#">1</a></li>

@@ -21,7 +21,7 @@ class LihatTagihanUktController extends Controller
                 if ($response->successful()) {
                     $allUsers = optional($response->json())['data'] ?? [];
                     $username = Session::get('username');
-                    
+
                     foreach ($allUsers as $user) {
                         if ($user['username'] === $username) {
                             $userData = $user;

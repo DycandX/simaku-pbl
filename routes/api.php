@@ -43,10 +43,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// route untuk role admin
+// Admin routes
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('user', UsersController::class); // hanya admin yang boleh kelola user
-    Route::apiResource('log-aktivitas', LogAktivitasController::class); // hanya admin yang bisa lihat log
+    Route::apiResource('log-aktivitas', LogAktivitasController::class);
 });
 
 // route untuk role staff
@@ -72,11 +71,11 @@ Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
 
 
 // route untuk role mahasiswa
-Route::middleware(['auth:sanctum', 'role:staff,mahasiswa'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:staff,mahasiswa,admin'])->group(function () {
     // Mahasiswa hanya bisa akses data yang relevan ke dirinya
     Route::get('mahasiswa/{id}', [MahasiswaController::class, 'show']);
-    Route::get('mahasiswa', [MahasiswaController::class, 'index']); 
-    Route::get('user', [UsersController::class, 'index']); 
+    Route::get('mahasiswa', [MahasiswaController::class, 'index']);
+    Route::apiResource('user', UsersController::class);
     Route::get('beasiswa', [BeasiswaController::class, 'index']);
     Route::get('penerima-beasiswa', [PenerimaBeasiswaController::class, 'index']);
     Route::get('ukt-semester', [UktSemesterController::class, 'index']);

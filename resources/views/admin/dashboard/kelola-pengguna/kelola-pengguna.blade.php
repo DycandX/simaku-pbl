@@ -66,30 +66,60 @@
         border-color: #4e73df;
     }
 
-    /* Role Badge Styling */
+    /* Role Badge Styling - Updated */
     .role-badge {
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
         font-weight: 500;
         text-align: center;
         display: inline-block;
         white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .role-admin {
-        background-color: rgba(255, 71, 87, 0.2);
-        color: #ff4757;
+        background-color: #fff5f5;
+        color: #c53030;
+        border: 1px solid #fed7d7;
     }
 
     .role-staff {
-        background-color: rgba(46, 213, 115, 0.2);
-        color: #2ed573;
+        background-color: #f0fff4;
+        color: #38a169;
+        border: 1px solid #c6f6d5;
     }
 
     .role-mahasiswa {
-        background-color: rgba(54, 162, 235, 0.2);
-        color: #36a2eb;
+        background-color: #ebf8ff;
+        color: #3182ce;
+        border: 1px solid #bee3f8;
+    }
+
+    /* Status Badge Styling - Updated (Less Bold) */
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-active {
+        background-color: #f0fff4;
+        color: #38a169;
+        border: 1px solid #c6f6d5;
+    }
+
+    .status-inactive {
+        background-color: #fff5f5;
+        color: #e53e3e;
+        border: 1px solid #fed7d7;
     }
 
     /* Table Custom Styling */
@@ -179,6 +209,31 @@
         cursor: not-allowed;
     }
 
+    /* Remove old badge styles */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bg-success {
+        background-color: #f0fff4;
+        color: #38a169;
+        border: 1px solid #c6f6d5;
+    }
+
+    .bg-danger {
+        background-color: #fff5f5;
+        color: #e53e3e;
+        border: 1px solid #fed7d7;
+    }
+
     @media (max-width: 768px) {
         .filter-row {
             flex-direction: column;
@@ -187,6 +242,7 @@
 
         .filter-left {
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .search-box {
@@ -199,30 +255,46 @@
 @section('header', 'Dashboard Kelola Pengguna')
 
 @section('header_button')
-<button class="btn-add">
+<a href="{{ route('admin.kelola-pengguna.create') }}" class="btn-add">
     <i class="fas fa-plus"></i>
     Tambah Pengguna
-</button>
+</a>
 @endsection
 
 @section('content')
-<div class="filter-row">
-    <div class="filter-left">
-        <div class="select-wrapper">
-            <select id="userRoleFilter">
-                <option value="">All User</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-                <option value="mahasiswa">Mahasiswa</option>
-            </select>
-        </div>
-        <button class="filter-btn">Filter</button>
-    </div>
+<form method="GET" action="{{ route('admin.kelola-pengguna') }}" id="filterForm">
+    <div class="filter-row">
+        <div class="filter-left">
+            <div class="select-wrapper">
+                <select name="role_filter" id="userRoleFilter">
+                    <option value="">Semua Role</option>
+                    <option value="admin" {{ request('role_filter') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="staff" {{ request('role_filter') == 'staff' ? 'selected' : '' }}>Staff</option>
+                    <option value="mahasiswa" {{ request('role_filter') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                </select>
+            </div>
 
-    <div class="search-wrapper">
-        <input type="text" placeholder="Search..." class="search-box" id="searchInput">
+            <div class="select-wrapper">
+                <select name="status_filter" id="userStatusFilter">
+                    <option value="">Semua Status</option>
+                    <option value="active" {{ request('status_filter') == 'active' ? 'selected' : '' }}>Aktif</option>
+                    <option value="inactive" {{ request('status_filter') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
+                </select>
+            </div>
+
+            <button type="submit" class="filter-btn">Filter</button>
+            @if(request('role_filter') || request('status_filter') || request('search'))
+                <a href="{{ route('admin.kelola-pengguna') }}" class="btn btn-secondary" style="padding: 8px 15px; margin-left: 10px; text-decoration: none; background-color: #6c757d; color: white; border-radius: 5px; font-size: 14px;">
+                    Reset
+                </a>
+            @endif
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" name="search" placeholder="Search username, email..." class="search-box" id="searchInput" value="{{ request('search') }}">
+        </div>
     </div>
-</div>
+</form>
 
 <div class="table-container">
     <div class="card-header">
@@ -237,29 +309,56 @@
                     <th>Nama Pengguna</th>
                     <th>Email</th>
                     <th>Role Pengguna</th>
+                    <th>Status Akun</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($usersData as $index => $user)
-                <tr>
-                    <td>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</td>
-                    <td>{{ $user['username'] }}</td>
-                    <td>{{ $user['email'] }}</td>
-                    <td>
-                        @if($user['role'] == 'admin')
-                            <span class="role-badge role-admin">Admin Keuangan</span>
-                        @elseif($user['role'] == 'staff')
-                            <span class="role-badge role-staff">Staff Keuangan</span>
-                        @elseif($user['role'] == 'mahasiswa')
-                            <span class="role-badge role-mahasiswa">Mahasiswa</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.kelola-pengguna.edit', $user['id']) }}" class="btn-edit">Edit</a>
-                    </td>
-                </tr>
-                @endforeach
+                @forelse($users as $index => $user)
+                    <tr>
+                        <td>{{ ($users->firstItem() ?? 0) + $index }}</td>
+                        <td>{{ $user['username'] }}</td>
+                        <td>{{ $user['email'] }}</td>
+
+                        <!-- Role badge dengan styling yang lebih elegan -->
+                        <td>
+                            @if($user['role'] === 'admin')
+                                <span class="role-badge role-admin">Admin</span>
+                            @elseif($user['role'] === 'staff')
+                                <span class="role-badge role-staff">Staff</span>
+                            @elseif($user['role'] === 'mahasiswa')
+                                <span class="role-badge role-mahasiswa">Mahasiswa</span>
+                            @else
+                                <span class="role-badge" style="background-color: #f7fafc; color: #718096; border: 1px solid #e2e8f0;">
+                                    {{ ucfirst($user['role']) }}
+                                </span>
+                            @endif
+                        </td>
+
+                        <!-- Status badge dengan styling yang lebih subtle -->
+                        <td>
+                            @if(isset($user['is_active']) && $user['is_active'])
+                                <span class="status-badge status-active">Aktif</span>
+                            @else
+                                <span class="status-badge status-inactive">Tidak Aktif</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            <a href="{{ route('admin.kelola-pengguna.edit', $user['id']) }}" class="btn-edit">Edit</a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            @if(request('role_filter') || request('status_filter') || request('search'))
+                                Tidak ada pengguna yang sesuai dengan filter.
+                            @else
+                                Tidak ada data pengguna.
+                            @endif
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -267,7 +366,20 @@
     <div class="card-footer">
         <div class="pagination-wrapper">
             <div class="pagination-info">
-                Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ $users->total() }}
+                @if($users->total() > 0)
+                    Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ $users->total() }}
+                    @php
+                        $filters = [];
+                        if(request('role_filter')) $filters[] = 'Role: ' . ucfirst(request('role_filter'));
+                        if(request('status_filter')) $filters[] = 'Status: ' . (request('status_filter') == 'active' ? 'Aktif' : 'Tidak Aktif');
+                        if(request('search')) $filters[] = 'Search: "' . request('search') . '"';
+                    @endphp
+                    @if(count($filters) > 0)
+                        (filtered by {{ implode(', ', $filters) }})
+                    @endif
+                @else
+                    No users found
+                @endif
             </div>
             <div class="page-controls">
                 @if ($users->onFirstPage())
@@ -306,40 +418,44 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    // Filter functionality
-    $('.filter-btn').on('click', function() {
-        var selectedRole = $('#userRoleFilter').val();
-        // Implement filter logic here
-        console.log('Filtering by role:', selectedRole);
+    // Auto-submit form when filter changes
+    $('#userRoleFilter, #userStatusFilter').on('change', function() {
+        $('#filterForm').submit();
     });
 
-    // Search functionality
+    // Search functionality with debounce
+    let searchTimeout;
     $('#searchInput').on('input', function() {
-        var searchTerm = $(this).val().toLowerCase();
-        // Implement search logic here
-        console.log('Searching for:', searchTerm);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            $('#filterForm').submit();
+        }, 500); // 500ms delay for better UX
     });
 
-    // Page navigation
-    $('.page-btn').on('click', function() {
-        if (!$(this).hasClass('active') && $(this).text()) {
-            $('.page-btn').removeClass('active');
-            $(this).addClass('active');
+    // Handle Enter key for search
+    $('#searchInput').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            $('#filterForm').submit();
         }
     });
 
-    // Edit button
-    $('.btn-edit').on('click', function() {
+    // Edit button functionality
+    $('.btn-edit').on('click', function(e) {
         var row = $(this).closest('tr');
         var username = row.find('td:eq(1)').text();
         console.log('Editing user:', username);
-        // Implement edit logic here
     });
 
-    // Add user button
+    // Add user button functionality
     $('.btn-add').on('click', function() {
         console.log('Adding new user');
-        // Implement add user logic here
+    });
+
+    // Clear search when clicking reset
+    $('a[href*="admin.kelola-pengguna"]:contains("Reset")').on('click', function() {
+        $('#searchInput').val('');
+        $('#userRoleFilter').val('');
+        $('#userStatusFilter').val('');
     });
 });
 </script>

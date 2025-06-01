@@ -1,172 +1,221 @@
 @extends('layouts.staff-app')
 
-@section('title', 'Beasiswa')
+@section('title', 'Beasiswa - SIMAKU')
 
-@section('header', 'Beasiswa Mahasiswa')
+@section('header', 'Staff - Beasiswa Pendidikan')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">Beasiswa Mahasiswa</h2>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <div class="flex flex-wrap gap-4 items-center">
-            <div class="flex-1 min-w-48">
-                <select id="prodiFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">D4 - Manajemen Bisnis</option>
-                    <option value="d3-akuntansi">D3 - Akuntansi</option>
-                    <option value="d4-mb">D4 - Manajemen Bisnis</option>
-                    <option value="d4-mbi">D4 - Manajemen Bisnis Internasional</option>
-                </select>
-            </div>
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors" 
-                    style="background-color: #3B82F6; border: none;">
-                Filter
-            </button>
-            <div class="flex-1 min-w-64">
-                <input type="text" placeholder="Search..." 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+<div class="container-fluid">
+    <!-- Main Card -->
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">STAFF - BEASISWA</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
             </div>
         </div>
-    </div>
+        <div class="card-body">
+            <!-- Detail Beasiswa Section -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="callout callout-info">
+                        <h5><i class="fas fa-info-circle mr-2"></i> Detail Beasiswa</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td width="40%"><strong>Nama Beasiswa :</strong></td>
+                                    <td>KIP-Kuliah</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status Beasiswa :</strong></td>
+                                    <td><span class="badge badge-success">Aktif</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tipe Beasiswa :</strong></td>
+                                    <td>Pembebasan UKT + Uang Saku</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <!-- Title Section -->
-    <div class="mb-4">
-        <h3 class="text-lg font-medium text-gray-700">Semua Beasiswa</h3>
-    </div>
+                <div class="col-md-6">
+                    <div class="callout callout-info">
+                        <h5><i class="fas fa-calendar-alt mr-2"></i> Periode Beasiswa</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td width="40%"><strong>Periode :</strong></td>
+                                    <td>2023/2024</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Semester Berlaku :</strong></td>
+                                    <td>Semester 1 s.d. 8</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Skema Pembayaran:</strong></td>
+                                    <td>Langsung ke rekening mahasiswa</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mahasiswa</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIM</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jurusan</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prodi</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Beasiswa</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-900">01</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Zirillia Syadha</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">4.33.23.5.19</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Administrasi Bisnis</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">D4 - Manajemen Bisnis Internasional</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">KIP-Kuliah</td>
-                        <td class="px-4 py-3">
-                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                    style="background-color: #3B82F6; border: none;">
-                                Lihat Beasiswa
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-900">02</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Fadhil Ramadhan</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">4.33.23.5.20</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Administrasi Bisnis</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">D4 - Manajemen Bisnis Internasional</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">KIP-Kuliah</td>
-                        <td class="px-4 py-3">
-                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                    style="background-color: #3B82F6; border: none;">
-                                Lihat Beasiswa
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-900">03</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Aisyah Hanifah</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">4.33.23.5.21</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Administrasi Bisnis</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">D4 - Manajemen Bisnis Internasional</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">KIP-Kuliah</td>
-                        <td class="px-4 py-3">
-                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                    style="background-color: #3B82F6; border: none;">
-                                Lihat Beasiswa
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-900">04</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Yudha Prasetyo</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">4.33.23.5.22</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Administrasi Bisnis</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">D4 - Manajemen Bisnis Internasional</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">KIP-Kuliah</td>
-                        <td class="px-4 py-3">
-                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                    style="background-color: #3B82F6; border: none;">
-                                Lihat Beasiswa
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-900">05</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Lestari Widya</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">4.33.23.5.23</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">Administrasi Bisnis</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">D4 - Manajemen Bisnis Internasional</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">KIP-Kuliah</td>
-                        <td class="px-4 py-3">
-                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                                    style="background-color: #3B82F6; border: none;">
-                                Lihat Beasiswa
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Detail Penerimaan Dana -->
+            <div class="callout callout-success">
+                <h5><i class="fas fa-money-bill-wave mr-2"></i> Detail Penerimaan Dana</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Periode</th>
+                            <th>Jumlah</th>
+                            <th>Tanggal Cair</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Semester 1</td>
+                            <td>Rp 2.400.000</td>
+                            <td>20 Februari 2023</td>
+                            <td><span class="badge badge-success">Sudah Cair</span></td>
+                        </tr>
+                        <tr>
+                            <td>Semester 2</td>
+                            <td>Rp 2.400.000</td>
+                            <td>5 September 2023</td>
+                            <td><span class="badge badge-success">Sudah Cair</span></td>
+                        </tr>
+                        <tr>
+                            <td>Semester 3</td>
+                            <td>Rp 2.400.000</td>
+                            <td>10 Februari 2024</td>
+                            <td><span class="badge badge-success">Sudah Cair</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-info" id="btnCetak">
+                        <i class="fas fa-print mr-1"></i> Cetak Informasi Beasiswa
+                    </button>
+                    <button class="btn btn-success" id="btnExport">
+                        <i class="fas fa-file-excel mr-1"></i> Export Excel
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-between mt-4">
-        <div class="text-sm text-gray-700">
-            Showing 1-5 of 50
+    <!-- Other Students with this Scholarship -->
+    <div class="card card-outline card-primary mt-4">
+        <div class="card-header">
+            <h3 class="card-title">Mahasiswa Penerima Beasiswa KIP-Kuliah</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">
-                Previous
-            </button>
-            <button class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                    style="background-color: #3B82F6; border: none;">
-                1
-            </button>
-            <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">
-                2
-            </button>
-            <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">
-                3
-            </button>
-            <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">
-                Next
-            </button>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th>Nama Mahasiswa</th>
+                            <th>NIM</th>
+                            <th>Program Studi</th>
+                            <th>Angkatan</th>
+                            <th width="15%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>Zirlda Syafira</td>
+                            <td>4.33.23.5.19</td>
+                            <td>D4 - Manajemen Bisnis Internasional</td>
+                            <td>2023</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Lihat
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td>Fadhil Ramadhan</td>
+                            <td>4.33.23.5.20</td>
+                            <td>D4 - Manajemen Bisnis Internasional</td>
+                            <td>2023</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Lihat
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td>Aisyah Hanifah</td>
+                            <td>4.33.23.5.21</td>
+                            <td>D4 - Manajemen Bisnis Internasional</td>
+                            <td>2023</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Lihat
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer clearfix">
+            <div class="float-left">
+                <div class="pagination-info">
+                    Menampilkan 1-3 dari 120 penerima
+                </div>
+            </div>
+            <ul class="pagination pagination-sm m-0 float-right">
+                <li class="page-item disabled"><a class="page-link" href="#">«</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">»</a></li>
+            </ul>
         </div>
     </div>
 </div>
+@endsection
 
+@section('scripts')
 <script>
-// Add filter functionality
-document.getElementById('prodiFilter').addEventListener('change', function() {
-    // Add your filter logic here
-    console.log('Filter changed:', this.value);
-});
+    $(document).ready(function() {
+        // Initialize tooltip
+        $('[data-toggle="tooltip"]').tooltip();
 
-// Add search functionality
-const searchInput = document.querySelector('input[placeholder="Search..."]');
-searchInput.addEventListener('input', function() {
-    // Add your search logic here
-    console.log('Search:', this.value);
-});
+        // Print functionality
+        $('#btnCetak').on('click', function() {
+            window.print();
+        });
+
+        // Export Excel functionality
+        $('#btnExport').on('click', function() {
+            alert('Ekspor Excel berhasil!');
+        });
+    });
 </script>
 @endsection
