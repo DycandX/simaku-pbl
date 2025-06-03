@@ -201,6 +201,87 @@ class LihatTagihanUktController extends Controller
         }
     }
 
+    public function upload_bukti_pembayaran($id)
+    {
+        $token = Session::get('token');
+        $userData = Session::get('user_data');
+        $nim = Session::get('username');
+
+        if (!$userData) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        // Ambil data detail pembayaran berdasarkan ID
+        $detailPembayaran = $this->getApiData("/api/detail-pembayaran/$id", $token);
+        //dd($detailPembayaran);
+        // Ambil data enrollment mahasiswa berdasarkan NIM
+        $enrollmentMahasiswa = $this->getApiData("/api/enrollment-mahasiswa?nim=" . urlencode($nim), $token);
+
+        if (empty($detailPembayaran)) {
+            return redirect()->back()->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
+        }
+
+        return view('mahasiswa.dashboard.tagihan-ukt.upload_bukti', 
+            compact('detailPembayaran', 'enrollmentMahasiswa', 'userData'));
+    }
+
+    public function bukti_pembayaran_store(Request $request)
+    {
+        $token = Session::get('token');
+        $userData = Session::get('user_data');
+
+        if (!$userData) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        // Validasi input dari form
+        $validated = $request->validate([
+            'tanggal_transfer' => 'required|date',
+            'bank_pengirim' => 'required|string|max:255',
+            'jumlah_dibayar' => 'required|numeric|min:1000',
+            'bukti_pembayaran_path' => 'required|file|mimes:jpeg,jpg,png|max:1024',
+        ]);
+
+        try {
+            $file = $request->file('file_path');
+
+            $response = Http::withToken($token)
+                ->asMultipart()
+                ->post(config('app.api_url') . '/api/detail-pembayaran', [
+                    [
+                        'name'     => 'tanggal_transfer',
+                        'contents' => $validated['tanggal_pembayaran'],
+                    ],
+                    [
+                        'name'     => 'bank_pengirim',
+                        'contents' => $validated['metode_pembayaran'],
+                    ],
+                    [
+                        'name'     => 'jumlah_dibayar',
+                        'contents' => $validated['nominal'],
+                    ],
+                    [
+                        'name'     => 'bukti_pembayaran_path',
+                        'contents' => fopen($file->getPathname(), 'r'),
+                        'filename' => $file->getClientOriginalName(),
+                    ],
+                    [
+                        'name'     => 'tagihan',
+                        'contents' => $request->input('tagihan'), // Nama Periode (readonly)
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                return redirect()->route('mahasiswa-dashboard')->with('success', 'Bukti pembayaran berhasil dikirim.');
+            } else {
+                $errorMessage = $response->json()['message'] ?? 'Gagal mengirim data.';
+                return back()->withErrors(['error' => $errorMessage])->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
 
     private function getApiData($endpoint, $token)
     {

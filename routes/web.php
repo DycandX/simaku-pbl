@@ -4,9 +4,7 @@ use App\Http\Controllers\Staff\detailPembayaranUktStaffController;
 use App\Http\Controllers\Staff\staffBuatTagihanUktController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TagihanController;
-use App\Http\Controllers\CicilanController;
-use App\Http\Controllers\GolonganUktController;
+use App\Http\Controllers\Mahasiswa\GolonganUktController;
 use App\Http\Controllers\Mahasiswa\DaftarUlangController;
 use App\Http\Controllers\Mahasiswa\LihatTagihanUktController;
 use App\Http\Controllers\Mahasiswa\BeasiswaController;
@@ -36,6 +34,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['check.login'])->group(function () {
     Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('mahasiswa-dashboard');
     Route::get('/lihat-tagihan-ukt/{id}', [LihatTagihanUktController::class, 'show'])->name('mahasiswa-dashboard.show');
+    Route::get('/upload-bukti-pembayaran/{id}', [LihatTagihanUktController::class, 'upload_bukti_pembayaran'])->name('upload-bukti-pembayaran');
+    Route::post('/upload-bukti-pembayaran', [LihatTagihanUktController::class, 'bukti_pembayaran_store'])->name('upload-bukti-pembayaran.store');
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     
@@ -86,6 +86,3 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff/cek-tagihan-ukt', [CekTagihanUktController::class, 'index'])->name('staff.cek-tagihan-ukt');
     Route::get('/staff/cek-tagihan-ukt/{noTagihan}', [CekTagihanUktController::class, 'detail'])->name('staff.cek-tagihan-ukt.detail');
 });
-
-// Lihat Tagihan route
-Route::get('/lihat-tagihan/{id}', [TagihanController::class, 'show'])->name('lihat-tagihan');

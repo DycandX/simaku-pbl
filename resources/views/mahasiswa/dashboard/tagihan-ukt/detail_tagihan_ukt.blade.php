@@ -136,7 +136,7 @@
                             </div>
                             <div class="col-8">
                                 <a href="#" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-download"></i>Download Tagihan
+                                    <i class="fas fa-download"></i>  Download Tagihan
                                 </a>
                             </div>
                         </div>
@@ -147,14 +147,11 @@
                                 <p class="mb-0"><strong>Pilih Metode Pembayaran :</strong></p>
                             </div>
                             <div class="col-8">
-                                @if($detailPembayaran['pembayaran_ukt_semester']['status'] == 'terbayar')
+                                @if($detailPembayaran['pembayaran_ukt_semester']['status'] == 'belum')
                                     <div>
                                         <a href="#" class="btn btn-primary btn-sm">
                                             Pembayaran Langsung
                                         </a>
-                                        {{-- <a href="{{ route('pengajuan.cicilan', ['tagihan_id' => $detailPembayaran['id']]) }}" class="btn btn-success btn-sm">
-                                            Pembayaran Cicil
-                                        </a> --}}
                                         <a href="{{ route('pengajuan.cicilan', ['id' => $detailPembayaran ['id']]) }}" class="btn btn-success btn-sm">Ajukan Cicilan</a>
                                     </div>
                                 @else
@@ -282,7 +279,7 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <a href="#" class="btn btn-primary" style="min-width: 220px;">
+                            <a href="{{ route('upload-bukti-pembayaran', ['id' => $detailPembayaran ['id']]) }}" class="btn btn-primary" style="min-width: 220px;">
                                 <i class="fas fa-plus"></i> Tambah Bukti Pembayaran
                             </a>
                         </div>
@@ -302,7 +299,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($detailPembayaran['pembayaran_ukt_semester']['ukt_semester']['periode_pembayaran']['status']== 'aktif')
+                                    @if($detailPembayaran['pembayaran_ukt_semester']['status']== 'terbayar')
                                     <tr>
                                         <td class="text-center">01</td>
                                         <td>{{ $pembayaranUkt['mahasiswa'] ['nama_lengkap'] }}</td>

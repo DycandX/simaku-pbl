@@ -26,8 +26,8 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-center">D3</td>
-                                <td>Administrasi Bisnis</td>
+                                <td class="text-center">S1</td>
+                                <td>Farmasi</td>
                                 <td class="text-center">Rp500.000</td>
                                 <td class="text-center">Rp1.000.000</td>
                                 <td class="text-center">Rp2.600.000</td>
@@ -37,7 +37,73 @@
                                 <td class="text-center">Rp6.100.000</td>
                             </tr>
                             <tr>
-                                <td class="text-center">D3</td>
+                                <td class="text-center">S1</td>
+                                <td>Ilmu Hukum</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
+                                <td>Sastra Indonesia</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
+                                <td>Informatika</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
+                                <td>Ilmu Komunikasi</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
+                                <td>Psikologi</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
+                                <td>Agroteknologi</td>
+                                <td class="text-center">Rp500.000</td>
+                                <td class="text-center">Rp1.000.000</td>
+                                <td class="text-center">Rp2.600.000</td>
+                                <td class="text-center">Rp3.500.000</td>
+                                <td class="text-center">Rp4.400.000</td>
+                                <td class="text-center">Rp5.200.000</td>
+                                <td class="text-center">Rp6.100.000</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">S1</td>
                                 <td>Akuntansi</td>
                                 <td class="text-center">Rp500.000</td>
                                 <td class="text-center">Rp1.000.000</td>
@@ -48,8 +114,8 @@
                                 <td class="text-center">Rp6.100.000</td>
                             </tr>
                             <tr>
-                                <td class="text-center">D3</td>
-                                <td>Keuangan Perbankan</td>
+                                <td class="text-center">S1</td>
+                                <td>Manajemen</td>
                                 <td class="text-center">Rp500.000</td>
                                 <td class="text-center">Rp1.000.000</td>
                                 <td class="text-center">Rp2.600.000</td>
@@ -59,74 +125,8 @@
                                 <td class="text-center">Rp6.100.000</td>
                             </tr>
                             <tr>
-                                <td class="text-center">D3</td>
-                                <td>Konstruksi Gedung</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
-                                <td>Konstruksi Sipil</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
-                                <td>Teknik Elektronika</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
-                                <td>Teknik Informatika</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
-                                <td>Teknik Listrik</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
+                                <td class="text-center">S1</td>
                                 <td>Teknik Mesin</td>
-                                <td class="text-center">Rp500.000</td>
-                                <td class="text-center">Rp1.000.000</td>
-                                <td class="text-center">Rp2.600.000</td>
-                                <td class="text-center">Rp3.500.000</td>
-                                <td class="text-center">Rp4.400.000</td>
-                                <td class="text-center">Rp5.200.000</td>
-                                <td class="text-center">Rp6.100.000</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">D3</td>
-                                <td>Analis Keuangan</td>
                                 <td class="text-center">Rp500.000</td>
                                 <td class="text-center">Rp1.000.000</td>
                                 <td class="text-center">Rp2.600.000</td>
