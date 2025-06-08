@@ -9,31 +9,30 @@ class Staff extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'staff';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'id_user',
         'nip',
         'nama_lengkap',
         'jabatan',
         'unit_kerja'
     ];
 
-    /**
-     * Get the user that owns the staff.
-     */
+    // Polymorphic relationship dengan User
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->morphOne(User::class, 'userable');
+    }
+
+    // Relationship dengan PengajuanCicilan yang di-approve
+    public function approvedPengajuan()
+    {
+        return $this->hasMany(PengajuanCicilan::class, 'approved_by');
+    }
+
+    // Check if staff already has user account
+    public function hasUser()
+    {
+        return $this->user()->exists();
     }
 }

@@ -1,65 +1,92 @@
 <?php
-
+// Model User
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'role',
-        'is_active',
-        'last_login'
+        'username', 'email', 'password', 'role',
+        'mahasiswa_id', 'staff_id', 'is_active'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
-        'last_login' => 'datetime'
+        'last_login' => 'datetime',
     ];
 
-    /**
-     * Get the staff associated with the user.
-     */
-    public function staff()
-    {
-        return $this->hasOne(Staff::class, 'id_user');
-    }
-
-    /**
-     * Get the mahasiswa associated with the user.
-     */
+    // Relationships
     public function mahasiswa()
     {
-        return $this->hasOne(Mahasiswa::class, 'nim', 'username');
+        return $this->belongsTo(Mahasiswa::class);
+    }
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
+    // Helper methods
+    public function isMahasiswa()
+    {
+        return $this->role === 'mahasiswa';
+    }
+
+    public function isStaff()
+    {
+        return $this->role === 'staff';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // Get profile data
+    public function getProfileAttribute()
+    {
+        if ($this->mahasiswa_id) {
+            return $this->mahasiswa;
+        } elseif ($this->staff_id) {
+            return $this->staff;
+        }
+        return null;
+    }
+
+    // Get display name
+    public function getDisplayNameAttribute()
+    {
+        $profile = $this->profile;
+        return $profile ? $profile->nama_lengkap : $this->username;
+    }
+
+    // Create user dari mahasiswa
+    public static function createFromMahasiswa(Mahasiswa $mahasiswa, $email, $password)
+    {
+        return self::create([
+            'username' => $mahasiswa->nim,
+            'email' => $email,
+            'password' => bcrypt($password),
+            'role' => 'mahasiswa',
+            'mahasiswa_id' => $mahasiswa->id,
+            'is_active' => true
+        ]);
+    }
+
+    // Create user dari staff
+    public static function createFromStaff(Staff $staff, $email, $password)
+    {
+        return self::create([
+            'username' => $staff->nip,
+            'email' => $email,
+            'password' => bcrypt($password),
+            'role' => 'staff',
+            'staff_id' => $staff->id,
+            'is_active' => true
+        ]);
     }
 }

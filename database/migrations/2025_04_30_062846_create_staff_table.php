@@ -1,23 +1,16 @@
 <?php
-
+// 2. Migration untuk tabel staff (TANPA id_user)
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
-        // Menentukan nama tabel 'staff' (bukan 'staffs')
         Schema::create('staff', function (Blueprint $table) {
-            $table->id(); // Kolom ID
-            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
-            $table->string('nip');
+            $table->id(); // Primary key auto-increment
+            $table->string('nip')->unique(); // NIP tetap ada tapi bukan foreign key
             $table->string('nama_lengkap');
             $table->string('jabatan');
             $table->string('unit_kerja');
@@ -25,12 +18,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('staff');
     }

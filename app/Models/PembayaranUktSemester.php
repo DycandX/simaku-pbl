@@ -4,63 +4,102 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class PembayaranUktSemester extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
     protected $table = 'pembayaran_ukt_semester';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'nim',
+        'id_enrollment',
         'id_ukt_semester',
-        'nomor_cicilan',
+        'id_jenis_pembayaran',
+        'total_cicilan',
         'nominal_tagihan',
         'tanggal_jatuh_tempo',
         'status',
+        'id_pengajuan_cicilan'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
         'nominal_tagihan' => 'decimal:2',
-        'tanggal_jatuh_tempo' => 'date',
+        'tanggal_jatuh_tempo' => 'date'
     ];
 
-    /**
-     * Get the mahasiswa that owns the pembayaran UKT.
-     */
-    public function mahasiswa()
+    // Relationship dengan EnrollmentMahasiswa
+    public function enrollment()
     {
-        return $this->belongsTo(Mahasiswa::class, 'nim');
+        return $this->belongsTo(EnrollmentMahasiswa::class, 'id_enrollment');
     }
 
-    /**
-     * Get the UKT semester that owns the pembayaran UKT.
-     */
+    // Relationship dengan UktSemester
     public function uktSemester()
     {
         return $this->belongsTo(UktSemester::class, 'id_ukt_semester');
     }
 
-    /**
-     * Get the detail pembayaran for the pembayaran UKT.
-     */
-    public function detailPembayaran()
+    // Relationship dengan JenisPembayaran
+    public function jenisPembayaran()
     {
-        return $this->hasMany(DetailPembayaran::class, 'id_aktivitas_pembayaran');
+        return $this->belongsTo(JenisPembayaran::class, 'id_jenis_pembayaran');
+    }
+
+    // Relationship dengan PengajuanCicilan
+    public function pengajuanCicilan()
+    {
+        return $this->belongsTo(PengajuanCicilan::class, 'id_pengajuan_cicilan');
+    }
+
+    // Check if overdue
+    public function isOverdue()
+    {
+        return $this->tanggal_jatuh_tempo < Carbon::now()->toDateString()
+               && $this->status === 'belum_bayar';
+    }
+
+    // Check if paid
+    public function isPaid()
+    {
+        return $this->status === 'terbayar';
+    }
+
+    // Get mahasiswa through enrollment
+    public function getMahasiswaAttribute()
+    {
+        return $this->enrollment->mahasiswa;
+    }
+
+    // Get cicilan ke berapa
+    public function getCicilanKeAttribute()
+    {
+        return $this->jenisPembayaran->nama ?? 'Cicilan ' . $this->id;
+    }
+
+    // Auto update status jika overdue
+    public function updateOverdueStatus()
+    {
+        if ($this->isOverdue()) {
+            $this->update(['status' => 'overdue']);
+        }
+    }
+
+    // Scope untuk belum bayar
+    public function scopeBelumBayar($query)
+    {
+        return $query->where('status', 'belum_bayar');
+    }
+
+    // Scope untuk terbayar
+    public function scopeTerbayar($query)
+    {
+        return $query->where('status', 'terbayar');
+    }
+
+    // Scope untuk overdue
+    public function scopeOverdue($query)
+    {
+        return $query->where('status', 'overdue');
     }
 }
