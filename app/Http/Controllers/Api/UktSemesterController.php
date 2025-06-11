@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\UktSemester;
+use App\Models\EnrollmentMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,11 +12,11 @@ class UktSemesterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = UktSemester::with(['mahasiswa', 'golonganUkt', 'periodePembayaran'])->orderByDesc('id');
+        $query = UktSemester::with(['enrollment.mahasiswa', 'periodePembayaran'])
+            ->orderByDesc('id');
 
-        // Jika parameter 'nim' ada, filter berdasarkan NIM mahasiswa
         if ($request->has('nim')) {
-            $query->whereHas('mahasiswa', function ($q) use ($request) {
+            $query->whereHas('enrollment.mahasiswa', function ($q) use ($request) {
                 $q->where('nim', $request->nim);
             });
         }
@@ -24,7 +25,7 @@ class UktSemesterController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data UKT Semester Ditemukan',
+            'message' => $data->isEmpty() ? 'Data tidak ditemukan' : 'Data UKT Semester ditemukan',
             'data' => $data
         ], 200);
     }
@@ -32,11 +33,10 @@ class UktSemesterController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'nim' => 'required|exists:mahasiswa,nim',
-            'id_golongan_ukt' => 'required|exists:golongan_ukt,id',
-            'status' => 'required|string|in:aktif,non-aktif',
+            'id_enrollment' => 'required|exists:enrollment_mahasiswa,id',
             'id_periode_pembayaran' => 'required|exists:periode_pembayaran,id',
-            'jumlah_ukt' => 'required|numeric|min:0'
+            'jumlah_ukt' => 'required|numeric|min:0',
+            'status' => 'in:aktif,tidak_aktif'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -44,106 +44,95 @@ class UktSemesterController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Gagal Menambahkan Data UKT Semester',
+                'message' => 'Validasi Gagal',
                 'data' => $validator->errors()
             ], 400);
         }
 
-        $ukt = UktSemester::create($validator->validated());
+        $uktSemester = UktSemester::create($validator->validated());
 
         return response()->json([
             'status' => true,
-            'message' => 'Sukses Menambahkan Data UKT Semester',
-            'data' => $ukt
+            'message' => 'Berhasil Menambahkan Data UKT Semester',
+            'data' => $uktSemester
         ], 201);
     }
 
     public function show($id)
     {
-        $ukt = UktSemester::with(['mahasiswa', 'golonganUkt', 'periodePembayaran'])->find($id);
+        $data = UktSemester::with(['enrollment.mahasiswa', 'periodePembayaran', 'pembayaran', 'pengajuanCicilan'])->find($id);
 
-        if (!$ukt) {
+        if (!$data) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data UKT Semester Tidak Ditemukan'
+                'message' => 'Data Tidak Ditemukan'
             ], 404);
         }
 
+        $data->total_paid = $data->total_paid;
+        $data->remaining_amount = $data->remaining_amount;
+        $data->is_fully_paid = $data->isFullyPaid();
+
         return response()->json([
             'status' => true,
-            'message' => 'Data UKT Semester Ditemukan',
-            'data' => $ukt
+            'message' => 'Data Ditemukan',
+            'data' => $data
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $ukt = UktSemester::find($id);
+        $uktSemester = UktSemester::find($id);
 
-        if (!$ukt) {
+        if (!$uktSemester) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data UKT Semester Tidak Ditemukan'
+                'message' => 'Data Tidak Ditemukan'
             ], 404);
         }
 
-        $rules = [];
-
-        if ($request->has('nim')) {
-            $rules['nim'] = 'exists:mahasiswa,nim';
-        }
-
-        if ($request->has('id_golongan_ukt')) {
-            $rules['id_golongan_ukt'] = 'exists:golongan_ukt,id';
-        }
-
-        if ($request->has('status')) {
-            $rules['status'] = 'string|in:aktif,non-aktif';
-        }
-
-        if ($request->has('id_periode_pembayaran')) {
-            $rules['id_periode_pembayaran'] = 'exists:periode_pembayaran,id';
-        }
-
-        if ($request->has('jumlah_ukt')) {
-            $rules['jumlah_ukt'] = 'numeric|min:0';
-        }
+        $rules = [
+            'id_enrollment' => 'exists:enrollment_mahasiswa,id',
+            'id_periode_pembayaran' => 'exists:periode_pembayaran,id',
+            'jumlah_ukt' => 'numeric|min:0',
+            'status' => 'in:aktif,tidak_aktif'
+        ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Gagal Update Data UKT Semester',
+                'message' => 'Validasi Gagal',
                 'data' => $validator->errors()
             ], 400);
         }
 
-        $ukt->update($validator->validated());
+        $uktSemester->update($validator->validated());
 
         return response()->json([
             'status' => true,
-            'message' => 'Sukses Update Data UKT Semester',
-            'data' => $ukt
+            'message' => 'Berhasil Update Data UKT Semester',
+            'data' => $uktSemester
         ], 200);
     }
 
     public function destroy($id)
     {
-        $ukt = UktSemester::find($id);
+        $uktSemester = UktSemester::find($id);
 
-        if (!$ukt) {
+        if (!$uktSemester) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data UKT Semester Tidak Ditemukan'
+                'message' => 'Data Tidak Ditemukan'
             ], 404);
         }
 
-        $ukt->delete();
+        $uktSemester->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Sukses Menghapus Data UKT Semester'
+            'message' => 'Berhasil Menghapus Data UKT Semester'
         ], 200);
     }
 }

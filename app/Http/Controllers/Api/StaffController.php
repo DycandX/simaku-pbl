@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Staff;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,11 +24,12 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'id_user' => 'required|exists:users,id',  // Pastikan user dengan id_user ada di tabel 'users'
-            'nip' => 'required|string',
+            'nip' => 'required|string|unique:staff,nip',
             'nama_lengkap' => 'required|string',
             'jabatan' => 'required|string',
             'unit_kerja' => 'required|string',
+            'user_email' => 'nullable|email|unique:users,email',
+            'user_password' => 'nullable|string|min:6'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -40,12 +42,25 @@ class StaffController extends Controller
             ], 400);
         }
 
+        // Buat staff
         $staff = Staff::create($validator->validated());
+
+        // Jika request mengandung data user, buat user terkait
+        if ($request->filled('user_email') && $request->filled('user_password')) {
+            $user = new User([
+                'email' => $request->user_email,
+                'password' => bcrypt($request->user_password),
+                'role' => 'staff',
+                'is_active' => true
+            ]);
+
+            $staff->user()->save($user);
+        }
 
         return response()->json([
             'status' => true,
             'message' => 'Sukses Menambahkan Data Staff',
-            'data' => $staff
+            'data' => $staff->load('user')
         ], 201);
     }
 
@@ -67,36 +82,72 @@ class StaffController extends Controller
         }
     }
 
+    // public function update(Request $request, $id)
+    // {
+    //     $staff = Staff::find($id);
+
+    //     if (!$staff) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Data Staff Tidak Ditemukan'
+    //         ], 404);
+    //     }
+
+    //     $rules = [];
+
+    //     if ($request->has('nip')) {
+    //         $rules['nip'] = 'string|unique:staff,nip,' . $id;
+    //     }
+    //     if ($request->has('nama_lengkap')) {
+    //         $rules['nama_lengkap'] = 'string';
+    //     }
+    //     if ($request->has('jabatan')) {
+    //         $rules['jabatan'] = 'string';
+    //     }
+    //     if ($request->has('unit_kerja')) {
+    //         $rules['unit_kerja'] = 'string';
+    //     }
+
+    //     $validator = Validator::make($request->all(), $rules);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Gagal Update Data Staff',
+    //             'data' => $validator->errors()
+    //         ], 400);
+    //     }
+
+    //     $staff->update($validator->validated());
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Sukses Update Data Staff',
+    //         'data' => $staff
+    //     ], 200);
+    // }
     public function update(Request $request, $id)
     {
-        $staff = Staff::find($id);
+        $staff = Staff::with('user')->find($id);
 
-        if (empty($staff)) {
+        if (!$staff) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Staff Tidak Ditemukan'
             ], 404);
         }
 
-        // Validasi dinamis hanya untuk field yang dikirim
         $rules = [];
 
-        if ($request->has('id_user')) {
-            $rules['id_user'] = 'exists:users,id';
-        }
-
         if ($request->has('nip')) {
-            $rules['nip'] = 'string';
+            $rules['nip'] = 'string|unique:staff,nip,' . $id;
         }
-
         if ($request->has('nama_lengkap')) {
             $rules['nama_lengkap'] = 'string';
         }
-
         if ($request->has('jabatan')) {
             $rules['jabatan'] = 'string';
         }
-
         if ($request->has('unit_kerja')) {
             $rules['unit_kerja'] = 'string';
         }
@@ -111,14 +162,40 @@ class StaffController extends Controller
             ], 400);
         }
 
-        // Update hanya field yang dikirim
-        $dataToUpdate = $validator->validated();
-        $staff->update($dataToUpdate);
+        $staff->update($validator->validated());
+
+        // Update user jika ada data
+        if ($request->has('user_email') || $request->has('user_password')) {
+            $userData = [];
+
+            if ($request->has('user_email')) {
+                $request->validate([
+                    'user_email' => 'email|unique:users,email,' . optional($staff->user)->id
+                ]);
+                $userData['email'] = $request->user_email;
+            }
+
+            if ($request->has('user_password')) {
+                $request->validate([
+                    'user_password' => 'string|min:6'
+                ]);
+                $userData['password'] = bcrypt($request->user_password);
+            }
+
+            if ($staff->hasUser()) {
+                $staff->user()->update($userData);
+            } else {
+                $staff->user()->create(array_merge($userData, [
+                    'role' => 'staff',
+                    'is_active' => true
+                ]));
+            }
+        }
 
         return response()->json([
             'status' => true,
             'message' => 'Sukses Update Data Staff',
-            'data' => $staff
+            'data' => $staff->load('user')
         ], 200);
     }
 
@@ -127,11 +204,16 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (empty($staff)) {
+        if (!$staff) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Staff Tidak Ditemukan'
             ], 404);
+        }
+
+        // Hapus juga user jika ada
+        if ($staff->hasUser()) {
+            $staff->user->delete();
         }
 
         $staff->delete();

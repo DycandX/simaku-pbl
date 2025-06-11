@@ -52,6 +52,12 @@ class PembayaranUktSemester extends Model
         return $this->belongsTo(PengajuanCicilan::class, 'id_pengajuan_cicilan');
     }
 
+    public function detailPembayaran()
+    {
+        return $this->hasMany(DetailPembayaran::class, 'id_pembayaran_ukt_semester');
+    }
+
+
     // Check if overdue
     public function isOverdue()
     {

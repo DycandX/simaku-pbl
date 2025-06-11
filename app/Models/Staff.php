@@ -19,10 +19,10 @@ class Staff extends Model
     ];
 
     // Polymorphic relationship dengan User
-    public function user()
-    {
-        return $this->morphOne(User::class, 'userable');
-    }
+    // public function user()
+    // {
+    //     return $this->morphOne(User::class, 'userable');
+    // }
 
     // Relationship dengan PengajuanCicilan yang di-approve
     public function approvedPengajuan()
@@ -30,6 +30,16 @@ class Staff extends Model
         return $this->hasMany(PengajuanCicilan::class, 'approved_by');
     }
 
+    public function verifikasiPembayaran()
+    {
+        return $this->hasMany(DetailPembayaran::class, 'verified_by');
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'staff_id');
+    }
+    
     // Check if staff already has user account
     public function hasUser()
     {

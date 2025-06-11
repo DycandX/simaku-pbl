@@ -1,11 +1,16 @@
 <?php
 // Model User
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
+
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $fillable = [
         'username', 'email', 'password', 'role',
         'mahasiswa_id', 'staff_id', 'is_active'
@@ -25,9 +30,10 @@ class User extends Authenticatable
         return $this->belongsTo(Mahasiswa::class);
     }
 
+    
     public function staff()
     {
-        return $this->belongsTo(Staff::class);
+        return $this->belongsTo(Staff::class, 'staff_id');
     }
 
     // Helper methods

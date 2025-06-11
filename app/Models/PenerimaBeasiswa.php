@@ -5,54 +5,42 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Beasiswa;
+use App\Models\Mahasiswa;
+use App\Models\Staff;
 
 class PenerimaBeasiswa extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
     protected $table = 'penerima_beasiswa';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'nim',
         'id_beasiswa',
-        'periode_pencairan',
-        'tanggal_cair',
+        'tanggal_mulai',
+        'tanggal_selesai',
         'nominal',
         'status',
         'keterangan',
         'created_by',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
-        'tanggal_cari' => 'date',
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
         'nominal' => 'decimal:2',
     ];
 
     /**
-     * Get the mahasiswa that owns the penerima beasiswa.
+     * Relasi ke tabel mahasiswa.
      */
     public function mahasiswa()
     {
-        return $this->belongsTo(Mahasiswa::class, 'nim');
+        return $this->belongsTo(Mahasiswa::class, 'nim', 'nim');
     }
 
     /**
-     * Get the beasiswa that owns the penerima beasiswa.
+     * Relasi ke tabel beasiswa.
      */
     public function beasiswa()
     {
@@ -60,7 +48,7 @@ class PenerimaBeasiswa extends Model
     }
 
     /**
-     * Get the staff that created the penerima beasiswa.
+     * Relasi ke staff yang membuat entri ini.
      */
     public function createdBy()
     {
@@ -68,10 +56,7 @@ class PenerimaBeasiswa extends Model
     }
 
     /**
-     * Scope a query to only include active scholarship recipients.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Scope untuk penerima yang aktif.
      */
     public function scopeActive($query)
     {

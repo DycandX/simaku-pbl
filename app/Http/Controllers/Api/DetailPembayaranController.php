@@ -12,14 +12,13 @@ class DetailPembayaranController extends Controller
     public function index(Request $request)
     {
         $query = DetailPembayaran::with([
-            'pembayaranUktSemester.uktSemester.mahasiswa',
+            'pembayaranUktSemester.uktSemester.enrollment.mahasiswa',
             'pembayaranUktSemester.uktSemester.periodePembayaran',
             'verifiedBy'
         ])->orderByDesc('id');
 
-        // Filter berdasarkan NIM jika tersedia
         if ($request->has('nim')) {
-            $query->whereHas('pembayaranUktSemester.uktSemester.mahasiswa', function ($q) use ($request) {
+            $query->whereHas('pembayaranUktSemester.uktSemester.enrollment.mahasiswa', function ($q) use ($request) {
                 $q->where('nim', $request->nim);
             });
         }
@@ -33,20 +32,19 @@ class DetailPembayaranController extends Controller
         ], 200);
     }
 
-
     public function store(Request $request)
     {
         $rules = [
             'id_pembayaran_ukt_semester' => 'required|exists:pembayaran_ukt_semester,id',
             'nominal' => 'required|numeric|min:0',
             'tanggal_pembayaran' => 'required|date',
-            'metode_pembayaran' => 'required|string',
-            'kode_referensi' => 'nullable|string',
-            'bukti_pembayaran_path' => 'nullable|string',
-            'status' => 'in:pending,verified,rejected',
+            'metode_pembayaran' => 'required|string|max:255',
+            'kode_referensi' => 'nullable|string|max:255',
+            'bukti_pembayaran_path' => 'nullable|string|max:255',
+            'status' => 'nullable|in:pending,verified,rejected',
             'verified_by' => 'nullable|exists:staff,id',
             'verified_at' => 'nullable|date',
-            'catatan' => 'nullable|string'
+            'catatan' => 'nullable|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -68,10 +66,21 @@ class DetailPembayaranController extends Controller
         ], 201);
     }
 
-
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $detail = DetailPembayaran::with(['pembayaranUktSemester', 'verifiedBy'])->find($id);
+        $query = DetailPembayaran::with([
+            'pembayaranUktSemester.uktSemester.enrollment.mahasiswa',
+            'pembayaranUktSemester.uktSemester.periodePembayaran',
+            'verifiedBy'
+        ])->where('id', $id);
+
+        if ($request->has('nim')) {
+            $query->whereHas('pembayaranUktSemester.uktSemester.enrollment.mahasiswa', function ($q) use ($request) {
+                $q->where('nim', $request->nim);
+            });
+        }
+
+        $detail = $query->first();
 
         if (!$detail) {
             return response()->json([
@@ -87,6 +96,7 @@ class DetailPembayaranController extends Controller
         ], 200);
     }
 
+
     public function update(Request $request, $id)
     {
         $detail = DetailPembayaran::find($id);
@@ -98,18 +108,38 @@ class DetailPembayaranController extends Controller
             ], 404);
         }
 
-        $rules = [
-            'id_pembayaran_ukt_semester' => 'exists:pembayaran_ukt_semester,id',
-            'nominal' => 'numeric|min:0',
-            'tanggal_pembayaran' => 'date',
-            'metode_pembayaran' => 'string',
-            'kode_referensi' => 'nullable|string',
-            'bukti_pembayaran_path' => 'nullable|string',
-            'status' => 'in:pending,verified,rejected',
-            'verified_by' => 'nullable|exists:staff,id',
-            'verified_at' => 'nullable|date',
-            'catatan' => 'nullable|string'
-        ];
+        $rules = [];
+
+        if ($request->has('id_pembayaran_ukt_semester')) {
+            $rules['id_pembayaran_ukt_semester'] = 'exists:pembayaran_ukt_semester,id';
+        }
+        if ($request->has('nominal')) {
+            $rules['nominal'] = 'numeric|min:0';
+        }
+        if ($request->has('tanggal_pembayaran')) {
+            $rules['tanggal_pembayaran'] = 'date';
+        }
+        if ($request->has('metode_pembayaran')) {
+            $rules['metode_pembayaran'] = 'string|max:255';
+        }
+        if ($request->has('kode_referensi')) {
+            $rules['kode_referensi'] = 'nullable|string|max:255';
+        }
+        if ($request->has('bukti_pembayaran_path')) {
+            $rules['bukti_pembayaran_path'] = 'nullable|string|max:255';
+        }
+        if ($request->has('status')) {
+            $rules['status'] = 'in:pending,verified,rejected';
+        }
+        if ($request->has('verified_by')) {
+            $rules['verified_by'] = 'nullable|exists:staff,id';
+        }
+        if ($request->has('verified_at')) {
+            $rules['verified_at'] = 'nullable|date';
+        }
+        if ($request->has('catatan')) {
+            $rules['catatan'] = 'nullable|string';
+        }
 
         $validator = Validator::make($request->all(), $rules);
 

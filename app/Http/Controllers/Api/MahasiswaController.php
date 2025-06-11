@@ -9,21 +9,15 @@ use Illuminate\Support\Facades\Validator;
 
 class MahasiswaController extends Controller
 {
-    // public function index()
-    // {
-    //     $data = Mahasiswa::orderBy('nim', 'asc')->get();
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Data Mahasiswa Ditemukan',
-    //         'data' => $data
-    //     ], 200);
-    // }
     public function index(Request $request)
     {
         $query = Mahasiswa::query()->orderBy('nim', 'asc');
 
-        // Jika parameter 'nim' ada, filter berdasarkan NIM
+        // Filter berdasarkan ID jika ada
+        if ($request->has('id')) {
+            $query->where('id', $request->id);
+        }
+        
         if ($request->has('nim')) {
             $query->where('nim', $request->nim);
         }
@@ -37,7 +31,6 @@ class MahasiswaController extends Controller
         ], 200);
     }
 
-
     public function store(Request $request)
     {
         $rules = [
@@ -45,7 +38,6 @@ class MahasiswaController extends Controller
             'nama_lengkap' => 'required|string',
             'alamat' => 'required|string',
             'no_telepon' => 'required|string',
-            'email' => 'required|email|unique:mahasiswa,email',
             'foto_path' => 'nullable|string',
         ];
 
@@ -69,7 +61,7 @@ class MahasiswaController extends Controller
 
     public function show($nim)
     {
-        $mahasiswa = Mahasiswa::find($nim);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->first();
 
         if ($mahasiswa) {
             return response()->json([
@@ -85,19 +77,17 @@ class MahasiswaController extends Controller
         }
     }
 
-
     public function update(Request $request, $nim)
     {
-        $mahasiswa = Mahasiswa::find($nim);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->first();
 
-        if (empty($mahasiswa)) {
+        if (!$mahasiswa) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Mahasiswa Tidak Ditemukan'
             ], 404);
         }
 
-        // Validasi dinamis hanya untuk field yang dikirim
         $rules = [];
 
         if ($request->has('nama_lengkap')) {
@@ -110,11 +100,6 @@ class MahasiswaController extends Controller
 
         if ($request->has('no_telepon')) {
             $rules['no_telepon'] = 'string';
-        }
-
-        if ($request->has('email')) {
-            // Gunakan pengecualian untuk nim agar tidak bentrok dengan dirinya sendiri
-            $rules['email'] = 'email|unique:mahasiswa,email,' . $nim . ',nim';
         }
 
         if ($request->has('foto_path')) {
@@ -130,9 +115,7 @@ class MahasiswaController extends Controller
             ], 400);
         }
 
-        // Update hanya field yang dikirim
-        $dataToUpdate = $validator->validated();
-        $mahasiswa->update($dataToUpdate);
+        $mahasiswa->update($validator->validated());
 
         return response()->json([
             'status' => true,
@@ -143,9 +126,9 @@ class MahasiswaController extends Controller
 
     public function destroy($nim)
     {
-        $mahasiswa = Mahasiswa::find($nim);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->first();
 
-        if (empty($mahasiswa)) {
+        if (!$mahasiswa) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Mahasiswa Tidak Ditemukan'

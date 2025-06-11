@@ -41,4 +41,10 @@ class ProgramStudi extends Model
     {
         return $this->hasMany(Kelas::class, 'id_prodi');
     }
+
+    // Relationship dengan EnrollmentMahasiswa
+    public function enrollments()
+    {
+        return $this->hasMany(EnrollmentMahasiswa::class, 'id_program_studi');
+    }
 }

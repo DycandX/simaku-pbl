@@ -22,21 +22,24 @@ class JenisPembayaranController extends Controller
 
     public function store(Request $request)
     {
-        $rules = [
+        $validator = Validator::make($request->all(), [
             'nama_jenis' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'is_angsuran' => 'required|boolean',
             'max_angsuran' => 'nullable|integer|min:1'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
+        ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal Menambahkan Jenis Pembayaran',
-                'data' => $validator->errors()
-            ], 400);
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Jika bukan angsuran, pastikan max_angsuran diset null
+        if (!$request->is_angsuran) {
+            $request->merge(['max_angsuran' => null]);
         }
 
         $data = JenisPembayaran::create($validator->validated());
@@ -101,11 +104,18 @@ class JenisPembayaranController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal Update Jenis Pembayaran',
-                'data' => $validator->errors()
-            ], 400);
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $data->update($validator->validated());
+        $validated = $validator->validated();
+
+        // Jika is_angsuran dikirim dan false, maka max_angsuran harus null
+        if (array_key_exists('is_angsuran', $validated) && $validated['is_angsuran'] === false) {
+            $validated['max_angsuran'] = null;
+        }
+
+        $data->update($validated);
 
         return response()->json([
             'status' => true,
@@ -113,6 +123,7 @@ class JenisPembayaranController extends Controller
             'data' => $data
         ], 200);
     }
+
 
     public function destroy($id)
     {
