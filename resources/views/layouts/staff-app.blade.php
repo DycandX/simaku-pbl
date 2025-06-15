@@ -370,7 +370,7 @@
 
                         <!-- Data Mahasiswa -->
                         <li class="nav-item">
-                            <a href="{{ route('staff.keuangan.data-mahasiswa') }}" class="nav-link {{ request()->is('staff-keuangan/data-mahasiswa*') ? 'active' : '' }}">
+                            <a href="{{ route('staff-keuangan.data-mahasiswa') }}" class="nav-link {{ request()->is('staff-keuangan/data-mahasiswa*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>Data Mahasiswa</p>
                             </a>
