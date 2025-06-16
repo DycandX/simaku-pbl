@@ -71,7 +71,7 @@ Route::middleware(['check.login'])->group(function () {
     Route::post('/staff/pengajuan-cicilan/{id}/approve', [PengajuanCicilanStaffController::class, 'approve'])->name('staff.pengajuan-cicilan.approve');
     Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');
 
-    Route::get('/staff-beasiswa', [staffBeasiswaController::class, 'index'])->name('staff-beasiswa');
+    Route::get('staff-keuangan/beasiswa/staff-beasiswa', [staffBeasiswaController::class, 'index'])->name('staff-keuangan.beasiswa.staff-beasiswa');
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
     //Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
     Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'index'])->name('staff-keuangan.data-mahasiswa');

@@ -76,7 +76,9 @@ class StaffDetailDataMahasiswaController extends Controller
             $studentData[0]['tahun_akademik'] = 'Unknown Academic Year';
         }
 
+        //dd($paymentData);
         return view('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', compact('studentData', 'paymentData'));
+        
     }
 
     // Method to handle API calls and get data
