@@ -24,13 +24,8 @@
                         <p><strong>Status Mahasiswa:</strong> 
                             <span class="badge badge-pill badge-success">Aktif</span>
                         </p>
+                        <p><strong>Metode Pembayaran:</strong> {{ $paymentData[0]['metode_pembayaran'] ?? 'Tidak Tersedia' }}</p> <!-- Metode Pembayaran -->
                     </div>
-
-                    {{-- <div class="col-md-6 text-right">
-                        <a href="{{ route('staff-keuangan.data-mahasiswa.data-banding-ukt') }}" class="btn btn-view">
-                            <i class="fas fa-eye"></i> Banding UKT
-                        </a>
-                    </div> --}}
                 </div>
             </div>
         </div>
@@ -70,14 +65,13 @@
                                 <td>{{ $studentData[0]['mahasiswa']['nama_lengkap'] }}</td>
                                 <td>{{ \Carbon\Carbon::parse($payment['created_at'])->format('d M Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($payment['tanggal_jatuh_tempo'])->format('d M Y') }}</td>
-                                <td>{{ $payment['enrollment']['id_tahun_akademik'] }}</td>
+                                <td>{{ $studentData[0]['tahun_akademik'] }}</td> <!-- Tahun Akademik -->
                                 <td>Rp {{ number_format($payment['nominal_tagihan'], 0, ',', '.') }}</td>
                                 <td>Rp {{ number_format($payment['ukt_semester']['jumlah_ukt'], 0, ',', '.') }}</td>
-                                <td>{{ $payment['jenis_pembayaran']['deskripsi'] }}</td>
+                                <td>{{ $payment['metode_pembayaran'] }}</td> <!-- Metode Pembayaran -->
                                 <td><span class="badge {{ $payment['ukt_semester']['periode_pembayaran']['status'] == 'non-aktif' ? 'badge-warning' : 'badge-success' }}">{{ ucfirst($payment['ukt_semester']['periode_pembayaran']['status']) }}</span></td>
                                 <td><span class="badge {{ $payment['nominal_tagihan'] == 0 ?  'badge-danger' : 'badge-info' }}">{{ ucfirst($payment['status']) }}</span></td>
                                 
-                                <td>-</td>
                                 <td>
                                     @if(isset($payment['bukti_pembayaran_path']))
                                         <a href="{{ asset($payment['bukti_pembayaran_path']) }}" class="btn btn-view" target="_blank">

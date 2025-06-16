@@ -32,36 +32,51 @@ class StaffDetailDataMahasiswaController extends Controller
             return redirect()->route('staff-keuangan.data-mahasiswa')->withErrors(['error' => 'Data mahasiswa tidak ditemukan.']);
         }
 
-        // Ensure 'kelas' exists in student data
+        // Fetch programs (prodi) and faculties (jurusan)
+        $programs = $this->getApiData('/api/kelas', [], $token);
+        $faculties = $this->getApiData('/api/fakultas', [], $token);
+
+        // Map program and faculty names for quick lookup
+        $programsMap = collect($programs)->pluck('program_studi.nama_prodi', 'id')->toArray();
+        $facultiesMap = collect($faculties)->pluck('nama_fakultas', 'id')->toArray();
+
+        // Add program and faculty names to student data
         if (isset($studentData[0]['kelas'])) {
-            // Fetch payment data for the student
-            $paymentData = $this->getApiData("/api/pembayaran-ukt-semester", ['nim' => $nim], $token);
-            //dd($paymentData);
-
-            // Fetch programs (prodi) and faculties (jurusan)
-            $programs = $this->getApiData('/api/kelas', [], $token);
-            $faculties = $this->getApiData('/api/fakultas', [], $token);
-
-            // Map program and faculty names for quick lookup
-            $programsMap = collect($programs)->pluck('program_studi.nama_prodi', 'id')->toArray();
-            $facultiesMap = collect($faculties)->pluck('nama_fakultas', 'id')->toArray();
-
-            // Add program and faculty names to student data
             $studentData[0]['kelas']['program_name'] = $programsMap[$studentData[0]['kelas']['id_prodi']] ?? 'Unknown Program';
+
+            // Ensure faculty data exists before assigning it
             $facultyId = collect($programs)->firstWhere('id', $studentData[0]['kelas']['id_prodi'])['program_studi']['id_fakultas'] ?? null;
             $studentData[0]['kelas']['faculty_name'] = $facultiesMap[$facultyId] ?? 'Unknown Faculty';
-
-            // Check if 'ukt_semester' exists in student data
-            if (isset($studentData[0]['ukt_semester'])) {
-                $studentData[0]['ukt_semester'] = $studentData[0]['ukt_semester'];  // If available, you can pass it to view
-            } else {
-                $studentData[0]['ukt_semester'] = null;  // Provide default value if not available
-            }
-
-            return view('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', compact('studentData', 'paymentData'));
-        } else {
-            return redirect()->route('staff-keuangan.data-mahasiswa')->withErrors(['error' => 'Data kelas mahasiswa tidak ditemukan.']);
         }
+
+        // Fetch payment data for the student
+        $paymentData = $this->getApiData("/api/pembayaran-ukt-semester", ['nim' => $nim], $token);
+
+        // Check if 'ukt_semester' exists in student data
+        if (isset($studentData[0]['ukt_semester'])) {
+            $studentData[0]['ukt_semester'] = $studentData[0]['ukt_semester'];  // If available, you can pass it to view
+        } else {
+            $studentData[0]['ukt_semester'] = null;  // Provide default value if not available
+        }
+
+        // Fetch payment details to get 'metode_pembayaran'
+        $paymentDetails = $this->getApiData("/api/detail-pembayaran", ['nim' => $nim], $token);
+
+        // Add payment method to payment data if available
+        if (!empty($paymentDetails) && isset($paymentDetails[0]['metode_pembayaran'])) {
+            $paymentData[0]['metode_pembayaran'] = $paymentDetails[0]['metode_pembayaran'];
+        } else {
+            $paymentData[0]['metode_pembayaran'] = 'Tidak Tersedia'; // Default if not found
+        }
+
+        // Add 'tahun_akademik' to student data
+        if (isset($studentData[0]['tahun_akademik'])) {
+            $studentData[0]['tahun_akademik'] = $studentData[0]['tahun_akademik']['tahun_akademik'] ?? 'Unknown Academic Year';
+        } else {
+            $studentData[0]['tahun_akademik'] = 'Unknown Academic Year';
+        }
+
+        return view('staff-keuangan.data-mahasiswa.detail-data-mahasiswa', compact('studentData', 'paymentData'));
     }
 
     // Method to handle API calls and get data
