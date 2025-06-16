@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-@php
+{{-- @php
     $totalSemuaTagihan = collect($uktSemester)->sum(function($item) {
         return (int) $item['jumlah_ukt'];
     });
@@ -20,6 +20,11 @@
     return $item['status'] === 'sudah lunas' ? (int) $item['nominal_tagihan'] : 0;
     });
 
+    $totalBelumTerbayar = $totalSemuaTagihan - $totalSudahTerbayar;
+@endphp --}}
+@php
+    $totalSemuaTagihan = collect($dataTagihan)->sum('nominal_tagihan');
+    $totalSudahTerbayar = collect($dataTagihan)->sum('total_terbayar');
     $totalBelumTerbayar = $totalSemuaTagihan - $totalSudahTerbayar;
 @endphp
 
@@ -86,34 +91,42 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($pembayaran as $index => $item)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td>{{ $item['nomor_tagihan'] }}</td>
-                                <td>{{ $item['semester'] }}</td>
-                                <td>Rp {{ number_format($item['total_tagihan'], 2, ',', '.') }}</td>
-                                <td>Rp {{ number_format($item['total_terbayar'], 2, ',', '.') }}</td>
-                                <td>
-                                    <span class="badge badge-primary ">{{ $item['keterangan'] ?? '-' }}</span>
-                                </td>
-                                <td>
-                                    @if (strtolower($item['status']) === 'sudah lunas')
-                                        <span class="badge badge-success">{{ $item['status'] }}</span>
-                                    @else
-                                        <span class="badge badge-danger">{{ $item['status'] }}</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ route('lihat-tagihan', ['id' => $item['id']]) }}" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-eye"></i> Lihat Tagihan
-                                    </a>
-                                </td>
-                            </tr>
+                            @forelse ($dataTagihan as $index => $item)
+                                @php
+                                    $total_tagihan = $item['nominal_tagihan'] ?? 0;
+                                    $total_terbayar = $item['total_terbayar'] ?? 0;
+                                    $status_raw = strtolower($item['status_raw'] ?? '-');
+
+                                    $badgeClass = match ($status_raw) {
+                                        'terbayar'      => 'badge-success',
+                                        'belum_bayar'   => 'badge-danger',
+                                        'cancelled'     => 'badge-secondary',
+                                        'over'          => 'badge-warning',
+                                        default         => 'badge-info',
+                                    };
+
+                                    $statusText = $item['status'] ?? '-';
+                                @endphp
+                                <tr>
+                                    <td class="text-center">{{ $index + 1 }}</td>
+                                    <td>{{ 'INV' . str_pad($item['id_ukt_semester'], 5, '0', STR_PAD_LEFT) }}</td>
+                                    <td>{{ $item['periode'] }}</td>
+                                    <td>Rp {{ number_format($total_tagihan, 2, ',', '.') }}</td>
+                                    <td>Rp {{ number_format($total_terbayar, 2, ',', '.') }}</td>
+                                    <td><span class="badge badge-primary">{{ $item['jenis'] }}</span></td>
+                                    <td><span class="badge {{ $badgeClass }}">{{ $statusText }}</span></td>
+                                    <td class="text-center">
+                                        <a href="{{ route('mahasiswa-dashboard.show', ['id' => $item['id_ukt_semester']]) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> Lihat Tagihan
+                                        </a>
+                                    </td>
+                                </tr>
                             @empty
-                            <tr>
-                                <td colspan="9" class="text-center">Belum ada tagihan.</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center">Belum ada tagihan.</td>
+                                </tr>
                             @endforelse
+          
                         </tbody>
                     </table>
                 </div>

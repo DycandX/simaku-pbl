@@ -48,7 +48,7 @@
                                 <strong>Periode Mulai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ \Carbon\Carbon::parse($beasiswa[0]['beasiswa']['periode_mulai'])->translatedFormat('l d F Y') ?? '-' }}
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['tanggal_mulai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
@@ -57,7 +57,7 @@
                                 <strong>Periode Selesai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ \Carbon\Carbon::parse($beasiswa[0]['beasiswa']['periode_selesai'])->translatedFormat('l d F Y') ?? '-' }}
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['tanggal_selesai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
@@ -78,7 +78,7 @@
                     <table class="table table-bordered">
                         <thead class="thead-light">
                             <tr>
-                                <th>Periode</th>
+                                <th>Periode Cair</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal Cair</th>
                                 <th>Status</th>
@@ -87,9 +87,9 @@
                         <tbody>
                             @forelse ($beasiswa as $item)
                                 <tr>
-                                    <td>{{ $item['periode_pencairan'] ?? '-' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item['keterangan'])->translatedFormat('d F Y') }}</td>
                                     <td>Rp {{ number_format($item['nominal'], 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item['tanggal_cair'])->translatedFormat('d F Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
                                     <td>
                                         @if ($item['status'] === 'aktif')
                                             <span class="badge badge-success">Sudah Cair</span>
