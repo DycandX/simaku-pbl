@@ -1,12 +1,15 @@
 <?php
+
+use App\Http\Controllers\Api\GolonganUktController as ApiGolonganUktController;
 use App\Http\Controllers\Staff\dataBandingUktController;
 use App\Http\Controllers\Staff\detailPembayaranUktStaffController;
 use App\Http\Controllers\Staff\staffBuatTagihanUktController;
+use App\Models\GolonganUkt;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\CicilanController;
-use App\Http\Controllers\GolonganUktController;
+use App\Http\Controllers\Mahasiswa\GolonganUktController;
 use App\Http\Controllers\Mahasiswa\DaftarUlangController;
 use App\Http\Controllers\Mahasiswa\LihatTagihanUktController;
 use App\Http\Controllers\Mahasiswa\BeasiswaController;
@@ -95,4 +98,4 @@ Route::middleware(['check.login'])->group(function () {
 });
 
 // Lihat Tagihan route
-Route::get('/lihat-tagihan/{id}', [TagihanController::class, 'show'])->name('lihat-tagihan');
+Route::get('/lihat-tagihan/{id}', [TagihanController::class, 'show'])->name('lihat-tagihan'); 

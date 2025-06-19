@@ -26,6 +26,7 @@ class StaffDetailDataMahasiswaController extends Controller
 
         // Fetch student data from API based on nim
         $studentData = $this->getApiData("/api/enrollment-mahasiswa", ['nim' => $nim], $token);
+        //dd($studentData);
 
         // Check if student data is empty or doesn't contain 'mahasiswa'
         if (empty($studentData) || !isset($studentData[0]['mahasiswa'])) {

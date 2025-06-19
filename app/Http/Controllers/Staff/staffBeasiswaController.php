@@ -25,24 +25,49 @@ class StaffBeasiswaController extends Controller
             return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
         }
 
-        // Fetch penerima beasiswa data
-        $beasiswaData = $this->getApiData("/api/penerima-beasiswa");
+        // Get filtering parameters from the request
+        $angkatan = $request->get('angkatan', '');  // Provide default empty value
+        $prodi = $request->get('prodi', '');        // Provide default empty value
+        $searchTerm = $request->get('search', '');  // Provide default empty value
 
+        // Build query parameters for filtering
+        $queryParams = [
+            'angkatan' => $angkatan,
+            'prodi' => $prodi,
+            'search' => $searchTerm
+        ];
+
+        // Fetch penerima beasiswa data
+        $beasiswaData = $this->getApiData("/api/penerima-beasiswa", $queryParams, $token);
         // Fetch enrollment mahasiswa data (program studi, angkatan, dsb)
-        $enrollmentData = $this->getApiData("/api/enrollment-mahasiswa");
+        $enrollmentData = $this->getApiData("/api/enrollment-mahasiswa", $queryParams, $token);
 
         // Merging data penerima beasiswa and enrollment mahasiswa
         $data = [];
 
         foreach ($beasiswaData as $beasiswa) {
-            // Find mahasiswa by nim
-            $mahasiswa = $this->findMahasiswa($beasiswa['nim'], $enrollmentData);
-            // Find program studi by id_prodi
-            $program_studi = $this->findProgramStudi($mahasiswa['id_program_studi'], $enrollmentData);
+            // Get the ID of the mahasiswa from the beasiswa data
+            $mahasiswaId = $beasiswa['mahasiswa']['id'];
 
-            // Add mahasiswa and program_studi data to beasiswa data
+            // Filter enrollmentData to only include the student matching the mahasiswaId
+            $filteredEnrollment = collect($enrollmentData)->filter(function ($enrollment) use ($mahasiswaId) {
+                return $enrollment['mahasiswa']['id'] == $mahasiswaId;
+            })->first(); // Use first() to get the first matching entry
+
+            // If there's no matching enrollment, skip this beasiswa
+            if (!$filteredEnrollment) {
+                continue;
+            }
+
+            // Get the relevant program studi and tahun_akademik details
+            $mahasiswa = $filteredEnrollment['mahasiswa'];
+            $program_studi = $filteredEnrollment['program_studi'];
+            $tahun_akademik = $filteredEnrollment['tahun_akademik']['tahun_akademik']; // Accessing tahun_akademik
+
+            // Add mahasiswa, program_studi, and tahun_akademik data to beasiswa data
             $beasiswa['mahasiswa'] = $mahasiswa;
             $beasiswa['program_studi'] = $program_studi;
+            $beasiswa['tahun_akademik'] = $tahun_akademik;  // Add tahun_akademik to beasiswa data
             $data[] = $beasiswa;
         }
 
@@ -59,39 +84,28 @@ class StaffBeasiswaController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('paginatedData'));
+        // Fetch available programs (prodi) data
+        $programs = $this->getApiData('/api/program-studi', [], $token);
+
+        // Create a map of program id to program name for quick lookup
+        $programsMap = collect($programs)->pluck('nama_prodi', 'id')->toArray();
+
+        // Add program name to each beasiswa
+        foreach ($paginatedData as &$beasiswa) {
+            $beasiswa['program_studi_name'] = $programsMap[$beasiswa['program_studi']['id']] ?? 'Unknown Program';
+        }
+
+        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('paginatedData', 'angkatan', 'prodi', 'searchTerm', 'programsMap'));
     }
 
     // Method to fetch data from API
-    private function getApiData($endpoint)
+    private function getApiData($endpoint, $queryParams = [], $token)
     {
         try {
-            $response = Http::get(config('app.api_url') . $endpoint);
+            $response = Http::withToken($token)->get(config('app.api_url') . $endpoint, $queryParams);
             return $response->successful() ? optional($response->json())['data'] ?? [] : [];
         } catch (\Exception $e) {
             return [];
         }
-    }
-
-    // Method to find mahasiswa by NIM
-    private function findMahasiswa($nim, $enrollmentData)
-    {
-        foreach ($enrollmentData as $data) {
-            if ($data['mahasiswa']['nim'] == $nim) {
-                return $data['mahasiswa'];
-            }
-        }
-        return null;
-    }
-
-    // Method to find program studi by id_prodi
-    private function findProgramStudi($id_prodi, $enrollmentData)
-    {
-        foreach ($enrollmentData as $data) {
-            if ($data['program_studi']['id'] == $id_prodi) {
-                return $data['program_studi'];
-            }
-        }
-        return null;
     }
 }
