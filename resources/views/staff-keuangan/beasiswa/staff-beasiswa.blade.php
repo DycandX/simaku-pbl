@@ -27,9 +27,7 @@
                             <th>Nama Mahasiswa</th>
                             <th>NIM</th>
                             <th>Program Studi</th>
-                            <th>Angkatan</th>
                             <th>Nama Beasiswa</th>
-                            <th>Tahun Akademik</th>
                             <th width="15%">Aksi</th>
                         </tr>
                     </thead>
@@ -40,16 +38,16 @@
                             <td>{{ $beasiswa['mahasiswa']['nama_lengkap'] }}</td>
                             <td>{{ $beasiswa['mahasiswa']['nim'] }}</td>
                             <td>{{ $beasiswa['program_studi']['nama_prodi'] }}</td>
-                            <td>{{ $beasiswa['mahasiswa']['angkatan'] ?? 'N/A' }}</td>
                             <td>{{ $beasiswa['beasiswa']['nama_beasiswa'] }}</td>
-                            <td>{{ $beasiswa['tahun_akademik'] }}</td> <!-- Display tahun_akademik -->
                             <td>
-                                <a href="#" class="btn btn-info btn-sm">
+                                <a href="{{ route('staff-keuangan.beasiswa.staff-detail-beasiswa', ['nim' => $beasiswa['mahasiswa']['nim']]) }}" class="btn btn-info btn-sm">
                                     <i class="fas fa-eye"></i> Lihat
                                 </a>
                             </td>
                         </tr>
                         @endforeach
+
+
                     </tbody>
                 </table>
             </div>

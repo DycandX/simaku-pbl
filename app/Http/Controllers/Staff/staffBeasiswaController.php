@@ -26,20 +26,18 @@ class StaffBeasiswaController extends Controller
         }
 
         // Get filtering parameters from the request
-        $angkatan = $request->get('angkatan', '');  // Provide default empty value
-        $prodi = $request->get('prodi', '');        // Provide default empty value
         $searchTerm = $request->get('search', '');  // Provide default empty value
+        $prodi = $request->get('prodi', '');        // Provide default empty value
 
         // Build query parameters for filtering
         $queryParams = [
-            'angkatan' => $angkatan,
+            'search' => $searchTerm,
             'prodi' => $prodi,
-            'search' => $searchTerm
         ];
 
         // Fetch penerima beasiswa data
         $beasiswaData = $this->getApiData("/api/penerima-beasiswa", $queryParams, $token);
-        // Fetch enrollment mahasiswa data (program studi, angkatan, dsb)
+        // Fetch enrollment mahasiswa data (program studi)
         $enrollmentData = $this->getApiData("/api/enrollment-mahasiswa", $queryParams, $token);
 
         // Merging data penerima beasiswa and enrollment mahasiswa
@@ -59,15 +57,13 @@ class StaffBeasiswaController extends Controller
                 continue;
             }
 
-            // Get the relevant program studi and tahun_akademik details
+            // Get the relevant program studi details
             $mahasiswa = $filteredEnrollment['mahasiswa'];
             $program_studi = $filteredEnrollment['program_studi'];
-            $tahun_akademik = $filteredEnrollment['tahun_akademik']['tahun_akademik']; // Accessing tahun_akademik
 
-            // Add mahasiswa, program_studi, and tahun_akademik data to beasiswa data
+            // Add mahasiswa and program_studi data to beasiswa data
             $beasiswa['mahasiswa'] = $mahasiswa;
             $beasiswa['program_studi'] = $program_studi;
-            $beasiswa['tahun_akademik'] = $tahun_akademik;  // Add tahun_akademik to beasiswa data
             $data[] = $beasiswa;
         }
 
@@ -95,7 +91,7 @@ class StaffBeasiswaController extends Controller
             $beasiswa['program_studi_name'] = $programsMap[$beasiswa['program_studi']['id']] ?? 'Unknown Program';
         }
 
-        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('paginatedData', 'angkatan', 'prodi', 'searchTerm', 'programsMap'));
+        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('paginatedData', 'searchTerm', 'prodi', 'programsMap'));
     }
 
     // Method to fetch data from API

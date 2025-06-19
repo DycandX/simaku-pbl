@@ -22,6 +22,7 @@ use App\Http\Controllers\Staff\staffDetailDataMahasiswaController;
 use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaController;
 use App\Http\Controllers\staffDataMahasiswaController as ControllersStaffDataMahasiswaController;
 use App\Http\Controllers\Staff\staffBuatTagihanUktKlikController;
+use App\Http\Controllers\Staff\StaffDetailBeasiswaController;
 
 
 
@@ -75,6 +76,8 @@ Route::middleware(['check.login'])->group(function () {
     Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');
 
     Route::get('staff-keuangan/beasiswa/staff-beasiswa', [StaffBeasiswaController::class, 'index'])->name('staff-keuangan.beasiswa.staff-beasiswa');
+    // Route for viewing beasiswa details
+    Route::get('staff-keuangan/beasiswa/staff-detail-beasiswa/{nim}', [StaffDetailBeasiswaController::class, 'index'])->name('staff-keuangan.beasiswa.staff-detail-beasiswa');
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
     //Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
     Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'index'])->name('staff-keuangan.data-mahasiswa');

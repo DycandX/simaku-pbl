@@ -1,111 +1,169 @@
-<div class="card card-outline card-primary">
-        <div class="card-header">
-            <h3 class="card-title">STAFF - BEASISWA</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            <!-- Detail Beasiswa Section -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="callout callout-info">
-                        <h5><i class="fas fa-info-circle mr-2"></i> Detail Beasiswa</h5>
+@extends('layouts.app')
+
+@section('title', 'Beasiswa - SIMAKU')
+
+@section('header', 'Beasiswa Pendidikan')
+
+@section('content')
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Detail Beasiswa Mahasiswa -->
+                <h5 class="mb-4">Detail Beasiswa Mahasiswa</h5>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Nama Beasiswa :</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ $beasiswaData[0]['beasiswa']['nama_beasiswa'] ?? '-' }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Status Beasiswa :</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ strtoupper($beasiswaData[0]['beasiswa']['status'] ?? '-') }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Tipe Beasiswa :</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ ucwords($beasiswaData[0]['beasiswa']['jenis'] ?? '-') }}
+                            </div>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td width="40%"><strong>Nama Beasiswa :</strong></td>
-                                    <td>KIP-Kuliah</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Status Beasiswa :</strong></td>
-                                    <td><span class="badge badge-success">Aktif</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Tipe Beasiswa :</strong></td>
-                                    <td>Pembebasan UKT + Uang Saku</td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                    <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Periode Mulai:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ $beasiswaData[0]['tanggal_mulai'] ?? '-' }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Periode Selesai:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ $beasiswaData[0]['tanggal_selesai'] ?? '-' }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Keterangan:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ ucwords($beasiswaData[0]['beasiswa']['deskripsi'] ?? '-' ) }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="callout callout-info">
-                        <h5><i class="fas fa-calendar-alt mr-2"></i> Periode Beasiswa</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tbody>
+                <!-- Detail Penerimaan Dana -->
+                <h5 class="mb-4">Detail Penerimaan Dana</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Periode Cair</th>
+                                <th>Jumlah</th>
+                                <th>Tanggal Cair</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($beasiswaData[0]['payment'] as $payment)
                                 <tr>
-                                    <td width="40%"><strong>Periode :</strong></td>
-                                    <td>2023/2024</td>
+                                    <td>{{ \Carbon\Carbon::parse($payment['keterangan'])->translatedFormat('d F Y') }}</td>
+                                    <td>Rp {{ number_format($payment['nominal'], 0, ',', '.') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($payment['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
+                                    <td>
+                                        @if ($payment['status'] === 'aktif')
+                                            <span class="badge badge-success">Sudah Cair</span>
+                                        @else
+                                            <span class="badge badge-secondary">Belum Cair</span>
+                                        @endif
+                                    </td>
                                 </tr>
+                            @empty
                                 <tr>
-                                    <td><strong>Semester Berlaku :</strong></td>
-                                    <td>Semester 1 s.d. 8</td>
+                                    <td colspan="4" class="text-center">Belum ada data beasiswa</td>
                                 </tr>
-                                <tr>
-                                    <td><strong>Skema Pembayaran:</strong></td>
-                                    <td>Langsung ke rekening mahasiswa</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detail Penerimaan Dana -->
-            <div class="callout callout-success">
-                <h5><i class="fas fa-money-bill-wave mr-2"></i> Detail Penerimaan Dana</h5>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Periode</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal Cair</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Semester 1</td>
-                            <td>Rp 2.400.000</td>
-                            <td>20 Februari 2023</td>
-                            <td><span class="badge badge-success">Sudah Cair</span></td>
-                        </tr>
-                        <tr>
-                            <td>Semester 2</td>
-                            <td>Rp 2.400.000</td>
-                            <td>5 September 2023</td>
-                            <td><span class="badge badge-success">Sudah Cair</span></td>
-                        </tr>
-                        <tr>
-                            <td>Semester 3</td>
-                            <td>Rp 2.400.000</td>
-                            <td>10 Februari 2024</td>
-                            <td><span class="badge badge-success">Sudah Cair</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card-footer">
-            <div class="row">
-                <div class="col-md-12">
-                    <button class="btn btn-info" id="btnCetak">
-                        <i class="fas fa-print mr-1"></i> Cetak Informasi Beasiswa
-                    </button>
-                    <button class="btn btn-success" id="btnExport">
-                        <i class="fas fa-file-excel mr-1"></i> Export Excel
-                    </button>
-                </div>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>                
             </div>
         </div>
     </div>
+</div> 
+@endsection
+
+@section('styles')
+<style>
+    .card {
+        background-color: #fff;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    h5 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .row.mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .row.mb-3 .col-sm-4 {
+        color: #6c757d;
+    }
+
+    .row.mb-3 .col-sm-8 {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .badge-success {
+        background-color: #4fd1c5;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-weight: 500;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+        .row.mb-3 .col-sm-4,
+        .row.mb-3 .col-sm-8 {
+            padding: 0.5rem 0;
+        }
+    }
+</style>
+@endsection
