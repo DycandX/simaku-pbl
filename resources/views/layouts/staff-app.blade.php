@@ -362,7 +362,7 @@
 
                         <!-- Beasiswa -->
                         <li class="nav-item">
-                            <a href="{{ route('staff-keuangan.beasiswa.staff-beasiswa') }}" class="nav-link {{ request()->is('staff-beasiswa*') ? 'active' : '' }}">
+                            <a href="{{ route('staff-keuangan.beasiswa.staff-beasiswa') }}" class="nav-link {{ request()->is('staff-keuangan/beasiswa/staff-beasiswa*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-graduation-cap"></i>
                                 <p>Beasiswa</p>
                             </a>

@@ -46,7 +46,20 @@ class StaffBeasiswaController extends Controller
             $data[] = $beasiswa;
         }
 
-        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('data'));
+        // Paginate the merged data using Laravel pagination
+        $data = collect($data); // Convert to collection
+        $data = $data->forPage($request->page ?? 1, 10);  // Manually paginate, 10 items per page
+
+        // Use LengthAwarePaginator to paginate
+        $paginatedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $data,
+            count($data),
+            10,
+            $request->page ?? 1,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('staff-keuangan.beasiswa.staff-beasiswa', compact('paginatedData'));
     }
 
     // Method to fetch data from API

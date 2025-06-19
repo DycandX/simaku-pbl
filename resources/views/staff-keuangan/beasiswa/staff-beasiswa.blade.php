@@ -11,7 +11,7 @@
     <!-- Other Students with this Scholarship -->
     <div class="card card-outline card-primary mt-4">
         <div class="card-header">
-            <h3 class="card-title">Mahasiswa Penerima Beasiswa KIP-Kuliah</h3>
+            <h3 class="card-title">Mahasiswa Penerima Beasiswa</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                     <i class="fas fa-minus"></i>
@@ -33,9 +33,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $index => $beasiswa)
+                        @foreach ($paginatedData as $index => $beasiswa)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $paginatedData->firstItem() + $index }}</td>
                             <td>{{ $beasiswa['mahasiswa']['nama_lengkap'] }}</td>
                             <td>{{ $beasiswa['mahasiswa']['nim'] }}</td>
                             <td>{{ $beasiswa['program_studi']['nama_prodi'] }}</td>
@@ -55,15 +55,11 @@
         <div class="card-footer clearfix">
             <div class="float-left">
                 <div class="pagination-info">
-                    Menampilkan 1-3 dari 120 penerima
+                    Menampilkan {{ $paginatedData->firstItem() }} - {{ $paginatedData->lastItem() }} dari {{ $paginatedData->total() }} penerima
                 </div>
             </div>
             <ul class="pagination pagination-sm m-0 float-right">
-                <li class="page-item disabled"><a class="page-link" href="#">«</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                {{ $paginatedData->links() }}
             </ul>
         </div>
     </div>
