@@ -38,7 +38,7 @@ class StaffDataMahasiswaController extends Controller
 
         // Fetch student data from API
         $students = $this->getApiData('/api/enrollment-mahasiswa', $queryParams, $token);
-        dd($students);
+        //dd($students);
 
         // Fetch programs (prodi) and faculties (jurusan) data
         $programs = $this->getApiData('/api/kelas', [], $token);

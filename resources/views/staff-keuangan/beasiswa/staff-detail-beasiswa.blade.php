@@ -19,7 +19,7 @@
                                 <strong>Nama Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ $beasiswaData[0]['beasiswa']['nama_beasiswa'] ?? '-' }}
+                                {{ $beasiswa[0]['beasiswa']['nama_beasiswa'] ?? '-' }}
                             </div>
                         </div>
 
@@ -28,7 +28,7 @@
                                 <strong>Status Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ strtoupper($beasiswaData[0]['beasiswa']['status'] ?? '-') }}
+                                {{ strtoupper($beasiswa[0]['beasiswa']['status'] ?? '-') }}
                             </div>
                         </div>
 
@@ -37,7 +37,7 @@
                                 <strong>Tipe Beasiswa :</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ ucwords($beasiswaData[0]['beasiswa']['jenis'] ?? '-') }}
+                                {{ ucwords($beasiswa[0]['beasiswa']['jenis'] ?? '-') }}
                             </div>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                                 <strong>Periode Mulai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ $beasiswaData[0]['tanggal_mulai'] ?? '-' }}
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['tanggal_mulai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
@@ -57,16 +57,16 @@
                                 <strong>Periode Selesai:</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ $beasiswaData[0]['tanggal_selesai'] ?? '-' }}
+                                {{ \Carbon\Carbon::parse($beasiswa[0]['tanggal_selesai'])->translatedFormat('l d F Y') ?? '-' }}
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-sm-4">
-                                <strong>Keterangan:</strong>
+                                <strong>Keterangan</strong>
                             </div>
                             <div class="col-sm-8">
-                                {{ ucwords($beasiswaData[0]['beasiswa']['deskripsi'] ?? '-' ) }}
+                                {{ ucwords($beasiswa[0]['beasiswa']['deskripsi'] ?? '-' ) }}
                             </div>
                         </div>
                     </div>
@@ -85,13 +85,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($beasiswaData[0]['payment'] as $payment)
+                            @forelse ($beasiswa as $item)
                                 <tr>
-                                    <td>{{ \Carbon\Carbon::parse($payment['keterangan'])->translatedFormat('d F Y') }}</td>
-                                    <td>Rp {{ number_format($payment['nominal'], 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($payment['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item['keterangan'])->translatedFormat('d F Y') }}</td>
+                                    <td>Rp {{ number_format($item['nominal'], 0, ',', '.') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
                                     <td>
-                                        @if ($payment['status'] === 'aktif')
+                                        @if ($item['status'] === 'aktif')
                                             <span class="badge badge-success">Sudah Cair</span>
                                         @else
                                             <span class="badge badge-secondary">Belum Cair</span>
