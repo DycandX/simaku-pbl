@@ -14,6 +14,6 @@ class staffBuatTagihanUktController extends Controller
     
     public function create() 
     {
-        return view('staff-keuangan.dashboard.buat-tagihan-ukt.buat-tagihan-ukt-klik');
+        return view('staff-keuangan.dashboard.buat-tagihan-ukt.detail-buat-tagihan-ukt');
     }
 }

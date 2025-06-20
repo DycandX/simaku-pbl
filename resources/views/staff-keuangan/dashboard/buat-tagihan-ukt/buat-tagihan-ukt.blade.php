@@ -15,7 +15,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <a href="{{ route('staff.buat-tagihan') }}" class="btn btn-primary">Buat Tagihan</a>
+                            <a href="{{ route('staff.detail-buat-tagihan') }}" class="btn btn-primary">Buat Tagihan</a>
                         </div>
                     </div>
 

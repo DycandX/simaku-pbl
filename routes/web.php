@@ -89,7 +89,7 @@ Route::middleware(['check.login'])->group(function () {
     
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
     Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
-    Route::get('/staff/buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.buat-tagihan');
+    Route::get('/staff/detail-buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.detail-buat-tagihan');
 
     Route::get('/staff/detail-pembayaran-ukt/{nomor_tagihan}', [detailPembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt.detail');
 
