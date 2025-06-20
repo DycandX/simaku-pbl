@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.staff-app')
 
 @section('title', 'Beasiswa - SIMAKU')
 
