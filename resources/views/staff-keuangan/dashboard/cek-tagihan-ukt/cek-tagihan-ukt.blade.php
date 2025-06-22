@@ -37,18 +37,6 @@
         </div>
     </div>
 </div>
-    <!-- Ditolak (Opsional, jika ada) -->
-    <!--
-    <div class="col-md-3">
-        <div class="status-card rejected">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-times-circle status-icon"></i>
-                <h3>{{ $totalDitolak ?? 2 }}</h3>
-            </div>
-            <p>Ditolak</p>
-        </div>
-    </div>
-    -->
 </div>
 
 <!-- Filter Section -->
@@ -119,6 +107,7 @@
                             <th>No</th>
                             <th>No Tagihan</th>
                             <th>Mahasiswa</th>
+                            <th>Program Studi</th>
                             <th>Semester</th>
                             <th>Total Tagihan</th>
                             <th>Total Dibayar</th>
@@ -127,6 +116,83 @@
                         </tr>
                     </thead>
                     <tbody>
+                    @forelse ($dataTagihan as $index => $ukt)
+                        @php
+
+                            $idUkt =  $ukt['id'];
+                            $mahasiswa =  $ukt['enrollment']['mahasiswa']['nama_lengkap'] ?? '-';
+                            $prodi = $ukt['enrollment']['program_studi']['nama_prodi'] ?? '-';
+                            $semester = $ukt['periode_pembayaran']['nama_periode']; // sesuaikan field
+                            $totalTagihan = number_format($ukt['jumlah_ukt'], 0, ',', '.');
+                        @endphp
+                        @php
+                            $totalDibayar = 0;
+
+                            if (!empty($ukt['pembayaran']) && is_array($ukt['pembayaran'])) {
+                                foreach ($ukt['pembayaran'] as $pembayaran) {
+                                    if (isset($pembayaran['status']) && $pembayaran['status'] === 'terbayar') {
+                                        $nominal = isset($pembayaran['nominal_tagihan']) ? (float) $pembayaran['nominal_tagihan'] : 0;
+                                        $totalDibayar += $nominal;
+                                    }
+                                }
+                            }
+
+                            // Format jadi Rupiah
+                            $totalDibayarFormatted = number_format($totalDibayar, 0, ',', '.');
+                        @endphp
+                        @php
+                            // Ambil nilai jumlah UKT
+                            $jumlahUkt = isset($ukt['jumlah_ukt']) ? (float) $ukt['jumlah_ukt'] : 0;
+
+                            // Hitung total dibayar dari status pembayaran
+                            $totalDibayar = 0;
+
+                            if (!empty($ukt['pembayaran']) && is_array($ukt['pembayaran'])) {
+                                foreach ($ukt['pembayaran'] as $pembayaran) {
+                                    if (isset($pembayaran['status']) && $pembayaran['status'] === 'terbayar') {
+                                        $nominal = isset($pembayaran['nominal_tagihan']) ? (float) $pembayaran['nominal_tagihan'] : 0;
+                                        $totalDibayar += $nominal;
+                                    }
+                                }
+                            }
+
+                            // Tentukan status dan warna badge
+                            if ($totalDibayar >= $jumlahUkt) {
+                                $statusText = 'Sudah Lunas';
+                                $statusBadge = 'success'; // hijau
+                            } else {
+                                $statusText = 'Belum Lunas';
+                                $statusBadge = 'danger'; // merah
+                            }
+                        @endphp
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ 'INV' . str_pad($idUkt, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td>{{ $mahasiswa ?? '-' }}</td>
+                            <td>{{ $prodi }}</td>
+                            <td>{{ $semester }}</td>
+                            <td>Rp {{ $totalTagihan }}</td>
+                            {{-- <td>Rp {{ $totalDibayar ?? 0, 0, ',', '.'}}</td> --}}
+                            <td>Rp {{ number_format($totalDibayar, 0, ',', '.') }}</td>
+                            {{-- Tampilkan badge status --}}
+                            <td>
+                                <span class="badge badge-{{ $statusBadge }}">{{ $statusText }}</span>
+                            </td>
+                            <td>
+                                {{-- ini kalo bisa ambil id nya aja gak usah pake inv segala oke??? --}}
+                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV' . str_pad($idUkt, 5, '0', STR_PAD_LEFT)) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Lihat Tagihan
+                                </a>
+                            </td> 
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center">Tidak ada data tagihan ditemukan.</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+
+                    {{-- <tbody>
                         <tr>
                             <td>01</td>
                             <td>INV00012340B</td>
@@ -207,7 +273,7 @@
                                 </a>
                             </td>
                         </tr>
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
         </div>
