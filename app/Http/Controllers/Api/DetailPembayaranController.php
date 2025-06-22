@@ -33,7 +33,8 @@ class DetailPembayaranController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {   
+        
         $rules = [
             'id_pembayaran_ukt_semester' => 'required|exists:pembayaran_ukt_semester,id',
             'nominal' => 'required|numeric|min:0',

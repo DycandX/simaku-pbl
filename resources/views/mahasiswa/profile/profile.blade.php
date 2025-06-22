@@ -3,28 +3,29 @@
 @section('title', 'Profile Mahasiswa - SIMAKU')
 
 @section('header', 'Profile Mahasiswa')
+
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="row justify-content-center">
-                    <div class="col-6">
-                        <div class="text-center mb-4">
+            <div class="card-body my-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-4 d-flex justify-content-center">
+                            <!-- Profile Image -->
                             <img src="{{ $mahasiswa['foto'] }}"
                                  alt="Profile Picture"
-                                 class="img-fluid rounded"
-                                 style="max-width: 150px; border-radius: 10px;">
+                                 class="img-fluid"
+                                 {{-- style="max-width: 200px; border-radius: 10px;"> --}}
+                                 style="width: 200px; height: 200px; object-fit: cover; border-radius: 10%;">
                         </div>
-
                     </div>
-                    <div class="col-6">
-
+                    
+                    <div class="col-md-7">
                         <div class="row mb-3">
                             <div class="col-sm-4"><strong>Nama :</strong></div>
                             <div class="col-sm-8">{{ $mahasiswa['nama'] }}</div>
                         </div>
-    
                         <div class="row mb-3">
                             <div class="col-sm-4"><strong>NIM :</strong></div>
                             <div class="col-sm-8">{{ $mahasiswa['nim'] }}</div>
@@ -39,11 +40,6 @@
                             <div class="col-sm-4"><strong>No. Telepon :</strong></div>
                             <div class="col-sm-8">{{ $mahasiswa['telepon'] }}</div>
                         </div>
-    
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Email :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['email'] }}</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -52,69 +48,10 @@
 </div>
 @endsection
 
-{{-- @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="row justify-content-center">
-                    <div class="col-md-12">
-                        <div class="text-left mb-4">
-                            <img src="{{ asset('assets/Profile.jpeg') }}"
-                                 alt="Profile Picture"
-                                 class="img-fluid rounded"
-                                 style="max-width: 150px; border-radius: 10px;">
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Nama :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['nama'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>NIM :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['nim'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Fakultas :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['fakultas'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Program Studi :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['prodi'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Kelas :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['kelas'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Golongan UKT :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['golongan_ukt'] }}</div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-4"><strong>Status Mahasiswa :</strong></div>
-                            <div class="col-sm-8">{{ $mahasiswa['status'] }}</div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection --}}
-
-
 @section('styles')
 <style>
     .card {
         background-color: #fff;
-        min-height: 600px;
     }
 
     .card-body {

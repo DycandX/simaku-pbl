@@ -44,27 +44,25 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Detail Daftar Ulang Mahasiswa</h3>
+        <div class="card shadow-sm">
+            <div class="card-header ">
+                <h3 class="card-title mb-0">Detail Daftar Ulang Mahasiswa</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr class="table-header">
+                    <table class="table table-hover align-middle">
+                        <thead class="thead-light">
+                            <tr>
                                 <th>No</th>
                                 <th>No Tagihan</th>
-                                {{-- <th>Mahasiswa</th> --}}
                                 <th>Tanggal Terbit</th>
                                 <th>Jatuh Tempo</th>
                                 <th>Semester</th>
                                 <th>Total</th>
                                 <th>Bank Tujuan</th>
-                                <th>Status</th>
-                                <th>Status Payment</th>
-                                <th>Keterangan Tagihan</th>
-                                <th>Bukti Pembayaran</th>
+                                <th>Status Tagihan</th>
+                                <th>Keterangan</th>
+                                <th>Bukti</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,36 +70,31 @@
                             <tr>
                                 <td>{{ $data['no'] }}</td>
                                 <td>{{ $data['no_tagihan'] }}</td>
-                                {{-- <td>{{ $data['nama_mahasiswa'] }}</td> --}}
                                 <td>{{ $data['tanggal_terbit'] }}</td>
                                 <td>{{ $data['jatuh_tempo'] }}</td>
                                 <td>{{ $data['semester'] }}</td>
                                 <td>{{ $data['total'] }}</td>
-                                <td>{{ $data['bank'] }}</td>
+                                <td class="text-uppercase">{{ $data['bank'] }}</td>
                                 <td>
-                                    <span class="badge {{ $data['status_tagihan'] === 'publish' ? 'status-sudah' : 'status-belum' }}">
+                                    <span class="badge 
+                                        {{ $data['status_tagihan'] === 'publish' ? 'bg-success' : 'bg-secondary' }}">
                                         {{ ucfirst($data['status_tagihan']) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ $data['status_payment'] === 'Sudah Dibayar' ? 'status-sudah' : 'status-belum' }}">
-                                        {{ $data['status_payment'] }}
                                     </span>
                                 </td>
                                 <td>{{ $data['keterangan'] }}</td>
                                 <td>
-                                    @if($data['bukti'])
-                                        <a href="{{ asset($data['bukti']) }}" target="_blank">
-                                            <i class="far fa-eye view-icon"></i>
+                                    @if($data['bukti'] !== '-' && $data['bukti'] !== null)
+                                            <a href="{{ asset('storage/' . $data['bukti']) }}" class="btn btn-sm btn-primary" title="Lihat Bukti" target="_blank">
+                                                <i class="far fa-eye"></i>
                                         </a>
                                     @else
-                                        -
+                                        <span class="text-muted">-</span>
                                     @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="12" class="text-center">Data tidak tersedia.</td>
+                                <td colspan="11" class="text-center text-muted">Data tidak tersedia.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -109,9 +102,10 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="text-muted">Showing 1-3 of 2</div>
+                    <div class="text-muted">Menampilkan {{ $dataTransaksi->count() }} data</div>
+                    {{-- Optional Pagination --}}
                     <nav aria-label="Page navigation">
-                        <ul class="pagination">
+                        <ul class="pagination mb-0">
                             <li class="page-item disabled">
                                 <a class="page-link" href="#" tabindex="-1">
                                     <i class="fas fa-chevron-left"></i>
@@ -125,22 +119,24 @@
                         </ul>
                     </nav>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
+{{-- Riwayat Daftar Ulang --}}
 <div class="row mt-4">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Riwayat Daftar Ulang Mahasiswa</h3>
+        <div class="card shadow-sm">
+            <div class="card-header ">
+                <h3 class="card-title mb-0">Riwayat Daftar Ulang Mahasiswa</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr class="table-header">
+                    <table class="table table-hover align-middle">
+                        <thead class="thead-light">
+                            <tr>
                                 <th>No</th>
                                 <th>Kelas</th>
                                 <th>Semester</th>
@@ -156,14 +152,21 @@
                                 <td>{{ str_pad($item['no'], 2, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $item['kelas'] }}</td>
                                 <td>{{ $item['semester'] }}</td>
-                                <td>{{ $item['daftar_ulang'] }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ $item['daftar_ulang'] }}</span>
+                                </td>
                                 <td>{{ $item['tanggal_daftar_ulang'] }}</td>
-                                <td>{{ ucfirst ($item['status']) }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {{ $item['status'] === 'aktif' ? 'bg-primary' : 'bg-secondary' }}">
+                                        {{ ucfirst($item['status']) }}
+                                    </span>
+                                </td>
                                 <td>{{ $item['urutan_semester'] }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">Belum ada data daftar ulang.</td>
+                                <td colspan="7" class="text-center text-muted">Belum ada data daftar ulang.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -174,6 +177,7 @@
     </div>
 </div>
 @endsection
+
 
 @section('scripts')
 <script>

@@ -39,7 +39,8 @@ class PengajuanCicilanController extends Controller
             'id_ukt_semester' => 'required|exists:ukt_semester,id',
             'jumlah_angsuran_diajukan' => 'required|integer|min:1',
             'alasan_pengajuan' => 'nullable|string',
-            'file_path' => 'required|string|max:255',
+            // 'file_path' => 'required|string|max:255',
+            'file_path' => 'required|file|mimes:pdf|max:2048',
             'status' => 'in:pending,approved,rejected',
             'approved_by' => 'nullable|exists:staff,id',
             'approved_at' => 'nullable|date',
@@ -124,7 +125,7 @@ class PengajuanCicilanController extends Controller
             $rules['alasan_pengajuan'] = 'nullable|string';
         }
         if ($request->has('file_path')) {
-            $rules['file_path'] = 'required|string|max:255';
+            $rules['file_path'] = 'required|file|mimes:pdf|max:2048';
         }
         if ($request->has('status')) {
             $rules['status'] = 'in:pending,approved,rejected';
