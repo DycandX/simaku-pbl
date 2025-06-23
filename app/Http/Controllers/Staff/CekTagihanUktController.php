@@ -9,24 +9,6 @@ use Illuminate\Support\Facades\Http;
 
 class CekTagihanUktController extends Controller
 {
-    /**
-     * Display a listing of the UKT bills.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function index()
-    // {
-    //     // In a real application, you would fetch this data from your database
-    //     // For now, we'll use dummy data
-    //     $data = [
-    //         'totalSudahLunas' => 1000,
-    //         'totalBelumLunas' => 4500,
-    //         'totalSemuaTagihan' => 5500,
-    //     ];
-
-    //     return view('staff-keuangan.dashboard.cek-tagihan-ukt.cek-tagihan-ukt', $data);
-    // }
-
     public function index()
     {
         $userData = Session::get('user_data');
@@ -51,20 +33,36 @@ class CekTagihanUktController extends Controller
             'dataTagihan' => $dataTagihan,
         ]);
     }
-    /**
-     * Display the specified UKT bill details.
-     *
-     * @param  string  $noTagihan
-     * @return \Illuminate\Http\Response
-     */
-    public function detail($noTagihan)
+    
+    public function detail($idUkt)
     {
-        // In a real application, you would fetch this specific bill data from your database
-        // using the $noTagihan parameter
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
+        //dd($idUkt);
 
-        // For now, we're just returning the view without specific data
-        return view('staff-keuangan.dashboard.cek-tagihan-ukt.cek-tagihan-ukt-detail');
+        // Check if user is logged in
+        if (!$userData || !$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        // Validate user role
+        if (!in_array($userData['role'], ['admin', 'staff'])) {
+            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+        }
+
+        // Fetch detail tagihan dari API berdasarkan ID UKT
+        $detailTagihan = $this->getApiData("/api/ukt-semester/{$idUkt}", [], $token);
+
+        if (!$detailTagihan) {
+            return redirect()->route('staff.cek-tagihan-ukt.index')->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
+        }
+        //dd($detailTagihan);
+        // Kirim data ke view detail
+        return view('staff-keuangan.dashboard.cek-tagihan-ukt.cek-tagihan-ukt-detail', [
+            'detailTagihan' => $detailTagihan,
+        ]);
     }
+
 
     private function getApiData($endpoint, $queryParams = [], $token)
     {

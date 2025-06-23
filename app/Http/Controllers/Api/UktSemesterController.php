@@ -68,7 +68,16 @@ class UktSemesterController extends Controller
 
     public function show($id)
     {
-        $data = UktSemester::with(['enrollment.mahasiswa', 'periodePembayaran', 'pembayaran', 'pengajuanCicilan', 'pembayaran.detailPembayaran'])->find($id);
+        $data = UktSemester::with(['enrollment.mahasiswa',
+        'enrollment.programStudi',
+        'enrollment.golonganUkt',
+        'enrollment.kelas',
+        'enrollment.tingkat',
+        'enrollment.tahunAkademik',
+        'periodePembayaran',
+        'pembayaran.detailPembayaran',
+        'pengajuanCicilan'])->find($id);
+        // $data = UktSemester::with(['enrollment.mahasiswa', 'periodePembayaran', 'pembayaran', 'pengajuanCicilan', 'pembayaran.detailPembayaran'])->find($id);
 
         if (!$data) {
             return response()->json([

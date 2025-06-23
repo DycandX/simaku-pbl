@@ -101,7 +101,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="uktTable">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -172,16 +172,14 @@
                             <td>{{ $prodi }}</td>
                             <td>{{ $semester }}</td>
                             <td>Rp {{ $totalTagihan }}</td>
-                            {{-- <td>Rp {{ $totalDibayar ?? 0, 0, ',', '.'}}</td> --}}
                             <td>Rp {{ number_format($totalDibayar, 0, ',', '.') }}</td>
                             {{-- Tampilkan badge status --}}
                             <td>
                                 <span class="badge badge-{{ $statusBadge }}">{{ $statusText }}</span>
                             </td>
                             <td>
-                                {{-- ini kalo bisa ambil id nya aja gak usah pake inv segala oke??? --}}
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV' . str_pad($idUkt, 5, '0', STR_PAD_LEFT)) }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
+                                <a href="{{ route('staff.cek-tagihan-ukt.detail', $idUkt) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Lihat Tagihan
                                 </a>
                             </td> 
                         </tr>
@@ -191,89 +189,6 @@
                         </tr>
                     @endforelse
                     </tbody>
-
-                    {{-- <tbody>
-                        <tr>
-                            <td>01</td>
-                            <td>INV00012340B</td>
-                            <td>Zirilda Syafira</td>
-                            <td>2023/2024 - Genap</td>
-                            <td>Rp 2.600.000,00</td>
-                            <td>Rp 2.600.000,00</td>
-                            <td>
-                                <span class="badge badge-success">Sudah Lunas</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV00012340B') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>02</td>
-                            <td>INV001234501</td>
-                            <td>Fadhil Ramadhan</td>
-                            <td>2023/2024 - Genap</td>
-                            <td>Rp 3.000.000,00</td>
-                            <td>Rp 3.000.000,00</td>
-                            <td>
-                                <span class="badge badge-success">Sudah Lunas</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV001234501') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>03</td>
-                            <td>INV001234502</td>
-                            <td>Aisyah Hanifah</td>
-                            <td>2023/2024 - Genap</td>
-                            <td>Rp 3.000.000,00</td>
-                            <td>Rp 2.850.000,00</td>
-                            <td>
-                                <span class="badge badge-warning">Belum Lunas</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV001234502') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>04</td>
-                            <td>INV001234503</td>
-                            <td>Yudha Prasetyo</td>
-                            <td>2023/2024 - Genap</td>
-                            <td>Rp 2.700.000,00</td>
-                            <td>Rp 2.700.000,00</td>
-                            <td>
-                                <span class="badge badge-success">Sudah Lunas</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV001234503') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>05</td>
-                            <td>INV001234506</td>
-                            <td>Siti Nurhaliza</td>
-                            <td>2023/2024 - Genap</td>
-                            <td>Rp 2.950.000,00</td>
-                            <td>Rp 2.950.000,00</td>
-                            <td>
-                                <span class="badge badge-success">Sudah Lunas</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', 'INV001234506') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat Tagihan
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody> --}}
                 </table>
             </div>
         </div>
@@ -311,19 +226,50 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Filter functionality can be implemented here
-        $('.btn-primary').on('click', function() {
-            // Implementasi filter
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSemester = document.getElementById('filterSemester');
+        const filterProdi = document.getElementById('filterProdi');
+        const filterStatus = document.getElementById('filterStatus');
+        const searchInput = document.getElementById('searchInput');
+        const filterButton = document.querySelector('.btn.btn-primary');
+        const resetButton = document.querySelector('.btn.btn-outline-secondary');
+        const rows = document.querySelectorAll('#uktTable tbody tr');
 
-        // Reset filter
-        $('.btn-outline-secondary').on('click', function() {
-            $('#filterSemester').val('');
-            $('#filterProdi').val('');
-            $('#filterStatus').val('');
-            $('#searchInput').val('');
-        });
+        function applyFilter() {
+            const semesterVal = filterSemester.value.toLowerCase();
+            const prodiVal = filterProdi.value.toLowerCase();
+            const statusVal = filterStatus.value.toLowerCase();
+            const searchVal = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                const semester = row.children[4].textContent.toLowerCase();
+                const prodi = row.children[3].textContent.toLowerCase();
+                const status = row.children[7].textContent.toLowerCase();
+                const mahasiswa = row.children[2].textContent.toLowerCase();
+
+                const matchSemester = !semesterVal || semester.includes(semesterVal);
+                const matchProdi = !prodiVal || prodi.includes(prodiVal);
+                const matchStatus = !statusVal || status.includes(statusVal);
+                const matchSearch = !searchVal || mahasiswa.includes(searchVal);
+
+                if (matchSemester && matchProdi && matchStatus && matchSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function resetFilter() {
+            filterSemester.value = '';
+            filterProdi.value = '';
+            filterStatus.value = '';
+            searchInput.value = '';
+            applyFilter();
+        }
+
+        filterButton.addEventListener('click', applyFilter);
+        resetButton.addEventListener('click', resetFilter);
     });
 </script>
 @endsection
