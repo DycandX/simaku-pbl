@@ -21,8 +21,9 @@ use App\Http\Controllers\Staff\CekTagihanUktController;
 use App\Http\Controllers\Staff\staffDetailDataMahasiswaController;
 use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaController;
 use App\Http\Controllers\staffDataMahasiswaController as ControllersStaffDataMahasiswaController;
-use App\Http\Controllers\Staff\staffBuatTagihanUktKlikController;
 use App\Http\Controllers\Staff\StaffDetailBeasiswaController;
+use App\Http\Controllers\Staff\StaffDetailBuatTagihanUktController;
+
 
 
 
@@ -88,8 +89,15 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff-keuangan/data-banding-ukt', [dataBandingUktController::class, 'index'])->name('staff-keuangan.data-mahasiswa.data-banding-ukt');
     
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
+
+
+    // buat tagihan (view list data log)
     Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
-    Route::get('/staff/detail-buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.detail-buat-tagihan');
+    Route::get('/staff/buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.buat-tagihan-ukt.create');
+
+    // detail buat tagihan (generate)
+    Route::get('/staff/tagihan-ukt', [StaffDetailBuatTagihanUktController::class, 'index'])->name('staff.detail-buatTagihanUkt.index');
+    Route::post('/staff/tagihan-ukt/create', [StaffDetailBuatTagihanUktController::class, 'create'])->name('staff.detail-buatTagihanUkt.create');
 
     Route::get('/staff/detail-pembayaran-ukt/{nomor_tagihan}', [detailPembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt.detail');
 

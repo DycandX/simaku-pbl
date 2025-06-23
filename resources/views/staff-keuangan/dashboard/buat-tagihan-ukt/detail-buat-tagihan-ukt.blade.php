@@ -13,22 +13,23 @@
                     <!-- Form Header -->
                     <h5 class="mb-4">Form Data Tagihan UKT</h5>
 
-                    <form>
+                    <form action="{{ route('staff.detail-buatTagihanUkt.create') }}" method="POST">
+                        @csrf
                         <div class="mb-3">
                             <label for="tagihan" class="form-label">Tagihan</label>
                             <select class="form-select" id="tagihan" name="tagihan">
-                                <option value="tagihan_ukt_2023_genap">TAGIHAN UKT 2023 - Genap</option>
-                                <option value="tagihan_ukt_2023_gasal">TAGIHAN UKT 2023 - Gasal</option>
-                                <option value="tagihan_ukt_2024_genap">TAGIHAN UKT 2024 - Genap</option>
-                                <option value="tagihan_ukt_2024_gasal">TAGIHAN UKT 2024 - Gasal</option>
+                                @foreach ($periodePembayaran as $periode)
+                                    <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="mahasiswa" class="form-label">Pilih Mahasiswa</label>
                             <select class="form-select" id="mahasiswa" name="mahasiswa">
-                                <option value="all_mahasiswa">All Mahasiswa</option>
-                                <!-- Dynamically load students here -->
+                                @foreach ($mahasiswaData as $mahasiswa)
+                                    <option value="{{ $mahasiswa['id'] }}">{{ $mahasiswa['mahasiswa']['nama_lengkap'] }}</option>
+                                @endforeach
                             </select>
                         </div>
 
