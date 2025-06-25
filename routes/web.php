@@ -82,18 +82,19 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff-profile', [staffprofileController::class, 'index'])->name('staff-profile');
     //Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'showDataMahasiswa'])->name('staff.keuangan.data-mahasiswa');
     Route::get('/staff-keuangan/data-mahasiswa', [staffDataMahasiswaController::class, 'index'])->name('staff-keuangan.data-mahasiswa');
-    
+
     Route::get('/staff-keuangan/data-mahasiswa/detail-data-mahasiswa/{nim}', [StaffDetailDataMahasiswaController::class, 'index'])->name('staff-keuangan.data-mahasiswa.detail-data-mahasiswa');
 
 
     Route::get('/staff-keuangan/data-banding-ukt', [dataBandingUktController::class, 'index'])->name('staff-keuangan.data-mahasiswa.data-banding-ukt');
-    
+
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
 
 
     // buat tagihan (view list data log)
     Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
     Route::get('/staff/buat-tagihan', [staffBuatTagihanUktController::class, 'create'])->name('staff.buat-tagihan-ukt.create');
+    Route::post('/staff/detail-buat-tagihan-ukt/preview', [staffDetailBuatTagihanUktController::class, 'preview'])->name('staff.detail-buatTagihanUkt.preview');
 
     // detail buat tagihan (generate)
     Route::get('/staff/tagihan-ukt', [StaffDetailBuatTagihanUktController::class, 'index'])->name('staff.detail-buatTagihanUkt.index');
@@ -109,4 +110,4 @@ Route::middleware(['check.login'])->group(function () {
 });
 
 // Lihat Tagihan route
-Route::get('/lihat-tagihan/{id}', [TagihanController::class, 'show'])->name('lihat-tagihan'); 
+Route::get('/lihat-tagihan/{id}', [TagihanController::class, 'show'])->name('lihat-tagihan');
