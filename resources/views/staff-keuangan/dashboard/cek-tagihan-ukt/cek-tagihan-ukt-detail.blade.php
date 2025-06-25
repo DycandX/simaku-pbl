@@ -133,7 +133,6 @@
                                 }
                             }
                         @endphp
-
                             <tr>
                                 <td>{{ 'INV' . str_pad($id, 5, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $periode }}</td>
@@ -148,67 +147,6 @@
                         </tbody>
                     </table>
                 </div>
-
-
-                {{-- <div class="mt-4">
-                    <h5>Riwayat Pembayaran</h5>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tanggal Bayar</th>
-                                    <th>Jumlah</th>
-                                    <th>Metode</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>10-Feb-2024</td>
-                                    <td>Rp 1.300.000,00</td>
-                                    <td>Transfer Bank</td>
-                                    <td><span class="badge-diverifikasi">Terverifikasi</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>18-Feb-2024</td>
-                                    <td>Rp 1.300.000,00</td>
-                                    <td>Transfer Bank</td>
-                                    <td><span class="badge-diverifikasi">Terverifikasi</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div> --}}
-
-                {{-- <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card bg-light">
-                            <div class="card-header">
-                                <h5 class="card-title">Informasi Pembayaran</h5>
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Bank:</strong> Bank Mandiri</p>
-                                <p><strong>No. Rekening:</strong> 1234-5678-9012-3456</p>
-                                <p><strong>Atas Nama:</strong> Universitas XYZ</p>
-                                <p><small>* Harap sertakan No. Tagihan pada keterangan transfer</small></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card bg-light">
-                            <div class="card-header">
-                                <h5 class="card-title">Catatan</h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Pembayaran telah diverifikasi dan lunas.</p>
-                                <p><small>Diverifikasi oleh: Staff Keuangan pada 18-Feb-2024</small></p>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </div>

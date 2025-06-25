@@ -5,42 +5,48 @@
 @section('header', 'Cek Tagihan UKT')
 
 @section('content')
-<div class="row mb-4">
+<div class="row ">
     <!-- Semua Tagihan -->
-    <div class="col-md-4">
-        <div class="status-card bg-info text-white">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-file-invoice status-icon"></i>
-                <h3>{{ $totalSemuaTagihan ?? 5500 }}</h3>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Semua Tagihan</h5>
+                <h3 class="mb-0 text-primary">{{ $totalSemuaTagihan }}</h3> 
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
             </div>
-            <p>Semua Tagihan</p>
         </div>
     </div>
     <!-- Sudah Lunas -->
-    <div class="col-md-4">
-        <div class="status-card verified">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-check-circle status-icon"></i>
-                <h3>{{ $totalSudahLunas ?? 1000 }}</h3>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Sudah Lunas</h5>
+                <h3 class="mb-0 text-success">{{ $totalSudahLunas }}</h3> 
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
             </div>
-            <p>Sudah Lunas</p>
         </div>
     </div>
     <!-- Belum Lunas -->
-    <div class="col-md-4">
-        <div class="status-card unverified">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-clock status-icon"></i>
-                <h3>{{ $totalBelumLunas ?? 4500 }}</h3>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Belum Lunas</h5>
+                <h3 class="mb-0 text-danger">{{ $totalBelumLunas }}</h3> 
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
             </div>
-            <p>Belum Lunas</p>
         </div>
     </div>
 </div>
 </div>
 
 <!-- Filter Section -->
-<div class="col-12 mb-4">
+<div class="col-12 mb-2">
     <div class="filter-section">
         <div class="row">
             <div class="col-md-3 mb-3">
@@ -48,9 +54,9 @@
                     <label for="filterSemester">Semester</label>
                     <select class="form-control" id="filterSemester">
                         <option value="">Semua Semester</option>
-                        <option value="2023/2024 - Genap" selected>2023/2024 - Genap</option>
-                        <option value="2023/2024 - Ganjil">2023/2024 - Ganjil</option>
-                        <option value="2022/2023 - Genap">2022/2023 - Genap</option>
+                        @foreach($periodePembayaran as $periode)
+                            <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -59,12 +65,15 @@
                     <label for="filterProdi">Program Studi</label>
                     <select class="form-control" id="filterProdi">
                         <option value="">Semua Program Studi</option>
-                        <option value="D4 - Manajemen Bisnis" selected>D4 - Manajemen Bisnis</option>
-                        <option value="D4 - Teknik Informatika">D4 - Teknik Informatika</option>
-                        <option value="D4 - Akuntansi">D4 - Akuntansi</option>
+                        @foreach($programStudi as $prodi)
+                            <option value="{{ $prodi['nama_prodi'] }}">
+                                {{ $prodi['nama_prodi'] }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
+
             <div class="col-md-3 mb-3">
                 <div class="form-group">
                     <label for="filterStatus">Status</label>
@@ -78,7 +87,7 @@
             <div class="col-md-3 mb-3">
                 <div class="form-group">
                     <label for="searchInput">Cari</label>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Nama/NIM...">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
                 </div>
             </div>
             <div class="col-md-12">
@@ -166,7 +175,8 @@
                             }
                         @endphp
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            {{-- <td>{{ $index + 1 }}</td> --}}
+                            <td>{{ $dataTagihan->firstItem() + $index }}</td>
                             <td>{{ 'INV' . str_pad($idUkt, 5, '0', STR_PAD_LEFT) }}</td>
                             <td>{{ $mahasiswa ?? '-' }}</td>
                             <td>{{ $prodi }}</td>
@@ -178,7 +188,7 @@
                                 <span class="badge badge-{{ $statusBadge }}">{{ $statusText }}</span>
                             </td>
                             <td>
-                                <a href="{{ route('staff.cek-tagihan-ukt.detail', $idUkt) }}" class="btn btn-info btn-sm">
+                                <a href="{{ route('staff.cek-tagihan-ukt.detail', $idUkt) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-eye"></i> Lihat Tagihan
                                 </a>
                             </td> 
@@ -192,7 +202,7 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer">
+        {{-- <div class="card-footer">
             <div class="row">
                 <div class="col-sm-12 col-md-5">
                     <div class="pagination-info">
@@ -217,6 +227,20 @@
                             <a class="page-link" href="#">Selanjutnya</a>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div> --}}
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-sm-12 col-md-5">
+                    <div class="pagination-info">
+                        Menampilkan {{ $dataTagihan->firstItem() }} - {{ $dataTagihan->lastItem() }} dari {{ $dataTagihan->total() }} data
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-7">
+                    <div class="d-flex justify-content-end">
+                        {{ $dataTagihan->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
             </div>
         </div>

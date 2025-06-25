@@ -70,8 +70,13 @@ Route::middleware(['check.login'])->group(function () {
 
 
     // ADDED: Route pengajuan cicilan staff dengan detail, approve, dan reject
-    Route::get('/staff/pengajuan-cicilan', [PengajuanCicilanStaffController::class, 'x'])->name('staff.pengajuan-cicilan');
+    Route::get('/staff/pengajuan-cicilan', [PengajuanCicilanStaffController::class, 'index'])->name('staff.pengajuan-cicilan');
     Route::get('/staff/pengajuan-cicilan/{id}', [PengajuanCicilanStaffController::class, 'show'])->name('staff.pengajuan-cicilan.detail');
+    Route::get('/staff/pengajuan-cicilan/{id}/form-cicilan', [PengajuanCicilanStaffController::class, 'formUpdateCicilan'])->name('pengajuan-cicilan.form-update-cicilan');
+    Route::put('/pengajuan-cicilan/{id}/update-status', [PengajuanCicilanStaffController::class, 'updateStatus'])->name('pengajuan-cicilan.update-status');
+    Route::put('/staff/pengajuan-cicilan/{id}/hasil-cicilan', [PengajuanCicilanStaffController::class, 'updateHasilCicilan'])->name('staff.pengajuan-cicilan.update-hasil-cicilan');
+
+
     Route::post('/staff/pengajuan-cicilan/{id}/approve', [PengajuanCicilanStaffController::class, 'approve'])->name('staff.pengajuan-cicilan.approve');
     Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');
 
