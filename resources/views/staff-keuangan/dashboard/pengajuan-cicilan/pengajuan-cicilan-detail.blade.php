@@ -269,9 +269,19 @@
                     <a href="{{ route('pengajuan-cicilan.form-update-cicilan', ['id' => $detailPengajuanCicilan['id']]) }}" class="btn btn-primary mr-3">
                         <i class="fas fa-upload mr-1"></i> Buat Hasil Pengajuan Cicilan
                     </a>
-                    <a href="{{ route('staff.pengajuan-cicilan') }}" class="btn btn-primary">
-                        <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
-                    </a>
+                    
+                    @if (strtolower($detailPengajuanCicilan['status']) === 'approved')
+                        <form action="{{ route('pengajuan-cicilan.buat-tagihan-baru', $detailPengajuanCicilan['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin membuat tagihan cicilan baru? Tagihan lama akan dibatalkan.')">
+                            @csrf
+                            <button type="submit" class="btn btn-success mr-3">
+                                <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" class="btn btn-success mr-3" disabled title="Pengajuan harus disetujui terlebih dahulu">
+                            <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
