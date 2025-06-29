@@ -111,58 +111,6 @@
                                 </p>
                             </div>
                         </div>
-
-                        {{-- <div class="row mb-3">
-                            <div class="col-4">
-                                <p class="mb-0"><strong>Status Verifikasi:</strong></p>
-                            </div>
-                            <div class="col-8">
-                                @php
-                                    $status = $uktSemester['pembayaran'][0]['detail_pembayaran'][0]['status'] ?? null;
-                                @endphp
-
-                                @if($status === 'verified')
-                                    <span class="badge badge-success">Berhasil diverifikasi</span>
-                                @elseif($status === 'rejected')
-                                    <span class="badge badge-danger">Pembayaran ditolak</span>
-                                @elseif($status === 'pending')
-                                    <span class="badge badge-warning">Menunggu diverifikasi</span>
-                                @else
-                                    <span class="badge badge-secondary">Status tidak diketahui</span>
-                                @endif
-                            </div>
-                        </div> --}}
-{{--                         
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-4">
-                                <p class="mb-0"><strong>Status Payment :</strong></p>
-                            </div>
-                            <div class="col-8">
-                                @if($detailPembayaran['status'] == 'pending')
-                                    <span class="badge badge-warning">Menunggu Verifikasi</span>
-                                @elseif($detailPembayaran['status'] == 'verified')
-                                    <span class="badge badge-success">Sudah Lunas</span>
-                                @elseif($detailPembayaran['status'] == 'rejected')
-                                    <span class="badge badge-danger">Pembayaran Ditolak</span>
-                                @else
-                                    <span class="badge badge-secondary">Status Tidak Diketahui</span>
-                                @endif
-                            </div>
-                        </div> --}}
-                        {{-- <div class="row mb-3">
-                            <div class="col-4">
-                                <p class="mb-0"><strong>Dibayar Melalui :</strong></p>
-                            </div>
-                            <div class="col-8">
-                                @if($detailPembayaran['metode_pembayaran'] != '-')
-                                <span class="badge badge-info">{{ $detailPembayaran['metode_pembayaran'] }}</span>
-                                @else
-                                <p class="text-dark mb-0">{{ $detailPembayaran['metode_pembayaran'] }}</p>
-                                @endif
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="row mb-3">
                             <div class="col-4">
                                 <p class="mb-0"><strong>Tagihan :</strong></p>
@@ -175,21 +123,40 @@
                         </div>
                     <div class="row mb-3">
                             <div class="col-4">
-                                <p class="mb-0"><strong>Tagihan :</strong></p>
+                                <p class="mb-0"><strong>Metode Pembayaran :</strong></p>
                             </div>
                             <div class="col-8">
                             @php
-                                    $sudahAjukanCicilan = false;
+                                $sudahAjukanCicilan = false;
+                                $totalTagihan = 0;
+                                $totalTerbayar = 0;
 
-                                    // Cek jika ada lebih dari 1 pembayaran (artinya cicilan sudah diajukan)
-                                    if (!empty($uktSemester['pembayaran']) && count($uktSemester['pembayaran']) > 1) {
+                                if (!empty($uktSemester['pembayaran'])) {
+                                    foreach ($uktSemester['pembayaran'] as $pembayaran) {
+                                        $totalTagihan += $pembayaran['nominal_tagihan'];
+
+                                        // Hitung total pembayaran yang sudah terverifikasi
+                                        foreach ($pembayaran['detail_pembayaran'] as $detail) {
+                                            if (strtolower($detail['status'] ?? '') === 'verified') {
+                                                $totalTerbayar += $detail['nominal'];
+                                            }
+                                        }
+                                    }
+
+                                    // Jika ada lebih dari satu pembayaran, maka cicilan sudah diajukan
+                                    if (count($uktSemester['pembayaran']) > 1) {
                                         $sudahAjukanCicilan = true;
                                     }
-                                @endphp
 
+                                    // Tapi kalau seluruh tagihan sudah terbayar, maka anggap tidak bisa ajukan cicilan
+                                    if ($totalTerbayar >= $totalTagihan) {
+                                        $sudahAjukanCicilan = true;
+                                    }
+                                }
+                            @endphp
                                 <div>
                                     {{-- Tombol Pembayaran Langsung selalu ditampilkan --}}
-                                    <a href="{{ route('pengajuan.cicilan', ['id' => $uktSemester['id']]) }}" class="btn btn-primary btn-sm">
+                                    <a href="#" class="btn btn-primary btn-sm">
                                         Pembayaran Langsung
                                     </a>
 
@@ -199,43 +166,21 @@
                                             Ajukan Cicilan
                                         </a>
                                     @endif
-                                
+                                </div>
                             </div>
                         </div>
 
-{{--                         
-                        <div class="row mb-3">
-                            <div class="col-">
-                                <p class="mb-0"><strong>Pilih Metode Pembayaran :</strong></p>
+                        @if (!empty($uktsemester['pengajuan_cicilan']) && isset($uktsemester['pengajuan_cicilan'][0]['id']))
+                            <!-- Pengajuan cicilan sudah masuk -->
+                            <div class="alert alert-warning mt-2 mb-2" role="alert">
+                                <i class="fas fa-info-circle"></i> Pengajuan cicilan anda sudah masuk, silahkan lanjutkan proses selanjutnya.
                             </div>
-                            <div class="col-12">
-                                @php
-                                    $sudahAjukanCicilan = false;
-
-                                    // Cek jika ada lebih dari 1 nominal_tagihan (artinya cicilan sudah diajukan)
-                                    if (!empty($uktSemester['pembayaran']) && count($uktSemester['pembayaran']) > 1) {
-                                        $sudahAjukanCicilan = true;
-                                    }
-                                @endphp
-
-                                @if(!$uktSemester['is_fully_paid'])
-                                    <div>
-                                        <a href="{{ route('pengajuan.cicilan', ['id' => $uktSemester['id']]) }}" class="btn btn-primary btn-sm">
-                                            Pembayaran Langsung
-                                        </a>
-
-                                        @if(!$sudahAjukanCicilan)
-                                            <a href="{{ route('pengajuan.cicilan', ['id' => $uktSemester['id']]) }}" class="btn btn-success btn-sm">
-                                                Ajukan Cicilan
-                                            </a>
-                                        @endif
-                                    </div>
-                                @else
-                                    <p class="text-dark mb-0">Sudah pengajuan cicilan</p>
-                                @endif
+                        @else
+                            <!-- Belum ada pengajuan cicilan -->
+                            <div class="alert alert-warning mt-2 mb-2" role="alert">
+                                <i class="fas fa-exclamation-triangle"></i> Silahkan pilih untuk metode pembayaran anda.
                             </div>
-                        </div> --}}
-                        
+                        @endif
                      </div>
                 </div>
 
@@ -261,8 +206,7 @@
                         // Hitung belum dibayar
                         $belumDibayar = (float) $totalTagihan - (float) $terbayar;
                     @endphp
-
-                    <div class="table-responsive mb-4 mt-3">
+                    <div class="table-responsive ">
                         <table class="table table-bordered">
                             <thead class="thead-light">
                                 <tr class="text-center">
@@ -271,7 +215,7 @@
                                     <th>Terbayar</th>
                                     <th>Belum Dibayar</th>
                                     <th>Status Verifikasi</th>
-                                    <th>Metode Pembayaran</th>
+                                    <th>Dibayar Melalui</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -304,67 +248,6 @@
                     </div>
                 @endforeach
 
-{{-- 
-                @php
-                    // Ambil total tagihan
-                    $totalTagihan = $detailPembayaran['pembayaran_ukt_semester']['ukt_semester']['jumlah_ukt'];
-
-                    // Default terbayar 0
-                    $terbayar = 0;
-
-                    // Cek jika pembayaran ada dan status-nya verified
-                    if (
-                        isset($detailPembayaran['nominal']) &&
-                        $detailPembayaran['pembayaran_ukt_semester']['status'] === 'terbayar'
-                    ) {
-                        $terbayar = $detailPembayaran['nominal'];
-                    }
-
-                    // Hitung belum dibayar
-                    $belumDibayar = (float) $totalTagihan - (float) $terbayar;
-                @endphp
-
-                <!-- Table Tagihan -->
-                <div class="table-responsive mb-4 mt-3">
-                    <table class="table table-bordered">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="text-center">Tagihan</th>
-                                <th class="text-center">Terbayar</th>
-                                <th class="text-center">Belum Dibayar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-center">Rp{{ number_format($totalTagihan, 0, ',', '.') }}</td>
-                                <td class="text-center text-success">Rp{{ number_format($terbayar, 0, ',', '.') }}</td>
-                                <td class="text-center text-danger">Rp{{ number_format($belumDibayar, 0, ',', '.') }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-
-
-                <!-- VA Payment Info -->
-                <div class="row mb-2">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-4">
-                                <p class="mb-0"><strong>No VA :</strong></p>
-                            </div>
-                            <div class="col-8">
-                                <p class="text-dark mb-0">{{ $detailPembayaran['kode_referensi'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Warning Alert -->
-                <div class="alert alert-warning mb-4" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i> Nomor VA akan muncul setelah metode pembayaran dipilih, dan memerlukan beberapa waktu untuk memproses No VA
-                </div>
-
                 <!-- Notes -->
                 <div class="row mb-2">
                     <div class="col-md-6">
@@ -390,22 +273,25 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
-
-                {{-- <!-- Upload Bukti Pembayaran Section -->
+                </div> 
+            </div>
+        </div>
+                <!-- Upload Bukti Pembayaran Section -->
                 <div class="card mt-4">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">Upload Bukti Pembayaran</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Tombol Upload -->
                         <div class="mb-3">
-                            <a href="{{ route('upload-bukti-pembayaran', ['id' => $detailPembayaran ['id']]) }}" class="btn btn-primary" style="min-width: 220px;">
+                            {{-- <a href="{{ route('upload-bukti-pembayaran', ['id' => $uktSemester['id']]) }}" class="btn btn-primary" style="min-width: 220px;"> --}}
+                            <a href="{{ route('upload-bukti-pembayaran', ['id' => $uktSemester['id']]) }}" class="btn btn-primary" style="min-width: 220px;">
                                 <i class="fas fa-plus"></i> Tambah Bukti Pembayaran
                             </a>
-                        </div> --}}
+                        </div>
 
                         <!-- Tabel Upload Bukti Pembayaran -->
-                        {{-- <div class="table-responsive">
+                        <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
@@ -419,35 +305,54 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($detailPembayaran['pembayaran_ukt_semester']['status']== 'terbayar')
-                                    <tr>
-                                        <td class="text-center">01</td>
-                                        <td>{{ $pembayaranUkt['mahasiswa'] ['nama_lengkap'] }}</td>
-                                        <td>BANK {{ $detailPembayaran['metode_pembayaran'] }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($detailPembayaran['tanggal_pembayaran'])->translatedFormat('d F Y') }}</td>
-                                        <td>Rp{{ number_format($detailPembayaran['nominal'], 0, ',', '.') }}</td>
-                                        
-                                        <td>-</td>
-                                        <td class="text-center">
-                                            <a href="#" class="btn btn-sm btn-primary" title="Download">
-                                                <i class="fas fa-download"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-sm btn-success" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    @if (!empty($uktSemester['pembayaran']) && count($uktSemester['pembayaran']) > 0)
+                                        @php $adaBukti = false; @endphp
+
+                                        @foreach ($uktSemester['pembayaran'] as $index => $pembayaran)
+                                            @if (!empty($pembayaran['detail_pembayaran']) && count($pembayaran['detail_pembayaran']) > 0)
+                                                @php
+                                                    $detail = $pembayaran['detail_pembayaran'][0];
+                                                    $adaBukti = true;
+                                                @endphp
+                                                <tr>
+                                                    <td class="text-center">{{ $index + 1 }}</td>
+                                                    <td>{{ $uktSemester['enrollment']['mahasiswa']['nama_lengkap'] }}</td>
+                                                    <td>BANK {{ $detail['metode_pembayaran'] }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($detail['tanggal_pembayaran'])->translatedFormat('d F Y') }}</td>
+                                                    <td>Rp{{ number_format($detail['nominal'], 0, ',', '.') }}</td>
+                                                    <td>{{ $detail['catatan'] ?? '-' }}</td>
+                                                    <td class="text-center">
+                                                        {{-- <a href="{{ asset('storage/' . $detail['bukti_pembayaran_path']) }}" download class="btn btn-sm btn-primary"> --}}
+                                                             <a href="{{ asset('storage/' . $detail['bukti_pembayaran_path']) }}" class="btn btn-sm btn-primary" title="Lihat Bukti" target="_blank">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-sm btn-success" title="Edit">
+                                                        {{-- <a href="{{ route('edit-bukti-pembayaran', ['id' => $detail['id']]) }}" class="btn btn-sm btn-success" title="Edit"> --}}
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus bukti pembayaran ini?')">
+                                                        {{-- <a href="{{ route('hapus-bukti-pembayaran', ['id' => $detail['id']]) }}" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus bukti pembayaran ini?')"> --}}
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+
+                                        @if (!$adaBukti)
+                                            <tr>
+                                                <td colspan="7" class="text-center">Belum ada bukti pembayaran</td>
+                                            </tr>
+                                        @endif
                                     @else
-                                    <tr>
-                                        <td colspan="7" class="text-center">Belum ada bukti pembayaran</td>
-                                    </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-center">Belum ada bukti pembayaran</td>
+                                        </tr>
                                     @endif
+
                                 </tbody>
                             </table>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
             </div>

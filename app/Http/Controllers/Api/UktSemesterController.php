@@ -12,7 +12,7 @@ class UktSemesterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = UktSemester::with(['enrollment.mahasiswa',
+        $query = UktSemester::with([ 'enrollment.mahasiswa',
         'enrollment.programStudi',
         'enrollment.golonganUkt',
         'enrollment.kelas',

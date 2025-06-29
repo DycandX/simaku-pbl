@@ -26,12 +26,11 @@ class ProfileController extends Controller
             'nim' => $data['nim'] ?? '-',
             'alamat' => $data['alamat'] ?? '-',
             'telepon' => $data['no_telepon'] ?? '-',
-            'email' => $data['email'] ?? '-',
             'foto' => $data['foto_path']
                 ? asset('assets/' . $data['foto_path'])
                 : asset('assets/Profile.jpeg'),
         ];
-       // dd($mahasiswa);
+       //dd($mahasiswa);
 
         return view('mahasiswa.profile.profile', compact('mahasiswa'));
     }
