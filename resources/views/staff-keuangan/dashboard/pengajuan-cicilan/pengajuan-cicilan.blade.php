@@ -1,8 +1,8 @@
 @extends('layouts.staff-app')
 
-@section('title', 'Dashboard Pengajuan Cicilan')
+@section('title', 'Pengajuan Cicilan UKT')
 
-@section('header', 'Dashboard Pengajuan Cicilan')
+@section('header', 'Pengajuan Cicilan UKT')
 
 @section('styles')
 <style>
