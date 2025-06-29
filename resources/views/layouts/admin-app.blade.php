@@ -39,11 +39,22 @@
             border-left: 1px dotted #e0e0e0;
         }
 
+        /* Hide menu when parent is closed */
+        .nav-item:not(.menu-open) > .nav-treeview {
+            display: none !important;
+        }
+
         /* Atur ikon panah dropdown */
         .nav-sidebar .nav-link > .right {
             position: absolute;
             right: 1rem;
             top: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Rotate arrow when menu is open */
+        .nav-item.menu-open > .nav-link > .right {
+            transform: rotate(90deg);
         }
 
         /* Style untuk modal logout */
@@ -234,8 +245,8 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Dashboard Menu dengan dropdown -->
-                        <li class="nav-item {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/kelola-role*') || request()->is('admin/kelola-menu*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/kelola-role*') || request()->is('admin/kelola-menu*') ? 'active' : '' }}">
+                        <li class="nav-item {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/mahasiswa*') || request()->is('admin/enrollment-mahasiswa*') || request()->is('admin/fakultas*') || request()->is('admin/program-studi*') || request()->is('admin/kelas*') || request()->is('admin/tingkat*') || request()->is('admin/tahun-akademik*') || request()->is('admin/staff*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('admin/dashboard*') || request()->is('admin/kelola-pengguna*') || request()->is('admin/mahasiswa*') || request()->is('admin/enrollment-mahasiswa*') || request()->is('admin/fakultas*') || request()->is('admin/program-studi*') || request()->is('admin/kelas*') || request()->is('admin/tingkat*') || request()->is('admin/tahun-akademik*') || request()->is('admin/staff*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>
                                     Dashboard
@@ -248,14 +259,73 @@
                                         <p>Kelola Pengguna</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="/admin/kelola-role" class="nav-link {{ request()->is('admin/kelola-role*') ? 'active' : '' }}">
-                                        <p>Kelola Role</p>
+
+                                <!-- Mahasiswa submenu dalam Dashboard -->
+                                <li class="nav-item {{ request()->is('admin/mahasiswa*') || request()->is('admin/enrollment-mahasiswa*') ? 'menu-open' : '' }}">
+                                    <a href="#" class="nav-link {{ request()->is('admin/mahasiswa*') || request()->is('admin/enrollment-mahasiswa*') ? 'active' : '' }}">
+                                        <i class="fas fa-graduation-cap nav-icon"></i>
+                                        <p>
+                                            Mahasiswa
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
                                     </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="/admin/mahasiswa" class="nav-link {{ request()->is('admin/mahasiswa*') ? 'active' : '' }}">
+                                                <p>Kelola Mahasiswa</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/admin/enrollment-mahasiswa" class="nav-link {{ request()->is('admin/enrollment-mahasiswa*') ? 'active' : '' }}">
+                                                <p>Enrollment Mahasiswa</p>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
+
+                                <!-- Akademik submenu dalam Dashboard -->
+                                <li class="nav-item {{ request()->is('admin/fakultas*') || request()->is('admin/program-studi*') || request()->is('admin/kelas*') || request()->is('admin/tingkat*') || request()->is('admin/tahun-akademik*') ? 'menu-open' : '' }}">
+                                    <a href="#" class="nav-link {{ request()->is('admin/fakultas*') || request()->is('admin/program-studi*') || request()->is('admin/kelas*') || request()->is('admin/tingkat*') || request()->is('admin/tahun-akademik*') ? 'active' : '' }}">
+                                        <i class="fas fa-university nav-icon"></i>
+                                        <p>
+                                            Akademik
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="/admin/fakultas" class="nav-link {{ request()->is('admin/fakultas*') ? 'active' : '' }}">
+                                                <p>Fakultas</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/admin/program-studi" class="nav-link {{ request()->is('admin/program-studi*') ? 'active' : '' }}">
+                                                <p>Program Studi</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/admin/kelas" class="nav-link {{ request()->is('admin/kelas*') ? 'active' : '' }}">
+                                                <p>Kelas</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/admin/tingkat" class="nav-link {{ request()->is('admin/tingkat*') ? 'active' : '' }}">
+                                                <p>Tingkat</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/admin/tahun-akademik" class="nav-link {{ request()->is('admin/tahun-akademik*') ? 'active' : '' }}">
+                                                <p>Tahun Akademik</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Staff submenu dalam Dashboard -->
                                 <li class="nav-item">
-                                    <a href="/admin/kelola-menu" class="nav-link {{ request()->is('admin/kelola-menu*') ? 'active' : '' }}">
-                                        <p>Kelola Menu</p>
+                                    <a href="/admin/staff" class="nav-link {{ request()->is('admin/staff*') ? 'active' : '' }}">
+                                        <i class="fas fa-users nav-icon"></i>
+                                        <p>Staff</p>
                                     </a>
                                 </li>
                             </ul>
@@ -346,13 +416,40 @@
             $('[data-widget="treeview"]').Treeview('init');
         }
 
-        // Pastikan dashboard dropdown aktif jika berada di halaman admin atau submenu
-        if (window.location.pathname.startsWith('/admin/dashboard') ||
-            window.location.pathname.startsWith('/admin/kelola-pengguna') ||
-            window.location.pathname.startsWith('/admin/kelola-role') ||
-            window.location.pathname.startsWith('/admin/kelola-menu')) {
-            // Menu akan terbuka otomatis karena kelas menu-open sudah ada di PHP
-        }
+        // Custom dropdown toggle handler
+        $('.nav-sidebar .nav-link').on('click', function(e) {
+            var $this = $(this);
+            var $parent = $this.parent();
+
+            // Jika link memiliki submenu (ada class nav-treeview)
+            if ($parent.find('.nav-treeview').length > 0) {
+                e.preventDefault();
+
+                // Toggle menu-open class
+                $parent.toggleClass('menu-open');
+
+                // Toggle dropdown icon
+                var $icon = $this.find('.right');
+                if ($parent.hasClass('menu-open')) {
+                    $icon.removeClass('fa-angle-left').addClass('fa-angle-down');
+                } else {
+                    $icon.removeClass('fa-angle-down').addClass('fa-angle-left');
+                }
+
+                // Slide toggle submenu
+                $parent.find('.nav-treeview').slideToggle(300);
+
+                return false;
+            }
+        });
+
+        // Pastikan dropdown terbuka sesuai halaman aktif saat load
+        $('.nav-item.menu-open').each(function() {
+            var $this = $(this);
+            var $icon = $this.find('> .nav-link .right');
+            $icon.removeClass('fa-angle-left').addClass('fa-angle-down');
+            $this.find('.nav-treeview').show();
+        });
 
         // Responsive sidebar handling
         $('.nav-link[data-widget="pushmenu"]').on('click', function() {

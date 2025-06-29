@@ -23,8 +23,14 @@ use App\Http\Controllers\staffBeasiswaController as ControllersStaffBeasiswaCont
 use App\Http\Controllers\staffDataMahasiswaController as ControllersStaffDataMahasiswaController;
 use App\Http\Controllers\Staff\StaffDetailBeasiswaController;
 use App\Http\Controllers\Staff\StaffDetailBuatTagihanUktController;
-
-
+use App\Http\Controllers\Admin\FakultasController;
+use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\TingkatController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\TahunAkademikController;
+use App\Http\Controllers\Admin\MahasiswaController;
+use App\Http\Controllers\Admin\EnrollmentMahasiswaController;
 
 
 // Import controller yang missing
@@ -40,6 +46,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Dashboard Route - Dilindungi middleware
 Route::middleware(['check.login'])->group(function () {
     Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('mahasiswa-dashboard');
+    Route::get('/lihat-tagihan-ukt/show', [LihatTagihanUktController::class, 'show'])->name('mahasiswa-dashboard.show');
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 //     Route::get('/profile', function()
@@ -57,12 +64,72 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/admin/kelola-pengguna', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'index'])->name('admin.kelola-pengguna');
     Route::get('/admin/kelola-pengguna/edit/{id}', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'edit'])->name('admin.kelola-pengguna.edit');
     Route::put('/admin/kelola-pengguna/update/{id}', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'update'])->name('admin.kelola-pengguna.update');
-    Route::get('/admin/kelola-role', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'index'])->name('admin.kelola-role');
-    Route::get('/admin/kelola-role/create', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'create'])->name('admin.kelola-role.create');
-    Route::post('/admin/kelola-role/store', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'store'])->name('admin.kelola-role.store');
-    Route::get('/admin/kelola-role/edit/{id}', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'edit'])->name('admin.kelola-role.edit');
-    Route::put('/admin/kelola-role/update/{id}', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'update'])->name('admin.kelola-role.update');
-    Route::delete('/admin/kelola-role/delete/{id}', [\App\Http\Controllers\Admin\KelolaRoleController::class, 'destroy'])->name('admin.kelola-role.destroy');
+    Route::get('/admin/kelola-pengguna/create', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'create'])->name('admin.kelola-pengguna.create');
+    Route::post('/admin/kelola-pengguna/store', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'store'])->name('admin.kelola-pengguna.store');
+    // Ubah route menjadi:
+    Route::prefix('admin')->as('admin.')->group(function () {
+        Route::get('/fakultas', [FakultasController::class, 'index'])->name('fakultas');
+        Route::get('/fakultas/create', [FakultasController::class, 'create'])->name('fakultas.create');
+        Route::post('/fakultas', [FakultasController::class, 'store'])->name('fakultas.store');
+        Route::get('/fakultas/{id}', [FakultasController::class, 'show'])->name('fakultas.show');
+        Route::get('/fakultas/{id}/edit', [FakultasController::class, 'edit'])->name('fakultas.edit');
+        Route::put('/fakultas/{id}', [FakultasController::class, 'update'])->name('fakultas.update');
+        Route::delete('/fakultas/{id}', [FakultasController::class, 'destroy'])->name('fakultas.destroy');
+          // Program Studi Routes
+        Route::get('/program-studi', [ProgramStudiController::class, 'index'])->name('program-studi');
+        Route::get('/program-studi/create', [ProgramStudiController::class, 'create'])->name('program-studi.create');
+        Route::post('/program-studi', [ProgramStudiController::class, 'store'])->name('program-studi.store');
+        Route::get('/program-studi/{id}', [ProgramStudiController::class, 'show'])->name('program-studi.show');
+        Route::get('/program-studi/{id}/edit', [ProgramStudiController::class, 'edit'])->name('program-studi.edit');
+        Route::put('/program-studi/{id}', [ProgramStudiController::class, 'update'])->name('program-studi.update');
+        Route::delete('/program-studi/{id}', [ProgramStudiController::class, 'destroy'])->name('program-studi.destroy');
+        // Kelas Routes
+        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas');
+        Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
+        Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
+        Route::get('/kelas/{id}', [KelasController::class, 'show'])->name('kelas.show');
+        Route::get('/kelas/{id}/edit', [KelasController::class, 'edit'])->name('kelas.edit');
+        Route::put('/kelas/{id}', [KelasController::class, 'update'])->name('kelas.update');
+        Route::delete('/kelas/{id}', [KelasController::class, 'destroy'])->name('kelas.destroy');
+        //Tingkat
+        Route::get('/tingkat', [TingkatController::class, 'index'])->name('tingkat');
+        Route::get('/tingkat/create', [TingkatController::class, 'create'])->name('tingkat.create');
+        Route::post('/tingkat', [TingkatController::class, 'store'])->name('tingkat.store');
+        Route::get('/tingkat/{id}', [TingkatController::class, 'show'])->name('tingkat.show');
+        Route::get('/tingkat/{id}/edit', [TingkatController::class, 'edit'])->name('tingkat.edit');
+        Route::put('/tingkat/{id}', [TingkatController::class, 'update'])->name('tingkat.update');
+        Route::delete('/tingkat/{id}', [TingkatController::class, 'destroy'])->name('tingkat.destroy');
+        //staff
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff');
+        Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::get('/staff/{id}', [StaffController::class, 'show'])->name('staff.show');
+        Route::get('/staff/{id}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+        Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        //Tahun Akademik
+        Route::get('/tahun-akademik', [TahunAkademikController::class, 'index'])->name('tahun-akademik');
+        Route::get('/tahun-akademik/create', [TahunAkademikController::class, 'create'])->name('tahun-akademik.create');
+        Route::post('/tahun-akademik', [TahunAkademikController::class, 'store'])->name('tahun-akademik.store');
+        Route::get('/tahun-akademik/{id}', [TahunAkademikController::class, 'show'])->name('tahun-akademik.show');
+        Route::get('/tahun-akademik/{id}/edit', [TahunAkademikController::class, 'edit'])->name('tahun-akademik.edit');
+        Route::put('/tahun-akademik/{id}', [TahunAkademikController::class, 'update'])->name('tahun-akademik.update');
+        Route::delete('/tahun-akademik/{id}', [TahunAkademikController::class, 'destroy'])->name('tahun-akademik.destroy');
+        //Mahasiswa
+        Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa');
+        Route::get('/mahasiswa/create', [MahasiswaController::class, 'create'])->name('mahasiswa.create');
+        Route::post('/mahasiswa', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
+        Route::get('/mahasiswa/{nim}/edit', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit');
+        Route::put('/mahasiswa/{nim}', [MahasiswaController::class, 'update'])->name('mahasiswa.update');
+        Route::delete('/mahasiswa/{nim}', [MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
+    });
+
+    Route::get('/admin/enrollment-mahasiswa', [EnrollmentMahasiswaController::class, 'index'])->name('admin.enrollment-mahasiswa');
+    Route::get('/admin/enrollment-mahasiswa/create', [EnrollmentMahasiswaController::class, 'create'])->name('admin.enrollment-mahasiswa.create');
+    Route::post('/admin/enrollment-mahasiswa', [EnrollmentMahasiswaController::class, 'store'])->name('admin.enrollment-mahasiswa.store');
+    Route::get('/admin/enrollment-mahasiswa/{id}/edit', [EnrollmentMahasiswaController::class, 'edit'])->name('admin.enrollment-mahasiswa.edit');
+    Route::put('/admin/enrollment-mahasiswa/{id}', [EnrollmentMahasiswaController::class, 'update'])->name('admin.enrollment-mahasiswa.update');
+    Route::delete('/admin/enrollment-mahasiswa/{id}', [EnrollmentMahasiswaController::class, 'destroy'])->name('admin.enrollment-mahasiswa.destroy');
 
     //staff
     Route::get('/staff-app', function () {

@@ -209,29 +209,21 @@
         cursor: not-allowed;
     }
 
-    /* Remove old badge styles */
-    .badge {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 500;
-        text-align: center;
-        display: inline-block;
-        white-space: nowrap;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    /* User info styling */
+    .user-info {
+        display: flex;
+        flex-direction: column;
     }
 
-    .bg-success {
-        background-color: #f0fff4;
-        color: #38a169;
-        border: 1px solid #c6f6d5;
+    .username {
+        font-weight: 600;
+        color: #2d3748;
     }
 
-    .bg-danger {
-        background-color: #fff5f5;
-        color: #e53e3e;
-        border: 1px solid #fed7d7;
+    .nama-lengkap {
+        font-size: 12px;
+        color: #718096;
+        margin-top: 2px;
     }
 
     @media (max-width: 768px) {
@@ -317,27 +309,44 @@
                 @forelse($users as $index => $user)
                     <tr>
                         <td>{{ ($users->firstItem() ?? 0) + $index }}</td>
-                        <td>{{ $user['username'] }}</td>
+                        <td>
+                            <div class="user-info">
+                                <span class="username">{{ $user['username'] }}</span>
+                                @php
+                                    $namaLengkap = '';
+                                    if ($user['role'] === 'mahasiswa' && isset($user['mahasiswa']['nama_lengkap'])) {
+                                        $namaLengkap = $user['mahasiswa']['nama_lengkap'];
+                                    } elseif ($user['role'] === 'staff' && isset($user['staff']['nama_lengkap'])) {
+                                        $namaLengkap = $user['staff']['nama_lengkap'];
+                                    }
+                                @endphp
+                                @if($namaLengkap)
+                                    <span class="nama-lengkap">{{ $namaLengkap }}</span>
+                                @endif
+                            </div>
+                        </td>
                         <td>{{ $user['email'] }}</td>
 
-                        <!-- Role badge dengan styling yang lebih elegan -->
+                        <!-- Role badge -->
                         <td>
-                            @if($user['role'] === 'admin')
-                                <span class="role-badge role-admin">Admin</span>
-                            @elseif($user['role'] === 'staff')
-                                <span class="role-badge role-staff">Staff</span>
-                            @elseif($user['role'] === 'mahasiswa')
-                                <span class="role-badge role-mahasiswa">Mahasiswa</span>
-                            @else
-                                <span class="role-badge" style="background-color: #f7fafc; color: #718096; border: 1px solid #e2e8f0;">
-                                    {{ ucfirst($user['role']) }}
-                                </span>
-                            @endif
+                            @switch($user['role'])
+                                @case('admin')
+                                    <span class="role-badge role-admin">Admin</span>
+                                    @break
+                                @case('staff')
+                                    <span class="role-badge role-staff">Staff</span>
+                                    @break
+                                @case('mahasiswa')
+                                    <span class="role-badge role-mahasiswa">Mahasiswa</span>
+                                    @break
+                                @default
+                                    <span class="role-badge">{{ ucfirst($user['role']) }}</span>
+                            @endswitch
                         </td>
 
-                        <!-- Status badge dengan styling yang lebih subtle -->
+                        <!-- Status badge -->
                         <td>
-                            @if(isset($user['is_active']) && $user['is_active'])
+                            @if($user['is_active'])
                                 <span class="status-badge status-active">Aktif</span>
                             @else
                                 <span class="status-badge status-inactive">Tidak Aktif</span>
