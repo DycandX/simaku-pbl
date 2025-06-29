@@ -28,6 +28,9 @@ class staffDetailBuatTagihanUktController extends Controller
         $periodePembayaran = $this->getApiData('/api/periode-pembayaran', [], $token);
         $mahasiswaData = $this->getApiData('/api/enrollment-mahasiswa', [], $token);
 
+        // Cari periode pembayaran yang aktif
+        $periodeAktif = collect($periodePembayaran)->firstWhere('status', 'aktif');
+
         $mahasiswaAktif = collect($mahasiswaData)->filter(function($enrollment) {
             return isset($enrollment['tahun_akademik']) &&
                    $enrollment['tahun_akademik']['status'] === 'aktif';
@@ -36,6 +39,7 @@ class staffDetailBuatTagihanUktController extends Controller
         return view('staff-keuangan.dashboard.buat-tagihan-ukt.detail-buat-tagihan-ukt', [
             'dataTagihan' => $dataTagihan,
             'periodePembayaran' => $periodePembayaran,
+            'periodeAktif' => $periodeAktif, // Tambahan periode aktif
             'mahasiswaData' => $mahasiswaAktif
         ]);
     }
@@ -99,8 +103,6 @@ class staffDetailBuatTagihanUktController extends Controller
         }
 
         $validated = $request->validate([
-            'tagihan' => 'required|string',
-            'tanggal_tagihan' => 'required|date',
             'tanggal_jatuh_tempo' => 'required|date',
             'deskripsi' => 'required|string',
         ]);
@@ -108,14 +110,14 @@ class staffDetailBuatTagihanUktController extends Controller
         try {
             DB::beginTransaction();
 
-            // Cari periode pembayaran
+            // Cari periode pembayaran aktif
             $periode = DB::table('periode_pembayaran')
-                ->where('nama_periode', $validated['tagihan'])
+                ->where('status', 'aktif')
                 ->first();
 
             if (!$periode) {
                 DB::rollback();
-                return back()->withErrors(['error' => 'Periode pembayaran tidak ditemukan.']);
+                return back()->withErrors(['error' => 'Tidak ada periode pembayaran yang aktif.']);
             }
 
             // Cari tahun akademik aktif
@@ -305,12 +307,13 @@ class staffDetailBuatTagihanUktController extends Controller
                 return response()->json(['error' => 'Tidak ada tahun akademik yang aktif'], 400);
             }
 
+            // Ambil periode pembayaran aktif
             $periode = DB::table('periode_pembayaran')
-                ->where('nama_periode', $request->periode)
+                ->where('status', 'aktif')
                 ->first();
 
             if (!$periode) {
-                return response()->json(['error' => 'Periode pembayaran tidak ditemukan'], 400);
+                return response()->json(['error' => 'Tidak ada periode pembayaran yang aktif'], 400);
             }
 
             $enrollments = DB::table('enrollment_mahasiswa')
