@@ -6,90 +6,45 @@
 
 @section('content')
 <div class="row">
-
-
-    {{-- <!-- Status Cards -->
-    <div class="col-md-3">
-        <div class="status-card bg-info text-white">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-money-bill-wave status-icon"></i>
-                <h3>Rp 700.000.000</h3>
-            </div>
-            <p>Total Pembayaran</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="status-card verified">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-check-circle status-icon"></i>
-                <h3>1000</h3>
-            </div>
-            <p>Diverifikasi</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="status-card unverified">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-clock status-icon"></i>
-                <h3>200</h3>
-            </div>
-            <p>Belum Diverifikasi</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="status-card rejected">
-            <div class="d-flex justify-content-center mb-2">
-                <i class="fas fa-times-circle status-icon"></i>
-                <h3>2</h3>
-            </div>
-            <p>Ditolak</p>
-        </div>
-    </div> --}}
+    {{-- Kartu Ringkasan --}}
     <div class="col-lg-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title text-dark">Total Pembayaran</h5>
-                <h3>Rp</h3>
-                {{-- <h3 class="mb-0 text-primary">{{ $totalSemuaTagihan }}</h3>  --}}
+                <h3 class="mb-0 text-primary">Rp {{ number_format($totalNominalTerverifikasi, 0, ',', '.') }}</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
             </div>
         </div>
     </div>
-    <!-- Sudah Lunas -->
     <div class="col-lg-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title text-dark">Diverifikasi</h5>
-                <h3>Rp</h3>
-                {{-- <h3 class="mb-0 text-success">{{ $totalSudahLunas }}</h3>  --}}
+                <h3 class="mb-0 text-success">{{ $statusSummary['diverifikasi'] }}</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
             </div>
         </div>
     </div>
-    <!-- Belum Lunas -->
     <div class="col-lg-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title text-dark">Belum Diverifikasi</h5>
-                <h3>Rp</h3>
-                {{-- <h3 class="mb-0 text-danger">{{ $totalBelumLunas }}</h3>  --}}
+                <h3 class="mb-0 text-warning">{{ $statusSummary['belum_diverifikasi'] }}</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
             </div>
         </div>
     </div>
-    <!-- Belum Lunas -->
     <div class="col-lg-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title text-dark">Ditolak</h5>
-                <h3>Rp</h3>
-                {{-- <h3 class="mb-0 text-danger">{{ $totalBelumLunas }}</h3>  --}}
+                <h3 class="mb-0 text-danger">{{ $statusSummary['ditolak'] }}</h3>
                 <span class="rounded-circle wallet-icon">
                     <i class="fas fa-wallet"></i>
                 </span>
@@ -97,12 +52,13 @@
         </div>
     </div>
 
-    {{-- <!-- Filter Section -->
-    <div class="col-12 mb-2">
-        <div class="filter-section">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
+    {{-- Filter Section --}}
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    {{-- Semester --}}
+                    <div class="col-md-4 mb-3">
                         <label for="filterSemester">Semester</label>
                         <select class="form-control" id="filterSemester">
                             <option value="">Semua Semester</option>
@@ -111,50 +67,38 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="filterProdi">Program Studi</label>
-                        <select class="form-control" id="filterProdi">
-                            <option value="">Semua Program Studi</option>
-                            @foreach($programStudi as $prodi)
-                                <option value="{{ $prodi['nama_prodi'] }}">
-                                    {{ $prodi['nama_prodi'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
 
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
+                    {{-- Status --}}
+                    <div class="col-md-4 mb-3">
                         <label for="filterStatus">Status</label>
                         <select class="form-control" id="filterStatus">
                             <option value="">Semua Status</option>
-                            <option value="Sudah Lunas">Sudah Lunas</option>
-                            <option value="Belum Lunas">Belum Lunas</option>
+                            <option value="pending">Belum Diverifikasi</option>
+                            <option value="verified">Diverifikasi</option>
+                            <option value="rejected">Ditolak</option>
                         </select>
                     </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="searchInput">Cari</label>
+
+                    {{-- Nama Mahasiswa --}}
+                    <div class="col-md-4 mb-3">
+                        <label for="searchInput">Cari Nama Mahasiswa</label>
                         <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-filter mr-1"></i> Filter
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary ml-2">
-                        <i class="fas fa-sync-alt mr-1"></i> Reset
-                    </button>
+
+                    <div class="col-12">
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-filter mr-1"></i> Filter
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ml-2">
+                            <i class="fas fa-sync-alt mr-1"></i> Reset
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    <!-- Payment Table -->
+    {{-- Tabel Pembayaran --}}
     <div class="col-12">
         <div class="table-container card">
             <div class="card-header">
@@ -162,7 +106,7 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="uktTable">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -176,76 +120,40 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>01</td>
-                                <td>INV000013408</td>
-                                <td>Zirilda Syafira</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>29-Jan-2024</td>
-                                <td>Rp 2.600.000,00</td>
-                                <td><span class="badge badge-success">Diverifikasi</span></td>
-                                <td>
-                                    <a href="{{ route('staff.pembayaran-ukt.detail', 'INV000013408') }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Lihat Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>02</td>
-                                <td>INV001234501</td>
-                                <td>Fadhil Ramadhan</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>29-Jan-2024</td>
-                                <td>Rp 3.000.000,00</td>
-                                <td><span class="badge badge-success">Diverifikasi</span></td>
-                                <td>
-                                    <a href="{{ route('staff.pembayaran-ukt.detail', 'INV001234501') }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Lihat Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>03</td>
-                                <td>INV001234502</td>
-                                <td>Aisyah Hanifah</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>29-Jan-2024</td>
-                                <td>Rp 2.850.000,00</td>
-                                <td><span class="badge badge-danger">Ditolak</span></td>
-                                <td>
-                                    <a href="{{ route('staff.pembayaran-ukt.detail', 'INV001234502') }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Lihat Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>04</td>
-                                <td>INV001234503</td>
-                                <td>Yudha Prasetyo</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>29-Jan-2024</td>
-                                <td>Rp 2.700.000,00</td>
-                                <td><span class="badge badge-warning">Belum Diverifikasi</span></td>
-                                <td>
-                                    <a href="{{ route('staff.pembayaran-ukt.detail', 'INV001234503') }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Lihat Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>05</td>
-                                <td>INV001234506</td>
-                                <td>Siti Nurhaliza</td>
-                                <td>2023/2024 - Genap</td>
-                                <td>29-Jan-2024</td>
-                                <td>Rp 2.950.000,00</td>
-                                <td><span class="badge badge-success">Diverifikasi</span></td>
-                                <td>
-                                    <a href="{{ route('staff.pembayaran-ukt.detail', 'INV001234506') }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Lihat Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
+                            @forelse ($detailPembayaranData as $index => $item)
+                                @php
+                                    $mahasiswa = $item['pembayaran_ukt_semester']['ukt_semester']['enrollment']['mahasiswa'];
+                                    $periode = $item['pembayaran_ukt_semester']['ukt_semester']['periode_pembayaran'];
+                                    $tanggal = \Carbon\Carbon::parse($item['tanggal_pembayaran'])->format('d-M-Y');
+                                    $status = $item['status'];
+                                @endphp
+                                <tr>
+                                    <td>{{ $detailPembayaranData->firstItem() + $index }}</td>
+                                    <td>INV{{ str_pad($item['id'], 5, '0', STR_PAD_LEFT) }}</td>
+                                    <td>{{ $mahasiswa['nama_lengkap'] }}</td>
+                                    <td>{{ $periode['nama_periode'] }}</td>
+                                    <td>{{ $tanggal }}</td>
+                                    <td>Rp {{ number_format($item['nominal'], 0, ',', '.') }}</td>
+                                    <td data-status="{{ $status }}">
+                                        @if ($status === 'verified')
+                                            <span class="badge badge-success">Diverifikasi</span>
+                                        @elseif ($status === 'rejected')
+                                            <span class="badge badge-danger">Ditolak</span>
+                                        @else
+                                            <span class="badge badge-warning">Belum Diverifikasi</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('staff.pembayaran-ukt.show', $item['id']) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Lihat Pembayaran
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Tidak ada data pembayaran.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -254,27 +162,11 @@
                 <div class="row">
                     <div class="col-sm-12 col-md-5">
                         <div class="pagination-info">
-                            Menampilkan 1-5 dari 1202 data
+                            Menampilkan {{ $detailPembayaranData->firstItem() }}-{{ $detailPembayaranData->lastItem() }} dari {{ $detailPembayaranData->total() }} data
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-7">
-                        <ul class="pagination justify-content-end">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Sebelumnya</a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Selanjutnya</a>
-                            </li>
-                        </ul>
+                    <div class="d-flex justify-content-end">
+                        {{ $detailPembayaranData->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
@@ -287,7 +179,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const filterSemester = document.getElementById('filterSemester');
-        const filterProdi = document.getElementById('filterProdi');
         const filterStatus = document.getElementById('filterStatus');
         const searchInput = document.getElementById('searchInput');
         const filterButton = document.querySelector('.btn.btn-primary');
@@ -296,22 +187,19 @@
 
         function applyFilter() {
             const semesterVal = filterSemester.value.toLowerCase();
-            const prodiVal = filterProdi.value.toLowerCase();
             const statusVal = filterStatus.value.toLowerCase();
             const searchVal = searchInput.value.toLowerCase();
 
             rows.forEach(row => {
-                const semester = row.children[4].textContent.toLowerCase();
-                const prodi = row.children[3].textContent.toLowerCase();
-                const status = row.children[7].textContent.toLowerCase();
+                const semester = row.children[3].textContent.toLowerCase();
+                const status = row.children[6].getAttribute('data-status').toLowerCase();
                 const mahasiswa = row.children[2].textContent.toLowerCase();
 
                 const matchSemester = !semesterVal || semester.includes(semesterVal);
-                const matchProdi = !prodiVal || prodi.includes(prodiVal);
                 const matchStatus = !statusVal || status.includes(statusVal);
                 const matchSearch = !searchVal || mahasiswa.includes(searchVal);
 
-                if (matchSemester && matchProdi && matchStatus && matchSearch) {
+                if (matchSemester && matchStatus && matchSearch) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -321,7 +209,6 @@
 
         function resetFilter() {
             filterSemester.value = '';
-            filterProdi.value = '';
             filterStatus.value = '';
             searchInput.value = '';
             applyFilter();

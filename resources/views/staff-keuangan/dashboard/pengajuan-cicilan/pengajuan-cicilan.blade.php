@@ -1,8 +1,8 @@
 @extends('layouts.staff-app')
 
-@section('title', 'Dashboard Pengajuan Cicilan')
+@section('title', 'Pengajuan Cicilan UKT')
 
-@section('header', 'Dashboard Pengajuan Cicilan')
+@section('header', 'Pengajuan Cicilan UKT')
 
 @section('styles')
 <style>
@@ -23,181 +23,195 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Status Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="status-card verified">
-                <div class="d-flex align-items-center justify-content-center">
-                    <i class="fas fa-check-circle status-icon"></i>
-                    <div>
-                        <h3>5</h3>
-                        <p>Diverifikasi</p>
-                    </div>
+    {{-- Baris Ringkasan Status --}}
+    <div class="row">
+        <!-- Diverifikasi -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Diverifikasi</h5>
+                    <h3 class="mb-0 text-primary">{{ $statusSummary['diverifikasi'] }}</h3>
+                    <span class="rounded-circle wallet-icon">
+                        <i class="fas fa-wallet"></i>
+                    </span>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="status-card unverified">
-                <div class="d-flex align-items-center justify-content-center">
-                    <i class="fas fa-clock status-icon"></i>
-                    <div>
-                        <h3>2</h3>
-                        <p>Belum Diverifikasi</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="status-card rejected">
-                <div class="d-flex align-items-center justify-content-center">
-                    <i class="fas fa-times-circle status-icon"></i>
-                    <div>
-                        <h3>0</h3>
-                        <p>Ditolak</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    
-    <!-- Filter Section -->
-    <div class="col-12 mb-2">
-        <div class="filter-section">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="filterSemester">Semester</label>
-                        <select class="form-control" id="filterSemester">
-                            <option value="">Semua Semester</option>
-                            @foreach($periodePembayaran as $periode)
-                                <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        <!-- Belum Diverifikasi -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Belum Diverifikasi</h5>
+                    <h3 class="mb-0 text-warning">{{ $statusSummary['belum_diverifikasi'] }}</h3>
+                    <span class="rounded-circle wallet-icon">
+                        <i class="fas fa-wallet"></i>
+                    </span>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="filterProdi">Program Studi</label>
-                        <select class="form-control" id="filterProdi">
-                            <option value="">Semua Program Studi</option>
-                            @foreach($programStudi as $prodi)
-                                <option value="{{ $prodi['nama_prodi'] }}">
-                                    {{ $prodi['nama_prodi'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+            </div>
+        </div>
 
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="filterStatus">Status</label>
-                        <select class="form-control" id="filterStatus">
-                            <option value="">Semua Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-group">
-                        <label for="searchInput">Cari</label>
-                        <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-filter mr-1"></i> Filter
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary ml-2">
-                        <i class="fas fa-sync-alt mr-1"></i> Reset
-                    </button>
+        <!-- Ditolak -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Ditolak</h5>
+                    <h3 class="mb-0 text-danger">{{ $statusSummary['ditolak'] }}</h3>
+                    <span class="rounded-circle wallet-icon">
+                        <i class="fas fa-wallet"></i>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12">
-        <div class="table-container card">
-            <div class="card-header">
-                <h3 class="card-title">Data Pengajuan Cicilan</h3>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="PengajuanCicilanTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NIM</th>
-                                <th>Mahasiswa</th>
-                                <th>Semester</th>
-                                <th>Program Studi</th>
-                                <th>Jumlah Angsuran</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($pengajuanData as $index => $item)
-                                @php
-                                    $id = $item['id'];
-                                    $nim = $item['enrollment']['mahasiswa']['nim'] ?? '-';
-                                    $nama = $item['enrollment']['mahasiswa']['nama_lengkap'] ?? '-';
-                                    $semester = $item['ukt_semester']['periode_pembayaran']['nama_periode'] ?? '-';
-                                    $prodi = $item['enrollment']['program_studi']['nama_prodi'] ?? '-';
-                                    $angsuran = $item['jumlah_angsuran_diajukan'] ?? 0;
-                                    $status = $item['status'] ?? 'Belum Diverifikasi';
-
-                                    $badgeClass = match($status) {
-                                        'approved' => 'success',
-                                        'Ditolak', 'ditolak' => 'danger',
-                                        default => 'warning',
-                                    };
-                                @endphp
-                                <tr>
-                                    <td>{{ $pengajuanData->firstItem() + $index }}</td>
-                                    <td>{{ $nim }}</td>
-                                    <td>{{ $nama }}</td>
-                                    <td>{{ $semester }}</td>
-                                    <td>{{ $prodi }}</td>
-                                    <td>{{ $angsuran }}x</td>
-                                    <td><span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
-                                    <td>
-                                        <a href="{{ route('staff.pengajuan-cicilan.detail', $id) }}" class="btn btn-primary btn-sm">
-                                        {{-- <a href="{{ route('staff.cek-tagihan-ukt.detail', $id) }}" class="btn btn-primary btn-sm"> --}}
-                                            <i class="fas fa-eye"></i> Lihat Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">Tidak ada data pengajuan ditemukan.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card-footer">
+    {{-- Filter Section --}}
+    <div class="row ">
+        <div class="col-12 mb-2">
+            <div class="filter-section">
                 <div class="row">
-                    <div class="col-sm-12 col-md-5">
-                        <div class="pagination-info">
-                            Menampilkan {{ $pengajuanData->firstItem() }} - {{ $pengajuanData->lastItem() }} dari {{ $pengajuanData->total() }} data
+                    {{-- Semester --}}
+                    <div class="col-md-3 mb-3">
+                        <div class="form-group">
+                            <label for="filterSemester">Semester</label>
+                            <select class="form-control" id="filterSemester">
+                                <option value="">Semua Semester</option>
+                                @foreach($periodePembayaran as $periode)
+                                    <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-7">
-                        <div class="d-flex justify-content-end">
-                            {{ $pengajuanData->links('pagination::bootstrap-4') }}
+
+                    {{-- Prodi --}}
+                    <div class="col-md-3 mb-3">
+                        <div class="form-group">
+                            <label for="filterProdi">Program Studi</label>
+                            <select class="form-control" id="filterProdi">
+                                <option value="">Semua Program Studi</option>
+                                @foreach($programStudi as $prodi)
+                                    <option value="{{ $prodi['nama_prodi'] }}">{{ $prodi['nama_prodi'] }}</option>
+                                @endforeach
+                            </select>
                         </div>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="col-md-3 mb-3">
+                        <div class="form-group">
+                            <label for="filterStatus">Status</label>
+                            <select class="form-control" id="filterStatus">
+                                <option value="">Semua Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Search --}}
+                    <div class="col-md-3 mb-3">
+                        <div class="form-group">
+                            <label for="searchInput">Cari</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-filter mr-1"></i> Filter
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ml-2">
+                            <i class="fas fa-sync-alt mr-1"></i> Reset
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    {{-- Table Section --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="table-container card">
+                <div class="card-header">
+                    <h3 class="card-title">Data Pengajuan Cicilan</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="PengajuanCicilanTable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>NIM</th>
+                                    <th>Mahasiswa</th>
+                                    <th>Semester</th>
+                                    <th>Program Studi</th>
+                                    <th>Jumlah Angsuran</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($pengajuanData as $index => $item)
+                                    @php
+                                        $id = $item['id'];
+                                        $nim = $item['enrollment']['mahasiswa']['nim'] ?? '-';
+                                        $nama = $item['enrollment']['mahasiswa']['nama_lengkap'] ?? '-';
+                                        $semester = $item['ukt_semester']['periode_pembayaran']['nama_periode'] ?? '-';
+                                        $prodi = $item['enrollment']['program_studi']['nama_prodi'] ?? '-';
+                                        $angsuran = $item['jumlah_angsuran_diajukan'] ?? 0;
+                                        $status = $item['status'] ?? 'Belum Diverifikasi';
+
+                                        $badgeClass = match($status) {
+                                            'approved' => 'success',
+                                            'Ditolak', 'ditolak' => 'danger',
+                                            default => 'warning',
+                                        };
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $pengajuanData->firstItem() + $index }}</td>
+                                        <td>{{ $nim }}</td>
+                                        <td>{{ $nama }}</td>
+                                        <td>{{ $semester }}</td>
+                                        <td>{{ $prodi }}</td>
+                                        <td>{{ $angsuran }}x</td>
+                                        <td><span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
+                                        <td>
+                                            <a href="{{ route('staff.pengajuan-cicilan.detail', $id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye"></i> Lihat Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">Tidak ada data pengajuan ditemukan.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="pagination-info">
+                                Menampilkan {{ $pengajuanData->firstItem() }} - {{ $pengajuanData->lastItem() }} dari {{ $pengajuanData->total() }} data
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <div class="d-flex justify-content-end">
+                                {{ $pengajuanData->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> {{-- Penutup .row --}}
+</div> {{-- Penutup .container-fluid --}}
 @endsection
+
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

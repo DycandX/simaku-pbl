@@ -143,7 +143,8 @@ Route::middleware(['check.login'])->group(function () {
     Route::get('/staff/pengajuan-cicilan/{id}/form-cicilan', [PengajuanCicilanStaffController::class, 'formUpdateCicilan'])->name('pengajuan-cicilan.form-update-cicilan');
     Route::put('/pengajuan-cicilan/{id}/update-status', [PengajuanCicilanStaffController::class, 'updateStatus'])->name('pengajuan-cicilan.update-status');
     Route::put('/staff/pengajuan-cicilan/{id}/hasil-cicilan', [PengajuanCicilanStaffController::class, 'updateHasilCicilan'])->name('staff.pengajuan-cicilan.update-hasil-cicilan');
-
+    // Tambahkan route ini ke dalam grup route yang sesuai
+    Route::post('/pengajuan-cicilan/{id}/buat-tagihan-baru', [PengajuanCicilanStaffController::class, 'buatTagihanBaru'])->name('pengajuan-cicilan.buat-tagihan-baru');
 
     Route::post('/staff/pengajuan-cicilan/{id}/approve', [PengajuanCicilanStaffController::class, 'approve'])->name('staff.pengajuan-cicilan.approve');
     Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');
@@ -162,6 +163,9 @@ Route::middleware(['check.login'])->group(function () {
 
     Route::get('/staff/pembayaran-ukt', [PembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt');
 
+    Route::get('/pembayaran-ukt/{id}', [PembayaranUktStaffController::class, 'show'])->name('staff.pembayaran-ukt.show');
+
+    Route::put('/staff/pembayaran-ukt/{id}/update-status', [PembayaranUktStaffController::class, 'updateStatus'])->name('staff.pembayaran-ukt.update-status');
 
     // buat tagihan (view list data log)
     Route::get('/staff/buat-tagihan-ukt', [staffBuatTagihanUktController::class, 'index'])->name('staff.buat-tagihan-ukt');
@@ -171,8 +175,6 @@ Route::middleware(['check.login'])->group(function () {
     // detail buat tagihan (generate)
     Route::get('/staff/tagihan-ukt', [StaffDetailBuatTagihanUktController::class, 'index'])->name('staff.detail-buatTagihanUkt.index');
     Route::post('/staff/tagihan-ukt/create', [StaffDetailBuatTagihanUktController::class, 'create'])->name('staff.detail-buatTagihanUkt.create');
-
-    Route::get('/staff/detail-pembayaran-ukt/{nomor_tagihan}', [detailPembayaranUktStaffController::class, 'index'])->name('staff.pembayaran-ukt.detail');
 
 
 
