@@ -60,234 +60,203 @@
         </div>
     </div>
 
+    
     <!-- Filter Section -->
-    <div class="filter-section">    
-        <div class="row align-items-center">
-            <div class="col-md-3 mb-3">
-                <div class="form-group">
-                    <label for="semesterFilter">Semester</label>
-                    <select class="form-control" id="semesterFilter">
-                        <option value="2023/2024 - Genap">2023/2024 - Genap</option>
-                        <option value="2023/2024 - Ganjil">2023/2024 - Ganjil</option>
-                    </select>
+    <div class="col-12 mb-2">
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="filterSemester">Semester</label>
+                        <select class="form-control" id="filterSemester">
+                            <option value="">Semua Semester</option>
+                            @foreach($periodePembayaran as $periode)
+                                <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="form-group">
-                    <label for="statusFilter">Status</label>
-                    <select class="form-control" id="statusFilter">
-                        <option value="All Status">All Status</option>
-                        <option value="Diverifikasi">Diverifikasi</option>
-                        <option value="Belum Diverifikasi">Belum Diverifikasi</option>
-                        <option value="Ditolak">Ditolak</option>
-                    </select>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="filterProdi">Program Studi</label>
+                        <select class="form-control" id="filterProdi">
+                            <option value="">Semua Program Studi</option>
+                            @foreach($programStudi as $prodi)
+                                <option value="{{ $prodi['nama_prodi'] }}">
+                                    {{ $prodi['nama_prodi'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="form-group">
-                    <label for="searchInput">Cari</label>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Nama/NIM...">
+
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="filterStatus">Status</label>
+                        <select class="form-control" id="filterStatus">
+                            <option value="">Semua Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3 d-flex align-items-end">
-                <button type="button" class="btn btn-primary mr-2" id="filterSemester">
-                    <i class="fas fa-filter mr-1"></i> Filter
-                </button>
-                <button type="button" class="btn btn-outline-secondary" id="filterStatus">
-                    <i class="fas fa-sync-alt mr-1"></i> Reset
-                </button>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label for="searchInput">Cari</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary ml-2">
+                        <i class="fas fa-sync-alt mr-1"></i> Reset
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="table-container card">
-        <div class="card-header">
-            <h5 class="mb-0">Data Pengajuan Cicilan</h5>
-        </div>
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="thead-light">
-                    <tr>
-                        <th style="width: 50px;">No</th>
-                        <th>NIM</th>
-                        <th>Mahasiswa</th>
-                        <th>Semester</th>
-                        <th>Jurusan</th>
-                        <th>Prodi</th>
-                        <th style="width: 100px;">Status</th>
-                        <th style="width: 120px;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="dataPengajuan">
-                    <!-- Dynamic rows will be populated here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <div class="pagination-info">
-                Menampilkan 1-5 dari 50 data
+    <div class="col-12">
+        <div class="table-container card">
+            <div class="card-header">
+                <h3 class="card-title">Data Pengajuan Cicilan</h3>
             </div>
-            <nav aria-label="Page navigation">
-                <ul class="pagination mb-0">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="PengajuanCicilanTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Mahasiswa</th>
+                                <th>Semester</th>
+                                <th>Program Studi</th>
+                                <th>Jumlah Angsuran</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($pengajuanData as $index => $item)
+                                @php
+                                    $id = $item['id'];
+                                    $nim = $item['enrollment']['mahasiswa']['nim'] ?? '-';
+                                    $nama = $item['enrollment']['mahasiswa']['nama_lengkap'] ?? '-';
+                                    $semester = $item['ukt_semester']['periode_pembayaran']['nama_periode'] ?? '-';
+                                    $prodi = $item['enrollment']['program_studi']['nama_prodi'] ?? '-';
+                                    $angsuran = $item['jumlah_angsuran_diajukan'] ?? 0;
+                                    $status = $item['status'] ?? 'Belum Diverifikasi';
+
+                                    $badgeClass = match($status) {
+                                        'approved' => 'success',
+                                        'Ditolak', 'ditolak' => 'danger',
+                                        default => 'warning',
+                                    };
+                                @endphp
+                                <tr>
+                                    <td>{{ $pengajuanData->firstItem() + $index }}</td>
+                                    <td>{{ $nim }}</td>
+                                    <td>{{ $nama }}</td>
+                                    <td>{{ $semester }}</td>
+                                    <td>{{ $prodi }}</td>
+                                    <td>{{ $angsuran }}x</td>
+                                    <td><span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
+                                    <td>
+                                        <a href="{{ route('staff.pengajuan-cicilan.detail', $id) }}" class="btn btn-primary btn-sm">
+                                        {{-- <a href="{{ route('staff.cek-tagihan-ukt.detail', $id) }}" class="btn btn-primary btn-sm"> --}}
+                                            <i class="fas fa-eye"></i> Lihat Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Tidak ada data pengajuan ditemukan.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="pagination-info">
+                            Menampilkan {{ $pengajuanData->firstItem() }} - {{ $pengajuanData->lastItem() }} dari {{ $pengajuanData->total() }} data
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="d-flex justify-content-end">
+                            {{ $pengajuanData->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function() {
-    // Data pengajuan cicilan (mock data)
-    const pengajuanData = [
-        { nim: "4.33.23.5.19", nama: "Zirlda Syafira", semester: "2023 - Genap", jurusan: "Administrasi Bisnis", prodi: "D4 - Manajemen Bisnis Internasional", status: "Diverifikasi" },
-        { nim: "4.33.23.5.20", nama: "Fadhil Ramadhan", semester: "2023 - Genap", jurusan: "Administrasi Bisnis", prodi: "D4 - Manajemen Bisnis Internasional", status: "Diverifikasi" },
-        { nim: "4.33.23.5.21", nama: "Aisyah Hanifah", semester: "2023 - Genap", jurusan: "Administrasi Bisnis", prodi: "D4 - Manajemen Bisnis Internasional", status: "Diverifikasi" },
-        { nim: "4.33.23.5.22", nama: "Yudha Prasetyo", semester: "2023 - Genap", jurusan: "Administrasi Bisnis", prodi: "D4 - Manajemen Bisnis Internasional", status: "Diverifikasi" },
-        { nim: "4.33.23.5.23", nama: "Lestari Widya", semester: "2023 - Genap", jurusan: "Administrasi Bisnis", prodi: "D4 - Manajemen Bisnis Internasional", status: "Diverifikasi" }
-    ];
-
-    let filteredData = pengajuanData;
-    let currentPage = 1;
-    const itemsPerPage = 5;
-
-    // Render table function
-    function renderTable(data, page = 1) {
-        const tableBody = document.getElementById("dataPengajuan");
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const pageData = data.slice(startIndex, endIndex);
-
-        tableBody.innerHTML = ""; // Clear existing rows
-
-        // Iterate through filtered data and populate table
-        pageData.forEach((item, index) => {
-            const actualIndex = startIndex + index + 1;
-            const statusBadge = getStatusBadge(item.status);
-
-            const row = `<tr>
-                <td>${actualIndex.toString().padStart(2, '0')}</td>
-                <td>${item.nim}</td>
-                <td>${item.nama}</td>
-                <td>${item.semester}</td>
-                <td>${item.jurusan}</td>
-                <td>${item.prodi}</td>
-                <td>${statusBadge}</td>
-                <td><a href="{{ route('staff.pengajuan-cicilan.detail', '') }}/${item.nim}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Lihat Pengajuan</a></td>
-            </tr>`;
-            tableBody.insertAdjacentHTML("beforeend", row);
+    @if (session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            confirmButtonColor: '#28a745',
+            confirmButtonText: 'OK'
         });
+    @endif
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSemester = document.getElementById('filterSemester');
+        const filterProdi = document.getElementById('filterProdi');
+        const filterStatus = document.getElementById('filterStatus');
+        const searchInput = document.getElementById('searchInput');
+        const filterButton = document.querySelector('.btn.btn-primary');
+        const resetButton = document.querySelector('.btn.btn-outline-secondary');
+        const rows = document.querySelectorAll('#PengajuanCicilanTable tbody tr');
 
-        updatePaginationInfo(data, page);
-        updatePagination(data, page);
-    }
+        function applyFilter() {
+            const semesterVal = filterSemester.value.toLowerCase();
+            const prodiVal = filterProdi.value.toLowerCase();
+            const statusVal = filterStatus.value.toLowerCase();
+            const searchVal = searchInput.value.toLowerCase();
 
-    // Get status badge function
-    function getStatusBadge(status) {
-        switch(status) {
-            case 'Diverifikasi':
-                return '<span class="badge badge-success">Diverifikasi</span>';
-            case 'Belum Diverifikasi':
-                return '<span class="badge badge-warning">Belum Diverifikasi</span>';
-            case 'Ditolak':
-                return '<span class="badge badge-danger">Ditolak</span>';
-            default:
-                return '<span class="badge badge-secondary">-</span>';
-        }
-    }
+            rows.forEach(row => {
+                const semester = row.children[3].textContent.toLowerCase();
+                const prodi = row.children[4].textContent.toLowerCase();
+                const status = row.children[6].textContent.toLowerCase();
+                const mahasiswa = row.children[2].textContent.toLowerCase();
 
-    // Update pagination info
-    function updatePaginationInfo(data, page) {
-        const startIndex = (page - 1) * itemsPerPage + 1;
-        const endIndex = Math.min(page * itemsPerPage, data.length);
-        document.querySelector('.pagination-info').textContent = `Menampilkan ${startIndex}-${endIndex} dari ${data.length} data`;
-    }
+                const matchSemester = !semesterVal || semester.includes(semesterVal);
+                const matchProdi = !prodiVal || prodi.includes(prodiVal);
+                const matchStatus = !statusVal || status.includes(statusVal);
+                const matchSearch = !searchVal || mahasiswa.includes(searchVal);
 
-    // Update pagination buttons
-    function updatePagination(data, page) {
-        const totalPages = Math.ceil(data.length / itemsPerPage);
-        const pagination = document.querySelector('.pagination');
-
-        pagination.innerHTML = `
-            <li class="page-item ${page === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" aria-label="Previous" data-page="${page - 1}">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-        `;
-
-        // Loop through total pages
-        for (let i = 1; i <= totalPages; i++) {
-            pagination.innerHTML += `
-                <li class="page-item ${i === page ? 'active' : ''}">
-                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                </li>
-            `;
+                if (matchSemester && matchProdi && matchStatus && matchSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
 
-        pagination.innerHTML += `
-            <li class="page-item ${page === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" aria-label="Next" data-page="${page + 1}">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        `;
-    }
-
-    // Filter functions
-    function applyFilters() {
-        const semesterValue = document.getElementById('semesterFilter').value;
-        const statusValue = document.getElementById('statusFilter').value;
-        const searchValue = document.getElementById('searchInput').value.toLowerCase();
-
-        filteredData = pengajuanData.filter(item => {
-            const matchesSemester = semesterValue === '' || item.semester.includes(semesterValue.split(' - ')[0]);
-            const matchesStatus = statusValue === 'All Status' || item.status === statusValue;
-            const matchesSearch = searchValue === '' ||
-                item.nama.toLowerCase().includes(searchValue) ||
-                item.nim.includes(searchValue);
-
-            return matchesSemester && matchesStatus && matchesSearch;
-        });
-
-        currentPage = 1;
-        renderTable(filteredData, currentPage);
-    }
-
-    // Event listeners
-    document.getElementById('filterSemester').addEventListener('click', applyFilters);
-    document.getElementById('filterStatus').addEventListener('click', applyFilters);
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-
-    // Pagination event listeners
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('page-link') && !e.target.closest('.disabled')) {
-            e.preventDefault();
-            const page = parseInt(e.target.dataset.page);
-            if (page && page !== currentPage) {
-                currentPage = page;
-                renderTable(filteredData, currentPage);
-            }
+        function resetFilter() {
+            filterSemester.value = '';
+            filterProdi.value = '';
+            filterStatus.value = '';
+            searchInput.value = '';
+            applyFilter();
         }
+
+        filterButton.addEventListener('click', applyFilter);
+        resetButton.addEventListener('click', resetFilter);
     });
-
-    // Initial render
-    renderTable(filteredData, currentPage);
-});
 </script>
 @endsection

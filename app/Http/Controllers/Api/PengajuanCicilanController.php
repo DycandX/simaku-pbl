@@ -13,7 +13,14 @@ class PengajuanCicilanController extends Controller
     {
         $query = PengajuanCicilan::with([
             'enrollment.mahasiswa',
+            'enrollment.programStudi',
+            'enrollment.golonganUkt',
+            'enrollment.kelas',
+            'enrollment.tingkat',
+            'enrollment.tahunAkademik',
             'uktSemester.periodePembayaran',
+            'uktSemester.pembayaran',
+            'pembayaran.detailPembayaran',
             'approver'
         ])->orderByDesc('id');
 
@@ -69,7 +76,14 @@ class PengajuanCicilanController extends Controller
     {
         $query = PengajuanCicilan::with([
             'enrollment.mahasiswa',
+            'enrollment.programStudi',
+            'enrollment.golonganUkt',
+            'enrollment.kelas',
+            'enrollment.tingkat',
+            'enrollment.tahunAkademik',
             'uktSemester.periodePembayaran',
+            'uktSemester.pembayaran',
+            'pembayaran.detailPembayaran',
             'approver'
         ])->where('id', $id);
 

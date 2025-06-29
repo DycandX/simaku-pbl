@@ -48,7 +48,7 @@ class PengajuanCicilan extends Model
     // Relationship dengan PembayaranUktSemester
     public function pembayaran()
     {
-        return $this->hasMany(PembayaranUktSemester::class, 'id_pengajuan_cicilan');
+        return $this->hasMany(PembayaranUktSemester::class, 'id_pengajuan_cicilan', 'id');
     }
 
     // Check if approved

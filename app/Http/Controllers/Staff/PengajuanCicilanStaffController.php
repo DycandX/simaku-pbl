@@ -2,213 +2,220 @@
 
 namespace App\Http\Controllers\Staff;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PengajuanCicilanStaffController extends Controller
 {
-    public function x()
+    public function index(Request $request)
     {
-        // Data contoh pengajuan cicilan untuk ditampilkan di dashboard
-        $pengajuanData = collect([
-            [
-                'nim' => '4.33.23.5.19',
-                'nama' => 'Zirlda Syafira',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-15',
-                'jumlah_cicilan' => 2,
-                'nominal_per_cicilan' => 2500000
-            ],
-            [
-                'nim' => '4.33.23.5.20',
-                'nama' => 'Fadhil Ramadhan',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-16',
-                'jumlah_cicilan' => 3,
-                'nominal_per_cicilan' => 1750000
-            ],
-            [
-                'nim' => '4.33.23.5.21',
-                'nama' => 'Aisyah Hanifah',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-17',
-                'jumlah_cicilan' => 4,
-                'nominal_per_cicilan' => 1250000
-            ],
-            [
-                'nim' => '4.33.23.5.22',
-                'nama' => 'Yudha Prasetyo',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-18',
-                'jumlah_cicilan' => 2,
-                'nominal_per_cicilan' => 2500000
-            ],
-            [
-                'nim' => '4.33.23.5.23',
-                'nama' => 'Lestari Widya',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-19',
-                'jumlah_cicilan' => 3,
-                'nominal_per_cicilan' => 1750000
-            ],
-            [
-                'nim' => '4.33.23.5.24',
-                'nama' => 'Ahmad Fauzi',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Belum Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-20',
-                'jumlah_cicilan' => 4,
-                'nominal_per_cicilan' => 1250000
-            ],
-            [
-                'nim' => '4.33.23.5.25',
-                'nama' => 'Siti Nurhaliza',
-                'semester' => '2023 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Belum Diverifikasi',
-                'tanggal_pengajuan' => '2024-01-21',
-                'jumlah_cicilan' => 4,
-                'nominal_per_cicilan' => 1250000
-            ]
-        ]);
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
+
+        if (!$userData || !$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        if (!in_array($userData['role'], ['admin', 'staff'])) {
+            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+        }
+
+        // Ambil semua data pengajuan cicilan dari API
+        $allPengajuanCicilan = $this->getApiData('/api/pengajuan-cicilan', [], $token);
+
+        $periodePembayaran = $this->getApiData("/api/periode-pembayaran", [], $token);
+        $programStudi = $this->getApiData("/api/program-studi", [], $token);
+
+        // Pagination manual
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 5;
+        $offset = ($currentPage - 1) * $perPage;
+        $dataSlice = array_slice($allPengajuanCicilan, $offset, $perPage);
+
+        $pengajuanData = new LengthAwarePaginator(
+            $dataSlice,
+            count($allPengajuanCicilan),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         // Hitung summary status
         $statusSummary = [
-            'diverifikasi' => $pengajuanData->where('status', 'Diverifikasi')->count(),
-            'belum_diverifikasi' => $pengajuanData->where('status', 'Belum Diverifikasi')->count(),
-            'ditolak' => $pengajuanData->where('status', 'Ditolak')->count(),
+            'diverifikasi' => collect($allPengajuanCicilan)->where('status', 'Diverifikasi')->count(),
+            'belum_diverifikasi' => collect($allPengajuanCicilan)->where('status', 'Belum Diverifikasi')->count(),
+            'ditolak' => collect($allPengajuanCicilan)->where('status', 'Ditolak')->count(),
         ];
 
         // Data untuk dropdown filter
-        $semesterOptions = $pengajuanData->pluck('semester')->unique()->values();
-        $jurusanOptions = $pengajuanData->pluck('jurusan')->unique()->values();
-        $prodiOptions = $pengajuanData->pluck('prodi')->unique()->values();
-
-        // Updated view path to match the folder structure
-        return view('staff-keuangan.dashboard.pengajuan-cicilan.pengajuan-cicilan', compact(
-            'pengajuanData',
-            'statusSummary',
-            'semesterOptions',
-            'jurusanOptions',
-            'prodiOptions'
-        ));
+        $semesterOptions = collect($allPengajuanCicilan)->pluck('semester')->unique()->values();
+        $jurusanOptions = collect($allPengajuanCicilan)->pluck('jurusan')->unique()->values();
+        $prodiOptions = collect($allPengajuanCicilan)->pluck('prodi')->unique()->values();
+        //dd($pengajuanData);
+        // dd($allPengajuanCicilan);
+        //dd($periodePembayaran);
+        return view('staff-keuangan.dashboard.pengajuan-cicilan.pengajuan-cicilan', [
+            'pengajuanData' => $pengajuanData,
+            'periodePembayaran' => $periodePembayaran,
+            'programStudi' => $programStudi,
+            'statusSummary' => $statusSummary,
+            'semesterOptions' => $semesterOptions,
+            'jurusanOptions' => $jurusanOptions,
+            'prodiOptions' => $prodiOptions,
+        ]);
     }
 
     public function show($id)
     {
-        // Simulasi data untuk detail pengajuan cicilan
-        $pengajuanData = collect([
-            [
-                'nim' => '4.33.23.5.19',
-                'nama' => 'Zirlda Syafira',
-                'semester' => '2023/2024 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Diverifikasi',
-                'tanggal_pengajuan' => '15 Januari 2024',
-                'jumlah_cicilan' => 2,
-                'nominal_per_cicilan' => 2500000
-            ],
-            [
-                'nim' => '4.33.23.5.25',
-                'nama' => 'Siti Nurhaliza',
-                'semester' => '2023/2024 - Genap',
-                'jurusan' => 'Administrasi Bisnis',
-                'prodi' => 'D4 - Manajemen Bisnis Internasional',
-                'status' => 'Belum Diverifikasi',
-                'tanggal_pengajuan' => '21 Januari 2024',
-                'jumlah_cicilan' => 4,
-                'nominal_per_cicilan' => 1250000
-            ]
-        ]);
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
 
-        // Temukan data pengajuan berdasarkan id
-        // Dalam kasus nyata, kita akan query dari database
-        $pengajuan = $pengajuanData->firstWhere('nim', $id) ?? $pengajuanData[1];
+        if (!$userData || !$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
 
-        // Siapkan data mahasiswa terpisah dari pengajuan
-        $mahasiswa = [
-            'nim' => $pengajuan['nim'],
-            'nama' => $pengajuan['nama'],
-            'jurusan' => $pengajuan['jurusan'],
-            'prodi' => $pengajuan['prodi'],
-            'semester' => $pengajuan['semester']
+        if (!in_array($userData['role'], ['admin', 'staff'])) {
+            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+        }
+
+        $data = $this->getApiData("/api/pengajuan-cicilan/{$id}", [], $token);
+
+        if (empty($data)) {
+            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data pengajuan.']);
+        }
+
+        $detailPengajuanCicilan = [
+            'id' => $id,
+            'AngsuranDiajukan' => $data['jumlah_angsuran_diajukan'],
+            'AngsuranDisetujui' => $data['jumlah_angsuran_disetujui'],
+            'status' => ucfirst($data['status']),
+            'file_path' => $data['file_path'] ?? null,
+            'nama' => $data['enrollment']['mahasiswa']['nama_lengkap'],
+            'nim' => $data['enrollment']['mahasiswa']['nim'],
+            'prodi' => $data['enrollment']['program_studi']['nama_prodi'],
+            'semester' => $data['ukt_semester']['periode_pembayaran']['nama_periode'],
+            'diverifikasi' => $data['approver']['nama_lengkap'] ?? null
         ];
 
-        // Updated view path to match the folder structure
-        return view('staff-keuangan.dashboard.pengajuan-cicilan.pengajuan-cicilan-detail', compact(
-            'pengajuan',
-            'mahasiswa',
-            'id'
-        ));
+        //dd($data);
+        //dd($detailPengajuanCicilan);
+        return view('staff-keuangan.dashboard.pengajuan-cicilan.pengajuan-cicilan-detail', compact('detailPengajuanCicilan', 'data'));
     }
 
-    public function approve(Request $request, $id)
+    public function updateStatus(Request $request, $id)
     {
-        // Method untuk approve pengajuan cicilan
-        try {
-            // Logic approve pengajuan cicilan
-            // Update status menjadi 'Diverifikasi'
+        $token = Session::get('token');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Pengajuan cicilan berhasil diverifikasi'
+        if (!$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Token tidak ditemukan, harap login ulang.']);
+        }
+
+        $status = $request->input('status');
+
+        // Validasi sederhana
+        if (!in_array($status, ['approved', 'rejected'])) {
+            return redirect()->back()->withErrors(['error' => 'Status tidak valid.']);
+        }
+
+        try {
+            $response = Http::withToken($token)->put(config('app.api_url') . "/api/pengajuan-cicilan/{$id}", [
+                'status' => $status
             ]);
+
+            if ($response->successful()) {
+                return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+            } else {
+                return redirect()->back()->withErrors(['error' => 'Gagal memperbarui status.']);
+            }
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memverifikasi pengajuan cicilan'
-            ], 500);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui status.']);
         }
     }
 
-    public function reject(Request $request, $id)
+    public function formUpdateCicilan($id)
     {
-        // Method untuk reject pengajuan cicilan
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
+
+        if (!$userData || !$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        if (!in_array($userData['role'], ['admin', 'staff'])) {
+            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+        }
+
+        $data = $this->getApiData("/api/pengajuan-cicilan/{$id}", [], $token);
+        //dd($data);
+        if (empty($data)) {
+            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data pengajuan.']);
+        }
+
+        $detailPengajuanCicilan = [
+            'id' => $id,
+            'AngsuranDiajukan' => $data['jumlah_angsuran_diajukan'],
+            'AngsuranDisetujui' => $data['jumlah_angsuran_disetujui'],
+            'status' => ucfirst($data['status']),
+            'file_path' => $data['file_path'] ?? null,
+            'nama' => $data['enrollment']['mahasiswa']['nama_lengkap'],
+            'nim' => $data['enrollment']['mahasiswa']['nim'],
+            'prodi' => $data['enrollment']['program_studi']['nama_prodi'],
+            'semester' => $data['ukt_semester']['periode_pembayaran']['nama_periode'],
+            'diverifikasi' => $data['approver']['nama_lengkap'] ?? null
+        ];
+        //dd($detailPengajuanCicilan);
+        //dd($data);
+        return view('staff-keuangan.dashboard.pengajuan-cicilan.update_cicilan', compact('detailPengajuanCicilan', 'data'));
+    }
+
+    public function updateHasilCicilan(Request $request, $id)
+    {
+        //dd($request->method(), $id, $request->all());
+        $userData = Session::get('user_data');
+        $token = Session::get('token');
+        //dd(Session::get('user_data'));
+
+        if (!$userData || !$token) {
+            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+        }
+
+        $validated = $request->validate([
+            'jumlah_angsuran_disetujui' => 'required|integer|min:1',
+            'catatan_approval' => 'nullable|string|max:255',
+        ]);
+
+        $payload = [
+            'jumlah_angsuran_disetujui' => $validated['jumlah_angsuran_disetujui'],
+            'catatan_approval' => $validated['catatan_approval'],
+            'approved_by' => $userData['staff_id'],
+            'approved_at' => now(),
+        ];
+
+
         try {
-            // Logic reject pengajuan cicilan
-            // Update status menjadi 'Ditolak'
+            $response = Http::withToken($token)->put(config('app.api_url') . "/api/pengajuan-cicilan/{$id}", $payload);
 
-            // Mendapatkan alasan penolakan
-            $reason = $request->input('reason');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Pengajuan cicilan berhasil ditolak'
-            ]);
+            if ($response->successful()) {
+                return redirect()->route('staff.pengajuan-cicilan')->with('success', 'Pengajuan cicilan berhasil diperbarui.');
+            } else {
+                return redirect()->back()->withErrors(['error' => 'Gagal memperbarui pengajuan.']);
+                // dd($response->status(), $response->body());
+            }
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menolak pengajuan cicilan'
-            ], 500);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi server.']);
         }
     }
 
-    public function filter(Request $request)
+    private function getApiData($endpoint, $queryParams = [], $token)
     {
-        // Method untuk filter data pengajuan cicilan
-        $filters = $request->only(['semester', 'status', 'jurusan', 'search']);
-
-        // Logic filter data pengajuan cicilan
-
-        return response()->json(['filtered_data' => []]);
+        try {
+            $response = Http::withToken($token)->get(config('app.api_url') . $endpoint, $queryParams);
+            return $response->successful() ? optional($response->json())['data'] ?? [] : [];
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }

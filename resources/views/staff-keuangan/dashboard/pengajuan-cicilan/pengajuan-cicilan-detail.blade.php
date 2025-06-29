@@ -156,221 +156,129 @@
 @endsection
 
 @section('content')
-<div class="container-fluid">
-    <div class="detail-container">
-        <div class="detail-header">
-            <h5 class="mb-0">Informasi Pengajuan Cicilan</h5>
-        </div>
-        <div class="detail-body">
-            <table class="detail-table">
-                <tr>
-                    <th>Nama</th>
-                    <td>{{ $mahasiswa['nama'] ?? 'Siti Nurhaliza' }}</td>
-                </tr>
-                <tr>
-                    <th>NIM</th>
-                    <td>{{ $mahasiswa['nim'] ?? '4.33.23.4.10' }}</td>
-                </tr>
-                <tr>
-                    <th>Jurusan</th>
-                    <td>{{ $mahasiswa['jurusan'] ?? 'Administrasi Bisnis' }}</td>
-                </tr>
-                <tr>
-                    <th>Program Studi</th>
-                    <td>{{ $mahasiswa['prodi'] ?? 'D4 - Manajemen Bisnis Internasional' }}</td>
-                </tr>
-                <tr>
-                    <th>Semester</th>
-                    <td>{{ $mahasiswa['semester'] ?? '2023/2024 - Genap' }}</td>
-                </tr>
-                <tr>
-                    <th>Jumlah Cicilan</th>
-                    <td>{{ $pengajuan['jumlah_cicilan'] ?? '4x' }}</td>
-                </tr>
-                <tr>
-                    <th>Nominal per Cicilan</th>
-                    <td>Rp {{ number_format($pengajuan['nominal_per_cicilan'] ?? 2500000, 0, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <th>Tanggal Pengajuan</th>
-                    <td>{{ $pengajuan['tanggal_pengajuan'] ?? '15 Januari 2024' }}</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>
-                        @if(($pengajuan['status'] ?? 'Diverifikasi') == 'Diverifikasi')
-                            <span class="badge-diverifikasi">Diverifikasi</span>
-                        @elseif(($pengajuan['status'] ?? '') == 'Belum Diverifikasi')
-                            <span class="badge-belum-diverifikasi">Belum Diverifikasi</span>
-                        @elseif(($pengajuan['status'] ?? '') == 'Ditolak')
-                            <span class="badge-ditolak">Ditolak</span>
-                        @endif
-                    </td>
-                </tr>
-            </table>
-
-            <div class="action-buttons">
-                <a href="#" class="btn btn-view" target="_blank">
-                    <i class="fas fa-eye action-icon"></i> Lihat File
-                </a>
-
-                @if(($pengajuan['status'] ?? '') != 'Diverifikasi' && ($pengajuan['status'] ?? '') != 'Ditolak')
-                <button class="btn btn-approve" id="approveBtn" data-id="{{ $id ?? 1 }}">
-                    <i class="fas fa-check-circle action-icon"></i> Verifikasi
-                </button>
-
-                <button class="btn btn-reject" id="rejectBtn" data-id="{{ $id ?? 1 }}">
-                    <i class="fas fa-times-circle action-icon"></i> Tolak
-                </button>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Konfirmasi Modal untuk Verifikasi -->
-    <div class="modal fade" id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="approveModalLabel">Konfirmasi Verifikasi</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Apakah Anda yakin ingin memverifikasi pengajuan cicilan ini?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-success" id="confirmApprove">Verifikasi</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Konfirmasi Modal untuk Penolakan -->
-    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectModalLabel">Konfirmasi Penolakan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="rejectReason">Alasan Penolakan:</label>
-                        <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-0"><strong>Nama Lengkap :</strong></p>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-dark mb-0">{{ $detailPengajuanCicilan['nama'] ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-0"><strong>NIM :</strong></p>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-dark mb-0">{{ $detailPengajuanCicilan['nim']  ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-0"><strong>Program Studi :</strong></p>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-dark mb-0">{{ $detailPengajuanCicilan['prodi']  ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-0"><strong>Semester</strong></p>
+                            </div>
+                            <div class="col-8">
+                               <p class="text-dark mb-0">{{ $detailPengajuanCicilan['semester']  ?? '-' }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmReject">Tolak</button>
+
+                {{-- Tabel Detail Pengajuan Cicilan --}}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Angsuran Diajukan</th>
+                                <th>Angsuran Disetujui</th>
+                                <th>Penanggung Jawab</th>
+                                <th>Status</th>
+                                <th>File Pengajuan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ $detailPengajuanCicilan['AngsuranDiajukan'] }}</td>
+                                <td>{{ $detailPengajuanCicilan['AngsuranDisetujui'] }}</td>
+                                <td>{{ $detailPengajuanCicilan['diverifikasi'] }}</td>
+                                <td>
+                                    @php
+                                        $status = strtolower($detailPengajuanCicilan['status']);
+                                        $badgeClass = match ($status) {
+                                            'approved' => 'badge bg-success',
+                                            'rejected' => 'badge bg-danger',
+                                            'pending' => 'badge bg-primary',
+                                            default => 'badge bg-secondary',
+                                        };
+                                    @endphp
+
+                                    <span class="{{ $badgeClass }}">
+                                        {{ ucfirst($status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if ($detailPengajuanCicilan['file_path'])
+                                        <a href="{{ asset('storage/' . $detailPengajuanCicilan['file_path']) }}" class="btn btn-sm btn-primary" title="Lihat File" target="_blank">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ asset('storage/' . $detailPengajuanCicilan['file_path']) }}" class="btn btn-sm btn-success" title="Download File" download>
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    @else
+                                        Tidak ada file
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <form action="{{ route('pengajuan-cicilan.update-status', $detailPengajuanCicilan['id']) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Setujui pengajuan ini?')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('pengajuan-cicilan.update-status', $detailPengajuanCicilan['id']) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tolak pengajuan ini?')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <a href="{{ route('pengajuan-cicilan.form-update-cicilan', ['id' => $detailPengajuanCicilan['id']]) }}" class="btn btn-primary mr-3">
+                        <i class="fas fa-upload mr-1"></i> Buat Hasil Pengajuan Cicilan
+                    </a>
+                    <a href="{{ route('staff.pengajuan-cicilan') }}" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
-
 @section('scripts')
 <script>
-$(document).ready(function() {
-    // Event handler untuk tombol verifikasi
-    $('#approveBtn').click(function() {
-        $('#approveModal').modal('show');
-    });
-
-    // Event handler untuk tombol tolak
-    $('#rejectBtn').click(function() {
-        $('#rejectModal').modal('show');
-    });
-
-    // Event handler untuk konfirmasi verifikasi
-    $('#confirmApprove').click(function() {
-        const id = $('#approveBtn').data('id');
-
-        // AJAX request untuk verifikasi
-        $.ajax({
-            url: '/staff/pengajuan-cicilan/' + id + '/approve',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#approveModal').modal('hide');
-
-                    // Tampilkan pesan sukses
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function() {
-                        // Reload halaman
-                        window.location.reload();
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                // Tampilkan pesan error
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Terjadi kesalahan saat memverifikasi pengajuan cicilan!',
-                });
-            }
-        });
-    });
-
-    // Event handler untuk konfirmasi penolakan
-    $('#confirmReject').click(function() {
-        const id = $('#rejectBtn').data('id');
-        const reason = $('#rejectReason').val();
-
-        if (!reason) {
-            alert('Alasan penolakan harus diisi!');
-            return;
-        }
-
-        // AJAX request untuk penolakan
-        $.ajax({
-            url: '/staff/pengajuan-cicilan/' + id + '/reject',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                reason: reason
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#rejectModal').modal('hide');
-
-                    // Tampilkan pesan sukses
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function() {
-                        // Reload halaman
-                        window.location.reload();
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                // Tampilkan pesan error
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Terjadi kesalahan saat menolak pengajuan cicilan!',
-                });
-            }
-        });
-    });
-});
 </script>
 @endsection

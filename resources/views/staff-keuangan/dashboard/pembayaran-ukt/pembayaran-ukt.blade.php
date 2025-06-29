@@ -2,11 +2,13 @@
 
 @section('title', 'Pembayaran UKT - SIMAKU')
 
-@section('header', 'STAFF - PEMBAYARAN UKT')
+@section('header', 'Pembayaran UKT Mahasiswa')
 
 @section('content')
 <div class="row">
-    <!-- Status Cards -->
+
+
+    {{-- <!-- Status Cards -->
     <div class="col-md-3">
         <div class="status-card bg-info text-white">
             <div class="d-flex justify-content-center mb-2">
@@ -42,10 +44,61 @@
             </div>
             <p>Ditolak</p>
         </div>
+    </div> --}}
+    <div class="col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Total Pembayaran</h5>
+                <h3>Rp</h3>
+                {{-- <h3 class="mb-0 text-primary">{{ $totalSemuaTagihan }}</h3>  --}}
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Sudah Lunas -->
+    <div class="col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Diverifikasi</h5>
+                <h3>Rp</h3>
+                {{-- <h3 class="mb-0 text-success">{{ $totalSudahLunas }}</h3>  --}}
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Belum Lunas -->
+    <div class="col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Belum Diverifikasi</h5>
+                <h3>Rp</h3>
+                {{-- <h3 class="mb-0 text-danger">{{ $totalBelumLunas }}</h3>  --}}
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Belum Lunas -->
+    <div class="col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-dark">Ditolak</h5>
+                <h3>Rp</h3>
+                {{-- <h3 class="mb-0 text-danger">{{ $totalBelumLunas }}</h3>  --}}
+                <span class="rounded-circle wallet-icon">
+                    <i class="fas fa-wallet"></i>
+                </span>
+            </div>
+        </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class="col-12 mb-4">
+    {{-- <!-- Filter Section -->
+    <div class="col-12 mb-2">
         <div class="filter-section">
             <div class="row">
                 <div class="col-md-3 mb-3">
@@ -53,40 +106,53 @@
                         <label for="filterSemester">Semester</label>
                         <select class="form-control" id="filterSemester">
                             <option value="">Semua Semester</option>
-                            <option value="2023/2024 - Genap" selected>2023/2024 - Genap</option>
-                            <option value="2023/2024 - Ganjil">2023/2024 - Ganjil</option>
-                            <option value="2022/2023 - Genap">2022/2023 - Genap</option>
+                            @foreach($periodePembayaran as $periode)
+                                <option value="{{ $periode['nama_periode'] }}">{{ $periode['nama_periode'] }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <div class="form-group">
+                        <label for="filterProdi">Program Studi</label>
+                        <select class="form-control" id="filterProdi">
+                            <option value="">Semua Program Studi</option>
+                            @foreach($programStudi as $prodi)
+                                <option value="{{ $prodi['nama_prodi'] }}">
+                                    {{ $prodi['nama_prodi'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
                         <label for="filterStatus">Status</label>
                         <select class="form-control" id="filterStatus">
                             <option value="">Semua Status</option>
-                            <option value="Diverifikasi">Diverifikasi</option>
-                            <option value="Belum Diverifikasi">Belum Diverifikasi</option>
-                            <option value="Ditolak">Ditolak</option>
+                            <option value="Sudah Lunas">Sudah Lunas</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <div class="form-group">
                         <label for="searchInput">Cari</label>
-                        <input type="text" class="form-control" id="searchInput" placeholder="Nama/NIM...">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nama Lengkap">
                     </div>
                 </div>
-                <div class="col-md-3 mb-3 d-flex align-items-end">
-                    <button type="button" class="btn btn-primary mr-2">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-primary">
                         <i class="fas fa-filter mr-1"></i> Filter
                     </button>
-                    <button type="button" class="btn btn-outline-secondary">
+                    <button type="button" class="btn btn-outline-secondary ml-2">
                         <i class="fas fa-sync-alt mr-1"></i> Reset
                     </button>
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Payment Table -->
     <div class="col-12">
@@ -219,18 +285,50 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Filter functionality
-        $('.btn-primary').on('click', function() {
-            // Implementasi filter
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSemester = document.getElementById('filterSemester');
+        const filterProdi = document.getElementById('filterProdi');
+        const filterStatus = document.getElementById('filterStatus');
+        const searchInput = document.getElementById('searchInput');
+        const filterButton = document.querySelector('.btn.btn-primary');
+        const resetButton = document.querySelector('.btn.btn-outline-secondary');
+        const rows = document.querySelectorAll('#uktTable tbody tr');
 
-        // Reset filter
-        $('.btn-outline-secondary').on('click', function() {
-            $('#filterSemester').val('');
-            $('#filterStatus').val('');
-            $('#searchInput').val('');
-        });
+        function applyFilter() {
+            const semesterVal = filterSemester.value.toLowerCase();
+            const prodiVal = filterProdi.value.toLowerCase();
+            const statusVal = filterStatus.value.toLowerCase();
+            const searchVal = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                const semester = row.children[4].textContent.toLowerCase();
+                const prodi = row.children[3].textContent.toLowerCase();
+                const status = row.children[7].textContent.toLowerCase();
+                const mahasiswa = row.children[2].textContent.toLowerCase();
+
+                const matchSemester = !semesterVal || semester.includes(semesterVal);
+                const matchProdi = !prodiVal || prodi.includes(prodiVal);
+                const matchStatus = !statusVal || status.includes(statusVal);
+                const matchSearch = !searchVal || mahasiswa.includes(searchVal);
+
+                if (matchSemester && matchProdi && matchStatus && matchSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function resetFilter() {
+            filterSemester.value = '';
+            filterProdi.value = '';
+            filterStatus.value = '';
+            searchInput.value = '';
+            applyFilter();
+        }
+
+        filterButton.addEventListener('click', applyFilter);
+        resetButton.addEventListener('click', resetFilter);
     });
 </script>
 @endsection
