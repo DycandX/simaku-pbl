@@ -130,6 +130,17 @@ class LihatTagihanUktController extends Controller
         if (empty($uktSemester)) {
             return redirect()->back()->withErrors(['error' => 'Data UKT Semester tidak ditemukan.']);
         }
+
+        // 2. Filter pembayaran untuk menghilangkan status 'cancelled'
+        if (isset($uktSemester['pembayaran']) && is_array($uktSemester['pembayaran'])) {
+            $uktSemester['pembayaran'] = array_filter($uktSemester['pembayaran'], function($pembayaran) {
+                return strtolower($pembayaran['status'] ?? '') !== 'cancelled';
+            });
+
+            // Reset array keys untuk menghindari masalah indexing
+            $uktSemester['pembayaran'] = array_values($uktSemester['pembayaran']);
+        }
+
         // Debug data
         //dd($uktSemester);
         // dd($allDetails);
@@ -166,7 +177,6 @@ class LihatTagihanUktController extends Controller
         ]);
     }
 
-    
     public function pengajuan_cicilan_store(Request $request)
     {
         $token = Session::get('token');
@@ -234,38 +244,12 @@ class LihatTagihanUktController extends Controller
         }
     }
 
-    // public function upload_bukti_pembayaran($id)
-    // {
-    //     $token = Session::get('token');
-    //     $userData = Session::get('user_data');
-    //     $nim = Session::get('username');
-
-    //     if (!$userData) {
-    //         return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
-    //     }
-
-    //     // Ambil data detail pembayaran berdasarkan ID
-    //     $detailPembayaran = $this->getApiData("/api/detail-pembayaran/$id", $token);
-    //     //dd($detailPembayaran);
-    //     // Ambil data enrollment mahasiswa berdasarkan NIM
-    //     $enrollmentMahasiswa = $this->getApiData("/api/enrollment-mahasiswa?nim=" . urlencode($nim), $token);
-
-    //     if (empty($detailPembayaran)) {
-    //         return redirect()->back()->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
-    //     }
-
-    //     return view(
-    //         'mahasiswa.dashboard.tagihan-ukt.upload_bukti',
-    //         compact('detailPembayaran', 'enrollmentMahasiswa', 'userData')
-    //     );
-    // }
     public function upload_bukti_pembayaran($id_ukt_semester)
     {
         //dd($id_ukt_semester);
         $token = Session::get('token');
         $userData = Session::get('user_data');
         $nim = Session::get('username');
-        
 
         if (!$userData) {
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
@@ -281,7 +265,17 @@ class LihatTagihanUktController extends Controller
             return redirect()->back()->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
         }
 
-        $pembayaranList = $uktSemester['pembayaran']; // Ambil daftar pembayaran cicilan
+        // Filter pembayaran list untuk menghilangkan status 'cancelled'
+        $pembayaranList = $uktSemester['pembayaran'] ?? []; // Ambil daftar pembayaran cicilan
+
+        // Filter untuk menghilangkan pembayaran dengan status 'cancelled'
+        $pembayaranList = array_filter($pembayaranList, function($pembayaran) {
+            return strtolower($pembayaran['status'] ?? '') !== 'cancelled';
+        });
+
+        // Reset array keys untuk menghindari masalah indexing
+        $pembayaranList = array_values($pembayaranList);
+
         //dd($pembayaranList);
         //dd($enrollmentMahasiswa);
         return view('mahasiswa.dashboard.tagihan-ukt.upload_bukti', [
@@ -291,7 +285,6 @@ class LihatTagihanUktController extends Controller
             'userData' => $userData
         ]);
     }
-
 
     public function bukti_pembayaran_store(Request $request)
     {
@@ -310,55 +303,39 @@ class LihatTagihanUktController extends Controller
             'bukti_pembayaran_path' => 'required|file|mimes:jpeg,jpg,png|max:1024',
         ]);
 
-        // try {
-        //     $storedPath = null;
+        try {
+            $storedPath = null;
 
-        //     if ($request->hasFile('bukti_pembayaran_path')) {
-        //         $storedPath = $request->file('bukti_pembayaran_path')->store('bukti-pembayaran', 'public');
-        //     }
+            if ($request->hasFile('bukti_pembayaran_path')) {
+                $originalName = $request->file('bukti_pembayaran_path')->getClientOriginalName();
+                $storedPath = $request->file('bukti_pembayaran_path')->storeAs('bukti-pembayaran', $originalName, 'public');
+            }
 
-        //     // Kirim path sebagai string biasa
-        //     $response = Http::withToken($token)
-        //         ->post(config('app.api_url') . '/api/detail-pembayaran', [
-        //             'tanggal_pembayaran' => $validated['tanggal_transfer'],
-        //             'metode_pembayaran' => $validated['bank_pengirim'],
-        //             'nominal' => $validated['jumlah_dibayar'],
-        //             'bukti_pembayaran_path' => $storedPath, // Ini string, bukan file
-        //             'id_pembayaran_ukt_semester' => $request->input('id_pembayaran'),
-        //         ]);
-            try {
-                $storedPath = null;
+            $response = Http::withToken($token)
+                ->asMultipart()
+                ->post(config('app.api_url') . '/api/detail-pembayaran', [
+                    [
+                        'name'     => 'tanggal_pembayaran',
+                        'contents' => $validated['tanggal_transfer'],
+                    ],
+                    [
+                        'name'     => 'metode_pembayaran',
+                        'contents' => $validated['bank_pengirim'],
+                    ],
+                    [
+                        'name'     => 'nominal',
+                        'contents' => $validated['jumlah_dibayar'],
+                    ],
+                    [
+                        'name'     => 'bukti_pembayaran_path',
+                        'contents' => $storedPath, // kirim string path, bukan file fisik
+                    ],
+                    [
+                        'name'     => 'id_pembayaran_ukt_semester',
+                        'contents' => $request->input('id_pembayaran'),
+                    ],
+                ]);
 
-                if ($request->hasFile('bukti_pembayaran_path')) {
-                    $originalName = $request->file('bukti_pembayaran_path')->getClientOriginalName();
-                    $storedPath = $request->file('bukti_pembayaran_path')->storeAs('bukti-pembayaran', $originalName, 'public');
-                }
-
-                $response = Http::withToken($token)
-                    ->asMultipart()
-                    ->post(config('app.api_url') . '/api/detail-pembayaran', [
-                        [
-                            'name'     => 'tanggal_pembayaran',
-                            'contents' => $validated['tanggal_transfer'],
-                        ],
-                        [
-                            'name'     => 'metode_pembayaran',
-                            'contents' => $validated['bank_pengirim'],
-                        ],
-                        [
-                            'name'     => 'nominal',
-                            'contents' => $validated['jumlah_dibayar'],
-                        ],
-                        [
-                            'name'     => 'bukti_pembayaran_path',
-                            'contents' => $storedPath, // kirim string path, bukan file fisik
-                        ],
-                        [
-                            'name'     => 'id_pembayaran_ukt_semester',
-                            'contents' => $request->input('id_pembayaran'),
-                        ],
-                    ]);
-                    
             if ($response->failed()) {
                 dd([
                     'status' => $response->status(),
@@ -377,7 +354,6 @@ class LihatTagihanUktController extends Controller
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
-
 
     private function getApiData($endpoint, $token)
     {

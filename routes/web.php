@@ -46,19 +46,21 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Dashboard Route - Dilindungi middleware
 Route::middleware(['check.login'])->group(function () {
     Route::get('/lihat-tagihan-ukt', [LihatTagihanUktController::class, 'index'])->name('mahasiswa-dashboard');
-    Route::get('/lihat-tagihan-ukt/show', [LihatTagihanUktController::class, 'show'])->name('mahasiswa-dashboard.show');
+    Route::get('/lihat-tagihan-ukt/{id}', [LihatTagihanUktController::class, 'show'])->name('mahasiswa-dashboard.show');
+    Route::get('/upload-bukti-pembayaran/{id}', [LihatTagihanUktController::class, 'upload_bukti_pembayaran'])->name('upload-bukti-pembayaran');
+    Route::post('/upload-bukti-pembayaran', [LihatTagihanUktController::class, 'bukti_pembayaran_store'])->name('upload-bukti-pembayaran.store');
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-//     Route::get('/profile', function()
-// {
-//     return 'Hello WEorld';
-// });
+
+
     Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang');
     Route::get('/golongan-ukt', [GolonganUktController::class, 'index'])->name('golongan-ukt');
 
     // Pengajuan Cicilan
-    Route::get('/pengajuan-cicilan', [CicilanController::class, 'create'])->name('pengajuan.cicilan');
-    Route::post('/pengajuan-cicilan', [CicilanController::class, 'store'])->name('pengajuan.cicilan.store');
+   // Route::get('/pengajuan-cicilan', [CicilanController::class, 'create'])->name('pengajuan.cicilan'); // pas di submit pake ini
+    Route::get('/pengajuan-cicilan/{id}', [LihatTagihanUktController::class, 'pengajuan_cicilan'])->name('pengajuan.cicilan'); // pas di submit pake ini
+    Route::post('/pengajuan-cicilan', [LihatTagihanUktController::class, 'pengajuan_cicilan_store'])->name('pengajuan.cicilan.store'); //ini pas di awal tampilan
+
 
     //Admin
     Route::get('/admin/kelola-pengguna', [\App\Http\Controllers\Admin\KelolaPenggunaController::class, 'index'])->name('admin.kelola-pengguna');

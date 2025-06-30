@@ -11,7 +11,7 @@
     <a href="/lihat-tagihan-ukt" class="btn btn-primary">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
-</div>               
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card shadow-sm">
@@ -90,9 +90,9 @@
                             </div>
                             <div class="col-8">
                                 <p class="text-dark mb-0">
-                                    {{ isset($uktSemester['periode_pembayaran']['tanggal_mulai']) 
+                                    {{ isset($uktSemester['periode_pembayaran']['tanggal_mulai'])
                                         ? \Carbon\Carbon::parse($uktSemester['periode_pembayaran']['tanggal_mulai'])->translatedFormat('d F Y')
-                                        : '-' 
+                                        : '-'
                                     }}
                                 </p>
                             </div>
@@ -104,9 +104,9 @@
                             </div>
                             <div class="col-8">
                                 <p class="text-dark mb-0">
-                                    {{ isset($uktSemester['periode_pembayaran']['tanggal_selesai']) 
+                                    {{ isset($uktSemester['periode_pembayaran']['tanggal_selesai'])
                                         ? \Carbon\Carbon::parse($uktSemester['periode_pembayaran']['tanggal_selesai'])->translatedFormat('d F Y')
-                                        : '-' 
+                                        : '-'
                                     }}
                                 </p>
                             </div>
@@ -273,7 +273,7 @@
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
                 <!-- Upload Bukti Pembayaran Section -->
