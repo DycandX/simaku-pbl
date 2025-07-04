@@ -206,10 +206,11 @@
                         // Hitung belum dibayar
                         $belumDibayar = (float) $totalTagihan - (float) $terbayar;
                     @endphp
-                    <div class="table-responsive ">
+                @endforeach
+                     <div class="table-responsive mt-4">
                         <table class="table table-bordered">
-                            <thead class="thead-light">
-                                <tr class="text-center">
+                            <thead class="thead-light text-center">
+                                <tr>
                                     <th>ID Pembayaran</th>
                                     <th>Tagihan</th>
                                     <th>Terbayar</th>
@@ -219,34 +220,52 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="text-center">
-                                    <td>{{ $pembayaran['id'] }}</td>
-                                    <td>Rp{{ number_format($totalTagihan, 0, ',', '.') }}</td>
-                                    <td class="text-success">Rp{{ number_format($terbayar, 0, ',', '.') }}</td>
-                                    <td class="text-danger">Rp{{ number_format($belumDibayar, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if($statusVerifikasi === 'verified')
-                                            <span class="badge badge-success">Berhasil diverifikasi</span>
-                                        @elseif($statusVerifikasi === 'rejected')
-                                            <span class="badge badge-danger">Pembayaran ditolak</span>
-                                        @elseif($statusVerifikasi === 'pending')
-                                            <span class="badge badge-warning">Menunggu diverifikasi</span>
-                                        @else
-                                            <span class="badge badge-secondary">Belum ada pembayaran</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($metodePembayaran !== '-')
-                                            <span class="badge badge-info">{{ $metodePembayaran }}</span>
-                                        @else
-                                            <p class="text-dark mb-0">-</p>
-                                        @endif
-                                    </td>
-                                </tr>
+                                @if (!empty($uktSemester['pembayaran']))
+                                    @foreach($uktSemester['pembayaran'] as $pembayaran)
+                                        @php
+                                            $totalTagihan = $pembayaran['nominal_tagihan'];
+                                            $detail = $pembayaran['detail_pembayaran'][0] ?? null;
+                                            $terbayar = 0;
+                                            $statusVerifikasi = $detail['status'] ?? null;
+                                            $metodePembayaran = $detail['metode_pembayaran'] ?? '-';
+                                            if ($detail && strtolower($statusVerifikasi) === 'verified') {
+                                                $terbayar = $detail['nominal'];
+                                            }
+                                            $belumDibayar = $totalTagihan - $terbayar;
+                                        @endphp
+                                        <tr class="text-center">
+                                            <td>{{ $pembayaran['id'] }}</td>
+                                            <td>Rp{{ number_format($totalTagihan, 0, ',', '.') }}</td>
+                                            <td class="text-success">Rp{{ number_format($terbayar, 0, ',', '.') }}</td>
+                                            <td class="text-danger">Rp{{ number_format($belumDibayar, 0, ',', '.') }}</td>
+                                            <td>
+                                                @if($statusVerifikasi === 'verified')
+                                                    <span class="badge badge-success">Berhasil diverifikasi</span>
+                                                @elseif($statusVerifikasi === 'rejected')
+                                                    <span class="badge badge-danger">Pembayaran ditolak</span>
+                                                @elseif($statusVerifikasi === 'pending')
+                                                    <span class="badge badge-warning">Menunggu diverifikasi</span>
+                                                @else
+                                                    <span class="badge badge-secondary">Belum ada pembayaran</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($metodePembayaran !== '-')
+                                                    <span class="badge badge-info">{{ $metodePembayaran }}</span>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="text-center">Belum ada data pembayaran</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
-                @endforeach
 
                 <!-- Notes -->
                 <div class="row mb-2">

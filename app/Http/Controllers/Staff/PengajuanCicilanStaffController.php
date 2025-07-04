@@ -202,9 +202,6 @@ class PengajuanCicilanStaffController extends Controller
         }
     }
 
-    /**
-     * Membuat tagihan baru berdasarkan pengajuan cicilan yang disetujui
-     */
     public function buatTagihanBaru($pengajuanId)
     {
         $userData = Session::get('user_data');
@@ -219,44 +216,38 @@ class PengajuanCicilanStaffController extends Controller
         }
 
         try {
-            // 1. Ambil data pengajuan cicilan
             $pengajuanData = $this->getApiData("/api/pengajuan-cicilan/{$pengajuanId}", [], $token);
-            
+
             if (empty($pengajuanData)) {
                 return redirect()->back()->withErrors(['error' => 'Data pengajuan cicilan tidak ditemukan.']);
             }
 
-            // Validasi status pengajuan harus approved
             if ($pengajuanData['status'] !== 'approved') {
                 return redirect()->back()->withErrors(['error' => 'Pengajuan cicilan belum disetujui.']);
             }
 
-            // 2. Ambil data UKT semester dari pengajuan (sudah include pembayaran)
             $uktSemesterData = $pengajuanData['ukt_semester'];
             $idUktSemester = $pengajuanData['id_ukt_semester'];
-            
+
             if (empty($uktSemesterData)) {
                 return redirect()->back()->withErrors(['error' => 'Data UKT semester tidak ditemukan.']);
             }
 
-            // 3. Hitung nominal per cicilan dengan pembulatan yang user-friendly
             $jumlahAngsuranDisetujui = $pengajuanData['jumlah_angsuran_disetujui'];
             $totalUkt = intval($uktSemesterData['jumlah_ukt']);
-            
-            // Buat pembagian cicilan yang user-friendly
+
             $nominalCicilan = $this->hitungPembagianUserFriendly($totalUkt, $jumlahAngsuranDisetujui);
 
-            // 4. Ambil data pembayaran UKT semester yang ada dari relasi
             $pembayaranUktData = $uktSemesterData['pembayaran'] ?? [];
 
-            // 5. Update status pembayaran yang ada menjadi 'cancelled'
             if (!empty($pembayaranUktData)) {
                 foreach ($pembayaranUktData as $pembayaran) {
-                    if ($pembayaran['id_enrollment'] == $pengajuanData['id_enrollment'] && 
+                    if (
+                        $pembayaran['id_enrollment'] == $pengajuanData['id_enrollment'] &&
                         $pembayaran['id_ukt_semester'] == $idUktSemester &&
                         $pembayaran['status'] !== 'cancelled' &&
-                        $pembayaran['status'] !== 'lunas') {
-                        
+                        $pembayaran['status'] !== 'lunas'
+                    ) {
                         $updateResult = $this->updatePembayaranStatus($pembayaran['id'], 'cancelled', $token);
                         if (!$updateResult) {
                             return redirect()->back()->withErrors(['error' => "Gagal membatalkan tagihan lama dengan ID: {$pembayaran['id']}"]);
@@ -265,21 +256,25 @@ class PengajuanCicilanStaffController extends Controller
                 }
             }
 
-            // 6. Buat tagihan baru sebanyak jumlah angsuran yang disetujui
             $tanggalMulai = Carbon::parse($uktSemesterData['periode_pembayaran']['tanggal_mulai']);
-            $interval = 30; // 30 hari interval antar cicilan
-            
-            // Array untuk menyimpan detail cicilan (untuk pesan sukses)
+            $interval = 30;
             $detailCicilan = [];
+
+            $listJenisPembayaran = $this->getJenisPembayaran($token);
 
             for ($i = 1; $i <= $jumlahAngsuranDisetujui; $i++) {
                 $tanggalJatuhTempo = $tanggalMulai->copy()->addDays($interval * ($i - 1));
-                $nominalTagihan = $nominalCicilan[$i - 1]; // Array dimulai dari 0
-                
+                $nominalTagihan = $nominalCicilan[$i - 1];
+
+                $idJenisPembayaran = $this->getJenisPembayaranId($listJenisPembayaran, $jumlahAngsuranDisetujui, $i);
+                if (!$idJenisPembayaran) {
+                    return redirect()->back()->withErrors(['error' => "Jenis pembayaran tidak ditemukan untuk angsuran ke-{$i}."]);
+                }
+
                 $tagihanBaru = [
                     'id_enrollment' => $pengajuanData['id_enrollment'],
                     'id_ukt_semester' => $idUktSemester,
-                    'id_jenis_pembayaran' => 2, // Assuming 2 adalah ID untuk pembayaran cicilan
+                    'id_jenis_pembayaran' => $idJenisPembayaran,
                     'total_cicilan' => $jumlahAngsuranDisetujui,
                     'cicilan_ke' => $i,
                     'nominal_tagihan' => $nominalTagihan,
@@ -289,7 +284,7 @@ class PengajuanCicilanStaffController extends Controller
                 ];
 
                 $response = Http::withToken($token)->post(config('app.api_url') . "/api/pembayaran-ukt-semester", $tagihanBaru);
-                
+
                 if (!$response->successful()) {
                     Log::error('Gagal membuat tagihan cicilan', [
                         'cicilan_ke' => $i,
@@ -299,12 +294,10 @@ class PengajuanCicilanStaffController extends Controller
                     ]);
                     return redirect()->back()->withErrors(['error' => "Gagal membuat tagihan cicilan ke-{$i}. " . $response->body()]);
                 }
-                
-                // Simpan detail untuk pesan sukses
+
                 $detailCicilan[] = "Cicilan ke-{$i}: Rp " . number_format($nominalTagihan, 0, ',', '.');
             }
 
-            // Buat pesan sukses dengan detail cicilan
             $totalPembagian = array_sum($nominalCicilan);
             $pesanSukses = "Berhasil membuat {$jumlahAngsuranDisetujui} tagihan cicilan baru:<br>";
             $pesanSukses .= implode('<br>', $detailCicilan);
@@ -323,6 +316,32 @@ class PengajuanCicilanStaffController extends Controller
         }
     }
 
+    private function getJenisPembayaran($token)
+    {
+        try {
+            $response = Http::withToken($token)->get(config('app.api_url') . "/api/jenis-pembayaran");
+            return $response->successful() ? $response->json('data') ?? [] : [];
+        } catch (\Exception $e) {
+            Log::error('Gagal mengambil data jenis pembayaran', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+    private function getJenisPembayaranId($listJenisPembayaran, $jumlahAngsuran, $cicilanKe)
+    {
+        foreach ($listJenisPembayaran as $jenis) {
+            if (
+                $jenis['is_angsuran'] &&
+                $jenis['max_angsuran'] == $jumlahAngsuran &&
+                str_contains(strtolower($jenis['nama_jenis']), "tahap {$cicilanKe}")
+            ) {
+                return $jenis['id'];
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Menghitung pembagian cicilan yang user-friendly dengan nominal bulat
      */
@@ -330,30 +349,30 @@ class PengajuanCicilanStaffController extends Controller
     {
         // Tentukan unit pembulatan berdasarkan besaran UKT
         $unitPembulatan = $this->tentukanUnitPembulatan($totalUkt);
-        
+
         // Hitung nominal dasar per cicilan
         $nominalDasar = intval($totalUkt / $jumlahCicilan);
-        
+
         // Bulatkan ke unit terdekat
         $nominalBulat = $this->bulatkanKeUnit($nominalDasar, $unitPembulatan);
-        
+
         // Inisialisasi array cicilan
         $cicilan = array_fill(0, $jumlahCicilan, $nominalBulat);
-        
+
         // Hitung total setelah pembulatan
         $totalSetelahBulat = $nominalBulat * $jumlahCicilan;
         $selisih = $totalUkt - $totalSetelahBulat;
-        
+
         // Distribusi selisih ke cicilan terakhir
         if ($selisih != 0) {
             $cicilan[$jumlahCicilan - 1] += $selisih;
-            
+
             // Jika cicilan terakhir menjadi tidak bulat, distribusi ulang
             if ($cicilan[$jumlahCicilan - 1] % $unitPembulatan != 0) {
                 $cicilan = $this->redistribusiSelisih($totalUkt, $jumlahCicilan, $unitPembulatan);
             }
         }
-        
+
         return $cicilan;
     }
 
@@ -391,25 +410,25 @@ class PengajuanCicilanStaffController extends Controller
         // Strategi: buat cicilan dengan nominal yang mudah dipahami
         $cicilan = [];
         $sisaUkt = $totalUkt;
-        
+
         // Untuk cicilan pertama sampai kedua terakhir
         for ($i = 0; $i < $jumlahCicilan - 1; $i++) {
             $sisaCicilan = $jumlahCicilan - $i;
             $nominalIdeal = intval($sisaUkt / $sisaCicilan);
             $nominalBulat = $this->bulatkanKeUnit($nominalIdeal, $unitPembulatan);
-            
+
             // Pastikan tidak melebihi sisa UKT
             if ($nominalBulat * $sisaCicilan > $sisaUkt) {
                 $nominalBulat -= $unitPembulatan;
             }
-            
+
             $cicilan[$i] = $nominalBulat;
             $sisaUkt -= $nominalBulat;
         }
-        
+
         // Cicilan terakhir mendapat sisa
         $cicilan[$jumlahCicilan - 1] = $sisaUkt;
-        
+
         return $cicilan;
     }
 
@@ -422,7 +441,7 @@ class PengajuanCicilanStaffController extends Controller
             $response = Http::withToken($token)->put(config('app.api_url') . "/api/pembayaran-ukt-semester/{$pembayaranId}", [
                 'status' => $status
             ]);
-            
+
             if ($response->successful()) {
                 Log::info("Berhasil update status pembayaran", [
                     'pembayaran_id' => $pembayaranId,
@@ -447,6 +466,65 @@ class PengajuanCicilanStaffController extends Controller
             return false;
         }
     }
+
+    public function hapusTagihanCancelled($pengajuanId)
+{
+    $userData = Session::get('user_data');
+    $token = Session::get('token');
+
+    if (!$userData || !$token) {
+        return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
+    }
+
+    if (!in_array($userData['role'], ['admin', 'staff'])) {
+        return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+    }
+
+    try {
+        // Ambil data pengajuan dan relasi pembayarannya
+        $pengajuanData = $this->getApiData("/api/pengajuan-cicilan/{$pengajuanId}", [], $token);
+
+        if (empty($pengajuanData)) {
+            return redirect()->back()->withErrors(['error' => 'Data pengajuan tidak ditemukan.']);
+        }
+
+        $pembayaranList = $pengajuanData['ukt_semester']['pembayaran'] ?? [];
+
+        $deletedIds = [];
+
+        foreach ($pembayaranList as $pembayaran) {
+            if (
+                $pembayaran['status'] === 'cancelled' &&
+                $pembayaran['id_enrollment'] == $pengajuanData['id_enrollment'] &&
+                $pembayaran['id_ukt_semester'] == $pengajuanData['id_ukt_semester']
+            ) {
+                $deleteResponse = Http::withToken($token)->delete(config('app.api_url') . "/api/pembayaran-ukt-semester/{$pembayaran['id']}");
+                if ($deleteResponse->successful()) {
+                    $deletedIds[] = $pembayaran['id'];
+                } else {
+                    Log::error("Gagal menghapus tagihan cancelled", [
+                        'id' => $pembayaran['id'],
+                        'response' => $deleteResponse->body()
+                    ]);
+                }
+            }
+        }
+
+        if (count($deletedIds) > 0) {
+            return redirect()->back()->with('success', 'Berhasil menghapus tagihan berstatus cancelled: ' . implode(', ', $deletedIds));
+        } else {
+            return redirect()->back()->with('info', 'Tidak ada tagihan cancelled yang ditemukan atau dihapus.');
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Error saat menghapus tagihan cancelled', [
+            'pengajuan_id' => $pengajuanId,
+            'error' => $e->getMessage()
+        ]);
+        return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus tagihan cancelled: ' . $e->getMessage()]);
+    }
+}
+
 
     private function getApiData($endpoint, $queryParams = [], $token)
     {

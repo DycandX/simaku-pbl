@@ -23,18 +23,15 @@
                             </ul>
                         </div>
                     @endif
-                    
+
                     <div class="form-group row mb-3">
-                        <label for="id_pembayaran" class="col-sm-2 col-form-label">Pilih Pembayaran</label>
+                        <label for="id_pembayaran" class="col-sm-2 col-form-label">ID Pembayaran</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="id_pembayaran" name="id_pembayaran" required>
-                                <option value="">-- Pilih ID Pembayaran --</option>
-                                @foreach($pembayaranList as $pembayaran)
-                                    <option value="{{ $pembayaran['id'] }}">
-                                        ID: {{ $pembayaran['id'] }} | Jatuh Tempo: {{ \Carbon\Carbon::parse($pembayaran['tanggal_jatuh_tempo'])->format('d M Y') }} | Nominal: Rp{{ number_format($pembayaran['nominal_tagihan'], 0, ',', '.') }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @php
+                                $pembayaran = $pembayaranList[0]; // karena hanya 1
+                            @endphp
+                            <input type="text" class="form-control" value="ID: {{ $pembayaran['id'] }} | Jatuh Tempo: {{ \Carbon\Carbon::parse($pembayaran['tanggal_jatuh_tempo'])->format('d M Y') }} | Nominal: Rp{{ number_format($pembayaran['nominal_tagihan'], 0, ',', '.') }}" disabled>
+                            <input type="hidden" name="id_pembayaran" value="{{ $pembayaran['id'] }}">
                         </div>
                     </div>
 

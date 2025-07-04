@@ -147,6 +147,8 @@ Route::middleware(['check.login'])->group(function () {
     Route::put('/staff/pengajuan-cicilan/{id}/hasil-cicilan', [PengajuanCicilanStaffController::class, 'updateHasilCicilan'])->name('staff.pengajuan-cicilan.update-hasil-cicilan');
     // Tambahkan route ini ke dalam grup route yang sesuai
     Route::post('/pengajuan-cicilan/{id}/buat-tagihan-baru', [PengajuanCicilanStaffController::class, 'buatTagihanBaru'])->name('pengajuan-cicilan.buat-tagihan-baru');
+    Route::post('/pengajuan-cicilan/{id}/hapus-tagihan-cancelled', [PengajuanCicilanStaffController::class, 'hapusTagihanCancelled'])->name('pengajuan-cicilan.hapus-tagihan-cancelled');
+
 
     Route::post('/staff/pengajuan-cicilan/{id}/approve', [PengajuanCicilanStaffController::class, 'approve'])->name('staff.pengajuan-cicilan.approve');
     Route::post('/staff/pengajuan-cicilan/{id}/reject', [PengajuanCicilanStaffController::class, 'reject'])->name('staff.pengajuan-cicilan.reject');

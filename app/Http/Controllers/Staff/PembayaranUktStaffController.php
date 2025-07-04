@@ -70,29 +70,49 @@ class PembayaranUktStaffController extends Controller
     }
 
     public function show($id)
-    {
-        $userData = Session::get('user_data');
-        $token = Session::get('token');
+{
+    $userData = Session::get('user_data');
+    $token = Session::get('token');
 
-        if (!$userData || !$token) {
-            return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
-        }
-
-        if (!in_array($userData['role'], ['admin', 'staff'])) {
-            return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
-        }
-
-        // Ambil detail pembayaran dari API berdasarkan ID
-        $detailPembayaran = $this->getApiData("/api/detail-pembayaran/{$id}", [], $token);
-
-        if (empty($detailPembayaran)) {
-            return redirect()->route('staff.pembayaran-ukt.index')->withErrors(['error' => 'Data tidak ditemukan.']);
-        }
-        //dd($detailPembayaran);
-        return view('staff-keuangan.dashboard.pembayaran-ukt.detail-pembayaran-ukt', [
-            'detailPembayaran' => $detailPembayaran
-        ]);
+    if (!$userData || !$token) {
+        return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
     }
+
+    if (!in_array($userData['role'], ['admin', 'staff'])) {
+        return redirect()->route('login')->withErrors(['error' => 'Akses ditolak.']);
+    }
+
+    // Ambil detail pembayaran
+    $detailPembayaran = $this->getApiData("/api/detail-pembayaran/{$id}", [], $token);
+    if (empty($detailPembayaran)) {
+        return redirect()->route('staff.pembayaran-ukt.index')->withErrors(['error' => 'Data tidak ditemukan.']);
+    }
+
+    // Ambil jenis pembayaran (langsung array, bukan ['data' => []])
+    $jenisPembayaranList = $this->getApiData("/api/jenis-pembayaran", [], $token);
+
+    $namaJenisPembayaran = '-';
+    if (
+        isset($detailPembayaran['pembayaran_ukt_semester']['id_jenis_pembayaran']) &&
+        is_array($jenisPembayaranList)
+    ) {
+        $idJenisPembayaran = $detailPembayaran['pembayaran_ukt_semester']['id_jenis_pembayaran'];
+
+        foreach ($jenisPembayaranList as $jenis) {
+            if ((int)$jenis['id'] === (int)$idJenisPembayaran) {
+                $namaJenisPembayaran = $jenis['nama_jenis'];
+                break;
+            }
+        }
+    }
+
+    return view('staff-keuangan.dashboard.pembayaran-ukt.detail-pembayaran-ukt', [
+        'detailPembayaran' => $detailPembayaran,
+        'namaJenisPembayaran' => $namaJenisPembayaran
+    ]);
+}
+
+
 
     public function updateStatus(Request $request, $id)
     {

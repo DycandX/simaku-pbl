@@ -269,7 +269,7 @@
                     <a href="{{ route('pengajuan-cicilan.form-update-cicilan', ['id' => $detailPengajuanCicilan['id']]) }}" class="btn btn-primary mr-3">
                         <i class="fas fa-upload mr-1"></i> Buat Hasil Pengajuan Cicilan
                     </a>
-                    
+
                     @if (strtolower($detailPengajuanCicilan['status']) === 'approved')
                         <form action="{{ route('pengajuan-cicilan.buat-tagihan-baru', $detailPengajuanCicilan['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin membuat tagihan cicilan baru? Tagihan lama akan dibatalkan.')">
                             @csrf
@@ -277,9 +277,19 @@
                                 <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
                             </button>
                         </form>
+                            {{-- Tambahan tombol baru --}}
+                        <form action="{{ route('pengajuan-cicilan.hapus-tagihan-cancelled', $detailPengajuanCicilan['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus semua tagihan yang berstatus cancelled?')">
+                            @csrf
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt mr-1"></i> Hapus Tagihan Lama
+                            </button>
+                        </form>
                     @else
                         <button type="button" class="btn btn-success mr-3" disabled title="Pengajuan harus disetujui terlebih dahulu">
                             <i class="fas fa-plus mr-1"></i> Buat Tagihan Baru
+                        </button>
+                        <button type="button" class="btn btn-danger" disabled title="Pengajuan harus disetujui terlebih dahulu">
+                            <i class="fas fa-trash-alt mr-1"></i> Hapus Tagihan Lama
                         </button>
                     @endif
                 </div>

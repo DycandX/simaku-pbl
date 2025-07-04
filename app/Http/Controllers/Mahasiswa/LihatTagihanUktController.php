@@ -132,26 +132,29 @@ class LihatTagihanUktController extends Controller
         }
 
         // 2. Filter pembayaran untuk menghilangkan status 'cancelled'
-        if (isset($uktSemester['pembayaran']) && is_array($uktSemester['pembayaran'])) {
-            $uktSemester['pembayaran'] = array_filter($uktSemester['pembayaran'], function($pembayaran) {
-                return strtolower($pembayaran['status'] ?? '') !== 'cancelled';
-            });
+        // dan menghapus data duplikat berdasarkan ID
+        $pembayaranUnik = [];
+        $seenIds = [];
 
-            // Reset array keys untuk menghindari masalah indexing
-            $uktSemester['pembayaran'] = array_values($uktSemester['pembayaran']);
+        foreach ($uktSemester['pembayaran'] ?? [] as $p) {
+            $status = strtolower($p['status'] ?? '');
+            $idPembayaran = $p['id'] ?? null;
+
+            if ($status !== 'cancelled' && $idPembayaran !== null && !in_array($idPembayaran, $seenIds)) {
+                $seenIds[] = $idPembayaran;
+                $pembayaranUnik[] = $p;
+            }
         }
 
-        // Debug data
-        //dd($uktSemester);
-        // dd($allDetails);
-        // dd($pembayaranUkt);
-        // dd($pembayaranIds);
+        // Reset array dan masukkan ke dalam struktur data
+        $uktSemester['pembayaran'] = array_values($pembayaranUnik);
 
         return view('mahasiswa.dashboard.tagihan-ukt.detail_tagihan_ukt', compact(
             'userData',
             'uktSemester'
         ));
     }
+
 
     public function pengajuan_cicilan($id)
     {
@@ -246,7 +249,6 @@ class LihatTagihanUktController extends Controller
 
     public function upload_bukti_pembayaran($id_ukt_semester)
     {
-        //dd($id_ukt_semester);
         $token = Session::get('token');
         $userData = Session::get('user_data');
         $nim = Session::get('username');
@@ -255,36 +257,53 @@ class LihatTagihanUktController extends Controller
             return redirect()->route('login')->withErrors(['error' => 'Harap login terlebih dahulu.']);
         }
 
-        // Ambil data UKT Semester berdasarkan ID
+        // Ambil data UKT Semester
         $uktSemester = $this->getApiData("/api/ukt-semester/$id_ukt_semester", $token);
-
-        // Ambil data enrollment mahasiswa berdasarkan NIM
         $enrollmentMahasiswa = $this->getApiData("/api/enrollment-mahasiswa?nim=" . urlencode($nim), $token);
 
         if (empty($uktSemester)) {
             return redirect()->back()->withErrors(['error' => 'Data tagihan tidak ditemukan.']);
         }
 
-        // Filter pembayaran list untuk menghilangkan status 'cancelled'
-        $pembayaranList = $uktSemester['pembayaran'] ?? []; // Ambil daftar pembayaran cicilan
-
-        // Filter untuk menghilangkan pembayaran dengan status 'cancelled'
-        $pembayaranList = array_filter($pembayaranList, function($pembayaran) {
+        // Ambil pembayaran list dari UKT (tanpa yg cancelled)
+        $pembayaranList = array_filter($uktSemester['pembayaran'] ?? [], function($pembayaran) {
             return strtolower($pembayaran['status'] ?? '') !== 'cancelled';
         });
+        // dd($pembayaranList);
 
-        // Reset array keys untuk menghindari masalah indexing
-        $pembayaranList = array_values($pembayaranList);
+        // Ambil data detail pembayaran (cicilan yang sudah dibayar)
+        $detailPembayaran = $this->getApiData("/api/detail-pembayaran", $token);
+        // dd($detailPembayaran);
 
-        //dd($pembayaranList);
-        //dd($enrollmentMahasiswa);
+        // Ambil semua ID pembayaran_ukt_semester yang sudah digunakan
+        $idTerpakai = array_map(function ($item) {
+            return $item['id_pembayaran_ukt_semester'];
+        }, $detailPembayaran);
+
+        // Filter hanya pembayaran yang ID-nya belum ada di detail_pembayaran
+        $pembayaranBelumTerpakai = array_filter($pembayaranList, function ($pembayaran) use ($idTerpakai) {
+            return !in_array($pembayaran['id'], $idTerpakai);
+        });
+
+        // Urutkan berdasarkan ID ASC dan ambil satu yang paling kecil
+        usort($pembayaranBelumTerpakai, fn($a, $b) => $a['id'] <=> $b['id']);
+        $pembayaranBelumTerpakai = array_values($pembayaranBelumTerpakai);
+
+        if (empty($pembayaranBelumTerpakai)) {
+            return redirect()->back()->withErrors(['error' => 'Semua pembayaran telah diunggah.']);
+        }
+
+        $pembayaranTerpilih = [$pembayaranBelumTerpakai[0]];
+
         return view('mahasiswa.dashboard.tagihan-ukt.upload_bukti', [
             'uktSemester' => $uktSemester,
-            'pembayaranList' => $pembayaranList,
+            'pembayaranList' => $pembayaranTerpilih,
             'enrollmentMahasiswa' => $enrollmentMahasiswa,
             'userData' => $userData
         ]);
     }
+
+
 
     public function bukti_pembayaran_store(Request $request)
     {

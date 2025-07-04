@@ -35,6 +35,14 @@
                                 <p class="mb-0">{{ $detailPembayaran['pembayaran_ukt_semester']['ukt_semester']['enrollment']['mahasiswa']['nim'] ?? '-' }}</p>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-0 fw-bold">Pembayaran ke:</p>
+                            </div>
+                            <div class="col-8">
+                                <p class="mb-0">{{ $namaJenisPembayaran }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
